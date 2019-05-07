@@ -4,7 +4,9 @@ project(rhoban_model_learning)
 find_package(catkin REQUIRED COMPONENTS
   rhoban_bbo
   model
-)
+  )
+
+option(BUILD_MODEL_LEARNING_TOOLS "Build the tools from model learning" OFF)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++17")
 
@@ -32,6 +34,7 @@ include_directories(
 set(DIRECTORIES
   src/rhoban_model_learning/
   src/rhoban_model_learning/basic_models
+  src/rhoban_model_learning/camera_calibration/
 #  src/rhoban_model_learning/ball_models
 #  src/rhoban_model_learning/models
   src/rhoban_model_learning/humanoid_models
@@ -83,7 +86,10 @@ target_link_libraries(model_learner ${catkin_LIBRARIES} rhoban_model_learning)
 #
 #add_executable(ball_trajectory_predictor tools/ball_trajectory_predictor.cpp)
 #target_link_libraries(ball_trajectory_predictor ${catkin_LIBRARIES} rhoban_model_learning)
-
+if (BUILD_MODEL_LEARNING_TOOLS)
+  add_executable(marker_extractor tools/marker_extractor.cpp)
+  target_link_libraries(marker_extractor ${catkin_LIBRARIES} rhoban_model_learning)
+endif()
 
 enable_testing()
  
