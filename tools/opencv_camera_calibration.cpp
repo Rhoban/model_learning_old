@@ -12,7 +12,7 @@ using namespace rhoban_model_learning;
 using namespace TCLAP;
 
 CameraModel calibrateCamera(const MarkerCollection& markers, const MarkerSeenCollection& markers_seen, size_t nb_images,
-                            const cv::Size& img_size)
+                            const cv::Size& img_size, int calibration_flags)
 {
   // Preliminary: check validity
   if (markers_seen.size() < nb_images)
@@ -53,8 +53,9 @@ CameraModel calibrateCamera(const MarkerCollection& markers, const MarkerSeenCol
   std::vector<cv::Mat> rvecs, tvecs;
 
   std::cout << "img_size: " << img_size << std::endl;
-  
-  double error = cv::calibrateCamera(obj_points, img_points, img_size, camera_matrix, distortion_coeffs, rvecs, tvecs);
+
+  double error = cv::calibrateCamera(obj_points, img_points, img_size, camera_matrix, distortion_coeffs, rvecs, tvecs,
+                                     calibration_flags);
 
   std::cout << "Error: " << error << std::endl;
   std::cout << "Camera Matrix: " << camera_matrix << std::endl;
@@ -77,11 +78,15 @@ int main(int argc, char** argv)
     UnlabeledValueArg<std::string> markers_seen_arg("markers_seen_paths",
                                                     "path to file containing result of markers detection", true,
                                                     "markers_seen.csv", "markers_seen_path", cmd);
-    TCLAP::ValueArg<int> nb_images_arg("n", "nb_images", "Number of images used for training", false, 20, "int", cmd);
+    TCLAP::ValueArg<int> nb_images_arg("n", "nb-images", "Number of images used for training", false, 20, "int", cmd);
     TCLAP::ValueArg<int> cols_arg("c", "cols", "Width of the images used", false, 640, "nb_cols", cmd);
     TCLAP::ValueArg<int> rows_arg("r", "rows", "Height of the images used", false, 480, "nb_rows", cmd);
     TCLAP::ValueArg<std::string> output_arg("o", "output", "Path to which the model is saved", false, "model.json",
                                             "output.json", cmd);
+    TCLAP::SwitchArg fix_k1_arg("", "fix-k1", "Use K1 parameter for calibration", cmd);
+    TCLAP::SwitchArg fix_k2_arg("", "fix-k2", "Use K2 parameter for calibration", cmd);
+    TCLAP::SwitchArg fix_k3_arg("", "fix-k3", "Use K3 parameter for calibration", cmd);
+    TCLAP::SwitchArg fix_tangential_arg("", "fix-tangential", "Fix tangential parameters for distortion", cmd);
 
     cmd.parse(argc, argv);
 
@@ -92,7 +97,26 @@ int main(int argc, char** argv)
     markers_seen.loadFile(markers_seen_arg.getValue());
 
     cv::Size img_size(cols_arg.getValue(), rows_arg.getValue());
-    CameraModel model = calibrateCamera(markers, markers_seen, nb_images_arg.getValue(), img_size);
+
+    int calibration_flags = CV_CALIB_FIX_ASPECT_RATIO;
+    if (fix_k1_arg.getValue())
+    {
+      calibration_flags |= CV_CALIB_FIX_K1;
+    }
+    if (fix_k2_arg.getValue())
+    {
+      calibration_flags |= CV_CALIB_FIX_K2;
+    }
+    if (fix_k3_arg.getValue())
+    {
+      calibration_flags |= CV_CALIB_FIX_K3;
+    }
+    if (fix_tangential_arg.getValue())
+    {
+      calibration_flags |= CV_CALIB_ZERO_TANGENT_DIST;
+    }
+    
+    CameraModel model = calibrateCamera(markers, markers_seen, nb_images_arg.getValue(), img_size, calibration_flags);
     model.saveFile(output_arg.getValue());
   }
   catch (const ArgException& exc)
