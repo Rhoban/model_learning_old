@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     SwitchArg ycrcb_arg("", "ycrcb", "Consider input as ycrcb images", cmd);
     ValueArg<int> rows_arg("r", "rows", "Number of rows in pattern", false, 9, "nbRows", cmd);
     ValueArg<int> cols_arg("c", "cols", "Number of cols in pattern", false, 6, "nbCols", cmd);
-    ValueArg<int> marker_size_arg("m", "marker_size", "Size of a marker in meters", false, 0.02, "markerSize[m]", cmd);
+    ValueArg<double> marker_size_arg("m", "marker_size", "Size of a marker in meters", false, 0.02, "markerSize[m]", cmd);
 
     cmd.parse(argc, argv);
 
@@ -97,8 +97,6 @@ int main(int argc, char** argv)
     {
       throw std::logic_error("Charuco not implemented");
     }
-
-    std::cout << "Nb markers: " << markers.size() << std::endl;
 
     markers.saveFile("markers.csv");
     markers_seen.saveFile("markers_seen.csv");

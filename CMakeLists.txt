@@ -89,6 +89,9 @@ target_link_libraries(model_learner ${catkin_LIBRARIES} rhoban_model_learning)
 if (BUILD_MODEL_LEARNING_TOOLS)
   add_executable(marker_extractor tools/marker_extractor.cpp)
   target_link_libraries(marker_extractor ${catkin_LIBRARIES} rhoban_model_learning)
+
+  add_executable(opencv_camera_calibration tools/opencv_camera_calibration.cpp)
+  target_link_libraries(opencv_camera_calibration ${catkin_LIBRARIES} rhoban_model_learning)
 endif()
 
 enable_testing()

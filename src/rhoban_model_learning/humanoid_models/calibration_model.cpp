@@ -1,6 +1,6 @@
 #include "rhoban_model_learning/humanoid_models/calibration_model.h"
 
-#include "rhoban_model_learning/humanoid_models/camera_model.h"
+#include <rhoban_model_learning/camera_calibration/camera_model.h>
 #include "rhoban_model_learning/humanoid_models/rotation_model.h"
 #include "rhoban_model_learning/humanoid_models/vision_noise_model.h"
 

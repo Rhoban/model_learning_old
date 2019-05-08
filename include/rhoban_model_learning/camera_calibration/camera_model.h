@@ -9,6 +9,7 @@ class CameraModel : public Model
 {
 public:
   CameraModel();
+  CameraModel(const Leph::CameraModel& other);
   CameraModel(const CameraModel& other);
 
   int getParametersSize() const override;

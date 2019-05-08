@@ -1,8 +1,12 @@
-#include "rhoban_model_learning/humanoid_models/camera_model.h"
+#include <rhoban_model_learning/camera_calibration/camera_model.h>
 
 namespace rhoban_model_learning
 {
 CameraModel::CameraModel() : model()
+{
+}
+
+CameraModel::CameraModel(const Leph::CameraModel& leph_model) : model(leph_model)
 {
 }
 
