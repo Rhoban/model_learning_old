@@ -43,11 +43,11 @@ MarkerSeenCollection detectChessboard(const std::vector<std::string>& img_paths,
     bool success = cv::findChessboardCorners(gray, pattern_size, corners);
     if (success)
     {
+      cv::cornerSubPix(gray, corner, cv::Size(5,5), cv::Size(-1,-1))
       if (display)
       {
         cv::drawChessboardCorners(bgr, pattern_size, corners, success);
       }
-      // TODO: subpix
       int marker_id = 0;
       for (const cv::Point2f& corner : corners)
       {
