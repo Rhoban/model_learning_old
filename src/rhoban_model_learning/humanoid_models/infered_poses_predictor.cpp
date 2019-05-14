@@ -31,32 +31,23 @@ Eigen::VectorXd IPP::predictObservation(const Input& raw_input, const Model& raw
   cv::Mat cameraMatrix = model.getCameraModel().getCameraMatrix();
   cv::Mat cameraDistortionCoeffs = model.getCameraModel().getDistortionCoeffs();
 
-  std::vector<cv::Point3f> points3d;
-  std::vector<cv::Point2i> points2d;
+  std::vector<cv::Point3f> worldCoordinates;
+  std::vector<cv::Point2f> pixelCoordinates;
   for (const Eigen::Vector3d& tag_to_infer : input.tags_to_infer)
   {
-    points2d.push_back(cv::Point2i(tag_to_infer(1), tag_to_infer(2)));
-    points3d.push_back(eigen2CV(model.getTagPosition(tag_to_infer(0))));
+    pixelCoordinates.push_back(cv::Point2f(tag_to_infer(1), tag_to_infer(2)));
+    worldCoordinates.push_back(eigen2CV(model.getTagPosition(tag_to_infer(0))));
   }
 
   cv::Mat t_vec;
   cv::Mat r_vec;
-  cv::solvePnP(points3d, points2d, cameraMatrix, cameraDistortionCoeffs, t_vec, r_vec);
+  cv::solvePnP(worldCoordinates, pixelCoordinates, cameraMatrix, cameraDistortionCoeffs, r_vec, t_vec);
 
-  /// Second: predict aruco_tag position in camera frame
-  PoseModel camera_pose;
-  Eigen::VectorXd params(6);
-  params << t_vec.at<double>(0), t_vec.at<double>(1), t_vec.at<double>(3), r_vec.at<double>(0), r_vec.at<double>(1),
-      r_vec.at<double>(2);
+  std::vector<cv::Point3d> marker_pos_world_container{ eigen2CV(model.getTagPosition(input.aruco_id)) };
+  std::vector<cv::Point2d> pixel_container{};
+  cv::projectPoints(marker_pos_world_container, r_vec, t_vec, cameraMatrix, cameraDistortionCoeffs, pixel_container);
 
-  camera_pose.setParameters(params);
-
-  Eigen::Vector3d marker_pos_world = model.getTagPosition(input.aruco_id);
-  Eigen::Vector3d marker_pos_camera = camera_pose.getPosInSelf(marker_pos_world);
-
-  /// Fourth : predict aruco_tag position in camera image
-  Eigen::Vector2d pixel = cv2Eigen(model.getCameraModel().getImgFromObject(eigen2CV(marker_pos_camera)));
-
+  Eigen::Vector2d pixel = cv2Eigen(pixel_container[0]);
   // Add noise if required
   if (engine != nullptr)
   {

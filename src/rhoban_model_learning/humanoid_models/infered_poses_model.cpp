@@ -3,9 +3,9 @@
 #include <rhoban_model_learning/camera_calibration/camera_model.h>
 #include "rhoban_model_learning/humanoid_models/multi_poses_model.h"
 #include "rhoban_model_learning/humanoid_models/vision_noise_model.h"
-#include "rhoban_model_learning/tags/aruco_collection.h"
 
 #include <rhoban_utils/util.h>
+#include <iostream>
 
 namespace rhoban_model_learning
 {
@@ -15,11 +15,14 @@ IPM::InferedPosesModel() : CompositeModel()
 {
   models["noise"] = std::unique_ptr<Model>(new VisionNoiseModel);
   models["camera"] = std::unique_ptr<Model>(new CameraModel);
-  models["tags"] = std::unique_ptr<Model>(new ArucoCollection);
 }
 
 IPM::InferedPosesModel(const InferedPosesModel& other) : CompositeModel(other)
 {
+  for (auto& el : other.markers)
+  {
+    markers[el.first] = el.second;
+  }
 }
 
 double IPM::getPxStddev() const
@@ -39,16 +42,19 @@ std::unique_ptr<Model> IPM::clone() const
 
 Eigen::Vector3d IPM::getTagPosition(int i) const
 {
-  return static_cast<const ArucoCollection&>(*models.at("tags")).getMarkers()[i].marker_center;
+  return markers.at(i);
 }
 
 void IPM::fromJson(const Json::Value& v, const std::string& dir_name)
 {
   CompositeModel::fromJson(v, dir_name);
+
   // Checking that content has been appropriately set
   checkType<VisionNoiseModel>("noise");
   checkType<CameraModel>("camera");
-  checkType<TagsCollection>("tags");
+
+  markers.loadFile(rhoban_utils::read<std::string>(v, "rel_tag_path"));
+  std::cout << "Markers loaded. There are " << markers.size() << " markers." << std::endl;
 }
 
 std::string IPM::getClassName() const

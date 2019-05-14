@@ -59,6 +59,16 @@ void PoseModel::setParameters(const Eigen::VectorXd& new_params)
   orientation.normalize();
 }
 
+void PoseModel::setPosition(const Eigen::Vector3d pos_)
+{
+  pos = pos_;
+}
+
+void PoseModel::setOrientation(const Eigen::Quaterniond orientation_)
+{
+  orientation = orientation_;
+  orientation.normalize();
+}
 std::vector<std::string> PoseModel::getParametersNames() const
 {
   return { "x", "y", "z", "qx", "qy", "qz", "qw" };

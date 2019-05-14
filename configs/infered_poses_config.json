@@ -1,0 +1,83 @@
+{
+    "model" : {
+        "class name" : "InferedPosesModel",
+        "content" : {
+            "rel_tag_path" : "markers.csv",
+            "models" : {
+                "noise" : {
+                    "class name" : "VisionNoiseModel",
+                    "content" : {
+                        "px_stddev" : 0
+                    }
+                },
+                "camera" : {
+                    "class name" : "CameraModel",
+                    "content" : {
+                        "img_width" : 600,
+                        "img_height" : 480
+                    }
+                }
+            }
+        }
+    },
+    "prior" : {
+        "class name" : "CompositePrior",
+        "content" : {
+            "priors" : {
+                "noise" : {
+                    "class name" : "DefaultPrior",
+                    "content" : {
+                        "means" : {
+                            "rows" : 1,
+                            "values" : [5]
+                        },
+                        "deviations" : {
+                            "rows" : 1,
+                            "values" : [2.5]
+                        }
+                    }
+                },
+                "camera" : {
+                    "class name" : "DefaultPrior",
+                    "content" : {
+                        "means" : {
+                            "rows" : 9,
+                            "values" : [490,490,300,240,0,0,0,0,0]
+                        },
+                        "deviations" : {
+                            "rows" : 9,
+                            "values" : [40,40,20,20,0.1,0.1,0.1,0.1,0.1]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "space" : {
+        "class name" : "DeviationBasedSpace",
+        "content" : {
+            "ratio" : 2
+        }
+    },
+    "predictor" : {
+        "class name" : "InferedPosesPredictor",
+        "content" : {}
+    },
+    "optimizer" : {
+        "class name" : "CMAESOptimizer",
+        "content" : {
+            "quiet" : false,
+            "nb_evaluations" : 3000,
+            "population_size" : 5
+        }
+        // "class name" : "CrossEntropy",
+        // "content" : {
+        //     "nb_generations" : 15,
+        //     "population_size" : 50,
+        //     "best_set_size" : 10
+        // }
+    },
+    //"indices_names" : ["camera:focalX", "camera:focalY", "camera:centerX", "camera:centerY", "noise:all"]//incomplete
+    "indices_names" : ["camera:all", "noise:all"]//incomplete
+    //"indices_names" : ["camera:focalX", "camera:focalY", "camera:centerX", "camera:centerY", "camera:k1", "camera:k2", "camera:p1", "camera:p2", "noise:all"]//incomplete
+}

@@ -7,7 +7,6 @@
 #include <tclap/CmdLine.h>
 #include <opencv2/calib3d.hpp>
 
-
 using namespace rhoban_model_learning;
 using namespace TCLAP;
 
@@ -36,7 +35,7 @@ CameraModel calibrateCamera(const MarkerCollection& markers, const MarkerSeenCol
     int image_id = images_indices[idx];
     std::vector<cv::Point2f> tmp_img_points;
     std::vector<cv::Point3f> tmp_obj_points;
-    for (const auto& entry: markers_seen.at(image_id))
+    for (const auto& entry : markers_seen.at(image_id))
     {
       int marker_id = entry.first;
       Eigen::Vector2d img_point = entry.second;
@@ -115,7 +114,7 @@ int main(int argc, char** argv)
     {
       calibration_flags |= CV_CALIB_ZERO_TANGENT_DIST;
     }
-    
+
     CameraModel model = calibrateCamera(markers, markers_seen, nb_images_arg.getValue(), img_size, calibration_flags);
     model.saveFile(output_arg.getValue());
   }
@@ -125,4 +124,3 @@ int main(int argc, char** argv)
     exit(EXIT_FAILURE);
   }
 }
-  

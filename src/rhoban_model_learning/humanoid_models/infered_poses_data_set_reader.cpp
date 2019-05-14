@@ -17,7 +17,13 @@ typedef InferedPosesDataSetReader IPDSR;
 typedef InferedPosesInput IPI;
 
 IPDSR::InferedPosesDataSetReader()
-  : nb_training_images(-1), nb_validation_images(-1), nb_tags_to_infer_pose(-1), nb_tags_per_image(-1), verbose(false)
+  : nb_training_images(-1)
+  , nb_validation_images(-1)
+  , nb_tags_to_infer_pose(-1)
+  , nb_tags_per_image(-1)
+  , verbose(false)
+  , grid_height(-1)
+  , grid_width(-1)
 {
 }
 
@@ -29,12 +35,12 @@ DataSet IPDSR::extractSamples(const std::string& file_path, std::default_random_
   for (size_t row = 0; row < data.nbRows(); row++)
   {
     std::map<std::string, std::string> row_content = data.getRow(row);
-    int image_id = std::stoi(row_content.at("image_id"));
+    int img_id = std::stoi(row_content.at("img_id"));
     int marker_id = std::stoi(row_content.at("marker_id"));
-    double pixel_x = std::stod(row_content.at("pixel_x"));
-    double pixel_y = std::stod(row_content.at("pixel_y"));
+    double img_x = std::stod(row_content.at("img_x"));
+    double img_y = std::stod(row_content.at("img_y"));
 
-    raw_datas_by_image[image_id].push_back(Eigen::Vector3d(marker_id, pixel_x, pixel_y));
+    raw_datas_by_image[img_id].push_back(Eigen::Vector3d(marker_id, img_x, img_y));
   }
 
   // Get valid images indices
@@ -46,7 +52,7 @@ DataSet IPDSR::extractSamples(const std::string& file_path, std::default_random_
   std::vector<int> images_indices;
   for (const auto& pair : raw_datas_by_image)
   {
-    int image_id = pair.first;
+    int img_id = pair.first;
     int nb_datas = pair.second.size();
     if (nb_datas >= nb_tags_to_infer_pose + nb_tags_per_image)
     {
@@ -54,8 +60,8 @@ DataSet IPDSR::extractSamples(const std::string& file_path, std::default_random_
     }
     else if (verbose)
     {
-      std::cout << "\tIgnoring image " << image_id << " because it has only " << nb_datas << " valid samples"
-                << std::endl;
+      std::cout << "\tIgnoring image " << img_id << " because it has only " << nb_datas << "(< "
+                << nb_tags_to_infer_pose + nb_tags_per_image << ") valid samples" << std::endl;
     }
   }
   if (images_indices.size() < (size_t)(nb_images))
@@ -68,24 +74,36 @@ DataSet IPDSR::extractSamples(const std::string& file_path, std::default_random_
   // Choosing the images used for training and validation
   std::vector<size_t> chosen_image_indices = rhoban_random::getKDistinctFromN(nb_images, images_indices.size(), engine);
 
-  // Choosing the tags used to infer the pose
+  // Choosing in each image the tags used to infer the pose
   std::map<int, std::vector<Sample>> samples_by_image;
 
-  for (size_t idx : chosen_image_indices)
+  for (size_t id_image : chosen_image_indices)
   {
-    const std::vector<Eigen::Vector3d>& raw_datas_of_image = raw_datas_by_image[images_indices[idx]];
-    std::vector<size_t> set_sizes = { (size_t)nb_tags_to_infer_pose, (size_t)nb_tags_per_image };
-    std::vector<std::vector<size_t>> tags_indices_separated =
-        rhoban_random::splitIndices(raw_datas_of_image.size() - 1, set_sizes, engine);
+    const std::vector<Eigen::Vector3d>& raw_datas_of_image = raw_datas_by_image[images_indices[id_image]];
+
+    std::vector<size_t> id_tags_to_infer{ 0, 5, 30, 48, 53 };
     std::vector<Eigen::Vector3d> tags_to_infer;
-    for (size_t tag_to_infer_id : tags_indices_separated[0])
+    for (size_t id_tag : id_tags_to_infer)
     {
-      tags_to_infer.push_back(raw_datas_of_image[tag_to_infer_id]);
+      tags_to_infer.push_back(raw_datas_of_image[id_tag]);
     }
-    for (size_t id_tag : tags_indices_separated[1])
+    std::sort(id_tags_to_infer.begin(), id_tags_to_infer.end());
+
+    // We remove the tags used to infer the pose
+    std::vector<int> ivec(grid_width * grid_height);
+    int i = 0;
+    std::iota(ivec.begin(), ivec.end(), 0);
+    std::vector<int> remaining_tags;
+    std::set_difference(ivec.begin(), ivec.end(), id_tags_to_infer.begin(), id_tags_to_infer.end(),
+                        std::inserter(remaining_tags, remaining_tags.begin()));
+
+    // We take nb_tags_per_image tags among the remaining tags
+    std::vector<size_t> indices = rhoban_random::getKDistinctFromN(nb_tags_per_image, remaining_tags.size(), engine);
+
+    for (size_t id_tag : indices)
     {
-      Eigen::Vector3d tag = raw_datas_of_image[id_tag];
-      samples_by_image[idx].push_back(
+      Eigen::Vector3d tag = raw_datas_of_image[remaining_tags[id_tag]];
+      samples_by_image[id_image].push_back(
           Sample(std::unique_ptr<Input>(new IPI(tags_to_infer, tag[0])), Eigen::Vector2d(tag[1], tag[2])));
     }
   }
@@ -127,6 +145,8 @@ Json::Value IPDSR::toJson() const
   v["nb_validation_images"] = nb_validation_images;
   v["nb_tags_per_image"] = nb_tags_per_image;
   v["nb_tags_to_infer_pose"] = nb_tags_to_infer_pose;
+  v["grid_height"] = grid_height;
+  v["grid_width"] = grid_width;
   v["verbose"] = verbose;
   return v;
 }
@@ -138,11 +158,24 @@ void IPDSR::fromJson(const Json::Value& v, const std::string& dir_name)
   rhoban_utils::tryRead(v, "nb_tags_per_image", &nb_tags_per_image);
   rhoban_utils::tryRead(v, "nb_tags_to_infer_pose", &nb_tags_to_infer_pose);
   rhoban_utils::tryRead(v, "verbose", &verbose);
+  rhoban_utils::tryRead(v, "grid_height", &grid_height);
+  rhoban_utils::tryRead(v, "grid_width", &grid_width);
 
   if (3 > nb_tags_to_infer_pose)
   {
     throw std::runtime_error(DEBUG_INFO + " the number of tags (" + std::to_string(nb_tags_to_infer_pose) +
                              " should be bigger than 2.");
+  }
+
+  if (grid_height < nb_tags_to_infer_pose)
+  {
+    throw std::runtime_error(DEBUG_INFO + " the number of tags (" + std::to_string(nb_tags_to_infer_pose) +
+                             " should be smaller than grid_height.");
+  }
+  if (grid_width < nb_tags_to_infer_pose)
+  {
+    throw std::runtime_error(DEBUG_INFO + " the number of tags (" + std::to_string(nb_tags_to_infer_pose) +
+                             " should be smaller than grid_width.");
   }
 }
 

@@ -16,6 +16,7 @@ int main(int argc, char** argv)
   }
 
   // Reading model learner from Json
+  std::cout << "Read model learner from Json" << std::endl;
   ModelLearner learner;
   learner.loadFile(argv[1]);
   // Reading input reader from Json
@@ -24,10 +25,12 @@ int main(int argc, char** argv)
   learner.getSpace().append(learner.getModel(), learner.getPrior(), learner.getTrainableIndices(), std::cout);
 
   // Analyze data
+  std::cout << "Analyze data." << std::endl;
   std::default_random_engine engine = rhoban_random::getRandomEngine();
   DataSet data = input_reader->extractSamples(argv[3], &engine);
 
   // Learn model
+  std::cout << "Learn model." << std::endl;
   ModelLearner::Result r = learner.learnParameters(data, &engine);
 
   // Output csv file with results

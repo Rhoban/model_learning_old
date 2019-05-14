@@ -60,10 +60,13 @@ ModelLearner::Result ModelLearner::learnParameters(const SampleVector& training_
   optimizer->setLimits(matrix_space);
   Eigen::VectorXd initial_guess = prior->getParametersMeans(*model, trainable_indices);
   Eigen::VectorXd best_parameters;
+
+  std::cout << "Start training." << std::endl;
   best_parameters = optimizer->train(reward_function, initial_guess, engine);
   // Copy the model
+  std::cout << "Finished training." << std::endl;
   result.model = model->clone();
-  result.model->setParameters(best_parameters);
+  result.model->setParameters(best_parameters, getTrainableIndices());
   // Estimate log likelihood on both, training set and validation set
   result.training_log_likelihood = getLogLikelihood(*result.model, training_set, engine);
   result.validation_log_likelihood = getLogLikelihood(*result.model, validation_set, engine);

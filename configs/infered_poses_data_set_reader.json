@@ -1,0 +1,13 @@
+{
+    "class name" : "InferedPosesDataSetReader",
+    "content" :{
+        "nb_training_images" : 100,
+        "nb_validation_images" : 25,
+        "nb_tags_per_image" : 30,
+        "nb_tags_to_infer_pose" : 5,
+	"grid_width": 9,
+	"grid_height": 6,
+        "verbose" : true
+    }
+}
+

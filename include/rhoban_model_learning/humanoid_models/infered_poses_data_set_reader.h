@@ -36,6 +36,10 @@ private:
 
   /// Printing debug information
   bool verbose;
+
+  /// Grid size
+  int grid_height;
+  int grid_width;
 };
 
 }  // namespace rhoban_model_learning

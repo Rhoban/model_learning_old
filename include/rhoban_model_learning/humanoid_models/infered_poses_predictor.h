@@ -4,12 +4,12 @@
 
 namespace rhoban_model_learning
 {
-/// Inputs should be PosesOptimizationInput which contain:
-/// - Image number
-/// - Aruco Id
+/// Inputs should be InferedPosesInput which contain:
+/// - a vector of Eigen::Vector3d representing the markers used to infer the camera position.
+/// - marker Id
 ///
 /// Observations are positions of the marker in the image (x,y)
-class InferedPosesPredictor : Predictor
+class InferedPosesPredictor : public Predictor
 {
 public:
   InferedPosesPredictor();

@@ -73,7 +73,7 @@ void CompositeModel::setParameters(const Eigen::VectorXd& new_params)
   {
     int model_count = entry.second->getParametersSize();
     const Eigen::VectorXd& sub_model_params = new_params.segment(idx, model_count);
-    std::cout << "params for model '" << entry.first << "' " << sub_model_params.transpose() << std::endl;
+    // std::cout << "params for model '" << entry.first << "' " << sub_model_params.transpose() << std::endl;
     entry.second->setParameters(sub_model_params);
     idx += model_count;
   }

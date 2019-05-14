@@ -2,6 +2,7 @@
 
 #include "rhoban_model_learning/composite_model.h"
 #include "rhoban_model_learning/humanoid_models/multi_poses_model.h"
+#include "rhoban_model_learning/camera_calibration/marker_collection.h"
 
 #include <Model/CameraModel.hpp>
 #include <Eigen/Core>
@@ -24,6 +25,9 @@ public:
 
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;
   std::string getClassName() const;
+
+protected:
+  MarkerCollection markers;
 };
 
 }  // namespace rhoban_model_learning

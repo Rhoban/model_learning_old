@@ -29,6 +29,9 @@ public:
   void setParameters(const Eigen::VectorXd& new_params) override;
   std::vector<std::string> getParametersNames() const override;
 
+  void setPosition(const Eigen::Vector3d pos_);
+  void setOrientation(const Eigen::Quaterniond orientation_);
+
   Json::Value toJson() const override;
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;
   std::string getClassName() const override;
