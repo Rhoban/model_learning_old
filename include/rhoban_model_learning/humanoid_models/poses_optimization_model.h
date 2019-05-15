@@ -3,7 +3,7 @@
 #include "rhoban_model_learning/composite_model.h"
 #include "rhoban_model_learning/humanoid_models/multi_poses_model.h"
 
-#include <Model/CameraModel.hpp>
+#include "robot_model/camera_model.h"
 
 namespace rhoban_model_learning
 {
@@ -15,7 +15,7 @@ public:
 
   double getPxStddev() const;
 
-  const Leph::CameraModel& getCameraModel() const;
+  const rhoban::CameraModel& getCameraModel() const;
 
   const PoseModel& getPose(int idx) const;
 

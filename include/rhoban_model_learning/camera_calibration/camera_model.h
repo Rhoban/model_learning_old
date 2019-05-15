@@ -1,15 +1,15 @@
 #include "rhoban_model_learning/model.h"
 
-#include "Model/CameraModel.hpp"
+#include "robot_model/camera_model.h"
 
 namespace rhoban_model_learning
 {
-/// Simple Wrapper for Leph::CameraModel
+/// Simple Wrapper for rhoban::CameraModel
 class CameraModel : public Model
 {
 public:
   CameraModel();
-  CameraModel(const Leph::CameraModel& other);
+  CameraModel(const rhoban::CameraModel& other);
   CameraModel(const CameraModel& other);
 
   int getParametersSize() const override;
@@ -23,7 +23,7 @@ public:
 
   std::unique_ptr<Model> clone() const override;
 
-  Leph::CameraModel model;
+  rhoban::CameraModel model;
 };
 
 }  // namespace rhoban_model_learning

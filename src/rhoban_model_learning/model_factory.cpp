@@ -4,7 +4,7 @@
 
 #include <rhoban_model_learning/camera_calibration/camera_model.h>
 #include "rhoban_model_learning/humanoid_models/multi_poses_model.h"
-#include "rhoban_model_learning/humanoid_models/poses_optimization_model.h"
+// #include "rhoban_model_learning/humanoid_models/poses_optimization_model.h"
 #include "rhoban_model_learning/humanoid_models/rotation_model.h"
 #include "rhoban_model_learning/humanoid_models/vision_noise_model.h"
 
@@ -27,7 +27,7 @@ ModelFactory::ModelFactory()
   // Humanoid models
   registerBuilder("CameraModel", []() { return std::unique_ptr<Model>(new CameraModel); });
   registerBuilder("MultiPosesModel", []() { return std::unique_ptr<Model>(new MultiPosesModel); });
-  registerBuilder("PosesOptimizationModel", []() { return std::unique_ptr<Model>(new PosesOptimizationModel); });
+  // registerBuilder("PosesOptimizationModel", []() { return std::unique_ptr<Model>(new PosesOptimizationModel); });
   registerBuilder("RotationModel", []() { return std::unique_ptr<Model>(new RotationModel); });
   registerBuilder("VisionNoiseModel", []() { return std::unique_ptr<Model>(new VisionNoiseModel); });
   // Tags models

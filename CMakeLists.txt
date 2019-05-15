@@ -4,6 +4,7 @@ project(rhoban_model_learning)
 find_package(catkin REQUIRED COMPONENTS
   rhoban_bbo
   model
+  robot_model
   )
 
 option(BUILD_MODEL_LEARNING_TOOLS "Build the tools from model learning" OFF)
@@ -16,7 +17,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++17")
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES rhoban_model_learning
-  CATKIN_DEPENDS rhoban_bbo model
+  CATKIN_DEPENDS rhoban_bbo model robot_model
 )
 
 ###########
@@ -37,7 +38,7 @@ set(DIRECTORIES
   src/rhoban_model_learning/camera_calibration/
 #  src/rhoban_model_learning/ball_models
 #  src/rhoban_model_learning/models
-  src/rhoban_model_learning/humanoid_models
+ src/rhoban_model_learning/humanoid_models
   src/rhoban_model_learning/tags
   )
 
