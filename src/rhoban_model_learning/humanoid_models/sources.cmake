@@ -1,7 +1,7 @@
 set (SOURCES
   # calibration_data_set_reader.cpp
   # calibration_input.cpp
-  # calibration_model.cpp
+  calibration_model.cpp
   # calibration_predictor.cpp
   # infered_poses_model.cpp
   # infered_poses_predictor.cpp
