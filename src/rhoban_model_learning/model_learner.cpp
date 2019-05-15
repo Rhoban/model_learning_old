@@ -170,4 +170,10 @@ const std::set<int>& ModelLearner::getTrainableIndices() const
   return trainable_indices;
 }
 
+void ModelLearner::exportValidationResulstToCSV(const Model& _model, const DataSet& data, const std::string& filename,
+                                                char separator) const
+{
+  predictor->exportPredictionsToCSV(_model, data.validation_set, filename, separator);
+}
+
 }  // namespace rhoban_model_learning

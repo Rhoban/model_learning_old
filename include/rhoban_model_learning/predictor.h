@@ -39,6 +39,11 @@ public:
   Json::Value toJson() const override;
   void fromJson(const Json::Value& v, const std::string& dir_name) override;
 
+  /// Allows to export prediction results to a csv file.
+  /// It should be reimplemented.
+  virtual void exportPredictionsToCSV(const Model& raw_model, const SampleVector& sample_vector,
+                                      const std::string& filename, char separator = ',') const;
+
 protected:
   /// The number of samples used to fit a distribution if necessary
   int nb_samples;

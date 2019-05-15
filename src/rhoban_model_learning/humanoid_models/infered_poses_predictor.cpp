@@ -8,6 +8,7 @@
 
 #include <rhoban_utils/angle.h>
 #include <rhoban_utils/util.h>
+#include "rhoban_utils/logging/csv.h"
 
 #include <opencv2/core/eigen.hpp>
 #include "opencv2/calib3d/calib3d.hpp"
@@ -83,6 +84,29 @@ Eigen::VectorXi IPP::getObservationsCircularity() const
 std::string IPP::getClassName() const
 {
   return "InferedPosesPredictor";
+}
+
+void IPP::exportPredictionsToCSV(const Model& raw_model, const SampleVector& sample_vector, const std::string& filename,
+                                 char separator) const
+{
+  rhoban_utils::CSV* csv = new rhoban_utils::CSV();
+  csv->open(filename, separator);
+
+  const InferedPosesModel& model = dynamic_cast<const InferedPosesModel&>(raw_model);
+
+  for (const auto& sample : sample_vector)
+  {
+    const InferedPosesInput& input = dynamic_cast<const InferedPosesInput&>(sample->getInput());
+    Eigen::Vector2d prediction = predictObservation(input, model, nullptr);
+    Eigen::Vector2d observation = sample->getObservation();
+    csv->push("marker_id", input.aruco_id);
+    csv->push("obs_x", observation.x());
+    csv->push("obs_y", observation.y());
+    csv->push("pred_x", prediction.x());
+    csv->push("pred_y", prediction.y());
+    csv->newLine();
+  }
+  csv->close();
 }
 
 }  // namespace rhoban_model_learning

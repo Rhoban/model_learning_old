@@ -4,6 +4,7 @@
 #include "rhoban_model_learning/model_prior.h"
 #include "rhoban_model_learning/model_space.h"
 #include "rhoban_model_learning/predictor.h"
+#include "rhoban_model_learning/sample.h"
 
 #include "rhoban_bbo/optimizer.h"
 
@@ -48,6 +49,9 @@ public:
   const ModelSpace& getSpace() const;
 
   const std::set<int>& getTrainableIndices() const;
+
+  void exportValidationResulstToCSV(const Model& _model, const DataSet& data, const std::string& filename,
+                                    char separator = ',') const;
 
 protected:
   /// The model which will be learnt

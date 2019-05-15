@@ -3,6 +3,9 @@
 #include "rhoban_random/multivariate_gaussian.h"
 #include "rhoban_utils/threading/multi_core.h"
 
+#include <rhoban_utils/util.h>
+#include <iostream>
+
 using namespace rhoban_utils;
 
 namespace rhoban_model_learning
@@ -71,6 +74,12 @@ void Predictor::fromJson(const Json::Value& v, const std::string& dir_name)
   rhoban_utils::tryRead(v, "nb_samples", &nb_samples);
   rhoban_utils::tryRead(v, "nb_threads", &nb_threads);
   rhoban_utils::tryRead(v, "output_dim", &output_dim);
+}
+
+void Predictor::exportPredictionsToCSV(const Model& raw_model, const SampleVector& sample_vector,
+                                       const std::string& filename, char separator) const
+{
+  std::cout << DEBUG_INFO + "exportPredictionsToCSV not implemented." << std::endl;
 }
 
 }  // namespace rhoban_model_learning
