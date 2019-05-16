@@ -3,7 +3,6 @@ project(rhoban_model_learning)
 
 find_package(catkin REQUIRED COMPONENTS
   rhoban_bbo
-  model
   robot_model
   )
 
@@ -17,7 +16,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++17")
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES rhoban_model_learning
-  CATKIN_DEPENDS rhoban_bbo model robot_model
+  CATKIN_DEPENDS rhoban_bbo robot_model
 )
 
 ###########

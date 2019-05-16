@@ -16,11 +16,9 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>rhoban_bbo</build_depend> <!-- rhoban/bbo.git -->
-  <build_depend>model</build_depend> <!-- rhoban/model.git -->
   <build_depend>robot_model</build_depend> <!-- rhoban/robot_model.git -->
 
   <run_depend>rhoban_bbo</run_depend>
-  <run_depend>model</run_depend>
   <run_depend>robot_model</run_depend>
 
 </package>
