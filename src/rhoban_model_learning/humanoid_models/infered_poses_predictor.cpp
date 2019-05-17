@@ -8,10 +8,10 @@
 
 #include <rhoban_utils/angle.h>
 #include <rhoban_utils/util.h>
+#include <robot_model/camera_model.h>
 
 #include <opencv2/core/eigen.hpp>
 #include "opencv2/calib3d/calib3d.hpp"
-#include "Model/CameraModel.hpp"
 
 namespace rhoban_model_learning
 {

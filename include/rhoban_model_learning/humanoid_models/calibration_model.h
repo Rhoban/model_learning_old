@@ -3,7 +3,7 @@
 #include "rhoban_model_learning/composite_model.h"
 #include "rhoban_model_learning/humanoid_models/rotation_model.h"
 
-#include <Model/CameraModel.hpp>
+#include "robot_model/camera_model.h"
 
 namespace rhoban_model_learning
 {
@@ -34,7 +34,7 @@ public:
   /// Return the [roll,yaw,pitch] offsets of neck using [rad]
   Eigen::Vector3d getNeckOffsetsRad() const;
   /// Return the parameters of the camera using Leph format
-  const Leph::CameraModel& getCameraModel() const;
+  const rhoban::CameraModel& getCameraModel() const;
 
   virtual std::unique_ptr<Model> clone() const;
 
