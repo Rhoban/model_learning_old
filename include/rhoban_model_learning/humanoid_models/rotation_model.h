@@ -2,8 +2,6 @@
 
 #include "rhoban_model_learning/model.h"
 
-#include "Model/CameraModel.hpp"
-
 namespace rhoban_model_learning
 {
 /// A rotation model used to simulate joints and more particularly error in

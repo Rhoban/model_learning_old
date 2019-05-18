@@ -6,7 +6,7 @@ CameraModel::CameraModel() : model()
 {
 }
 
-CameraModel::CameraModel(const Leph::CameraModel& leph_model) : model(leph_model)
+CameraModel::CameraModel(const rhoban::CameraModel& camera_model) : model(camera_model)
 {
 }
 

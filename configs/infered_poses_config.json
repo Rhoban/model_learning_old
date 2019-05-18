@@ -67,7 +67,7 @@
         "class name" : "CMAESOptimizer",
         "content" : {
             "quiet" : false,
-            "nb_evaluations" : 3000,
+            "nb_evaluations" : 1,
             "population_size" : 5
         }
         // "class name" : "CrossEntropy",

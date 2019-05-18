@@ -4,7 +4,7 @@
 #include "rhoban_model_learning/humanoid_models/multi_poses_model.h"
 #include "rhoban_model_learning/camera_calibration/marker_collection.h"
 
-#include <Model/CameraModel.hpp>
+#include "robot_model/camera_model.h"
 #include <Eigen/Core>
 
 namespace rhoban_model_learning
@@ -17,7 +17,7 @@ public:
 
   double getPxStddev() const;
 
-  const Leph::CameraModel& getCameraModel() const;
+  const rhoban::CameraModel& getCameraModel() const;
 
   virtual std::unique_ptr<Model> clone() const;
 

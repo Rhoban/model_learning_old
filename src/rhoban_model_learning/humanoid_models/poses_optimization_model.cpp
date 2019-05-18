@@ -26,7 +26,7 @@ double POM::getPxStddev() const
   return static_cast<const VisionNoiseModel&>(*models.at("noise")).px_stddev;
 }
 
-const Leph::CameraModel& POM::getCameraModel() const
+const rhoban::CameraModel& POM::getCameraModel() const
 {
   return static_cast<const CameraModel&>(*models.at("camera")).model;
 }

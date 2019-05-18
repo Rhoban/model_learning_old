@@ -48,7 +48,7 @@ Eigen::Vector3d CM::getNeckOffsetsRad() const
   return M_PI / 180 * getRotationModel("neckOffset").getRPY();
 }
 
-const Leph::CameraModel& CM::getCameraModel() const
+const rhoban::CameraModel& CM::getCameraModel() const
 {
   return static_cast<const CameraModel&>(*models.at("camera")).model;
 }

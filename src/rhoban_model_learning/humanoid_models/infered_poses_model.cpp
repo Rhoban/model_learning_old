@@ -30,7 +30,7 @@ double IPM::getPxStddev() const
   return static_cast<const VisionNoiseModel&>(*models.at("noise")).px_stddev;
 }
 
-const Leph::CameraModel& IPM::getCameraModel() const
+const rhoban::CameraModel& IPM::getCameraModel() const
 {
   return static_cast<const CameraModel&>(*models.at("camera")).model;
 }
