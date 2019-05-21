@@ -18,4 +18,5 @@ set(SOURCES
   predictor_factory.cpp
   sample.cpp
   tools.cpp
+  uniform_prior.cpp
 )
