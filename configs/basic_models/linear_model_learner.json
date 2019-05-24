@@ -9,7 +9,7 @@
         }
     },
     "prior" : {
-        "class name" : "DefaultPrior",
+        "class name" : "IndependentGaussiansPrior",
         "content" : {
             "means" : {
                 "rows" : 4,

@@ -25,7 +25,7 @@
         "content" : {
             "priors" : {
                 "noise" : {
-                    "class name" : "DefaultPrior",
+                    "class name" : "IndependentGaussiansPrior",
                     "content" : {
                         "means" : {
                             "rows" : 1,
@@ -38,7 +38,7 @@
                     }
                 },
                 "camera" : {
-                    "class name" : "DefaultPrior",
+                    "class name" : "IndependentGaussiansPrior",
                     "content" : {
                         "means" : {
                             "rows" : 9,

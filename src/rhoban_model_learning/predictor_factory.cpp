@@ -2,7 +2,7 @@
 
 #include "rhoban_model_learning/basic_models/linear_predictor.h"
 //#include "rhoban_model_learning/humanoid_models/poses_optimization_predictor.h"
-#include "rhoban_model_learning/humanoid_models/infered_poses_predictor.h"
+#include "rhoban_model_learning/camera_calibration/infered_poses_predictor.h"
 
 namespace rhoban_model_learning
 {

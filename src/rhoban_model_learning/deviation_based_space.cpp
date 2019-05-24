@@ -10,7 +10,7 @@ DeviationBasedSpace::DeviationBasedSpace() : ratio(3)
 
 Eigen::MatrixXd DeviationBasedSpace::getParametersSpace(const Model& m, const ModelPrior& prior) const
 {
-  Eigen::VectorXd mean = prior.getParametersMeans(m);
+  Eigen::VectorXd mean = prior.getParametersInitialValues(m);
   Eigen::VectorXd dev = prior.getParametersStdDev(m);
   Eigen::MatrixXd space(mean.rows(), 2);
   space.block(0, 0, mean.rows(), 1) = mean - dev * ratio;

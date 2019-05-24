@@ -1,7 +1,6 @@
-#include "rhoban_model_learning/humanoid_models/infered_poses_predictor.h"
-
-#include "rhoban_model_learning/humanoid_models/infered_poses_input.h"
-#include "rhoban_model_learning/humanoid_models/infered_poses_model.h"
+#include "rhoban_model_learning/camera_calibration/infered_poses_predictor.h"
+#include "rhoban_model_learning/camera_calibration/infered_poses_input.h"
+#include "rhoban_model_learning/camera_calibration/infered_poses_model.h"
 
 #include "rhoban_random/multivariate_gaussian.h"
 #include "rhoban_random/tools.h"

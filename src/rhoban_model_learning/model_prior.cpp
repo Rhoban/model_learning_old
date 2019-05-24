@@ -11,9 +11,9 @@
 
 namespace rhoban_model_learning
 {
-Eigen::VectorXd ModelPrior::getParametersMeans(const Model& m, const std::set<int>& used_indices) const
+Eigen::VectorXd ModelPrior::getParametersInitialValues(const Model& m, const std::set<int>& used_indices) const
 {
-  return extractSubset(getParametersMeans(m), used_indices);
+  return extractSubset(getParametersInitialValues(m), used_indices);
 }
 
 Eigen::VectorXd ModelPrior::getParametersStdDev(const Model& m, const std::set<int>& used_indices) const
@@ -23,7 +23,7 @@ Eigen::VectorXd ModelPrior::getParametersStdDev(const Model& m, const std::set<i
 
 double ModelPrior::getLogLikelihood(const Model& m) const
 {
-  Eigen::VectorXd means = getParametersMeans(m);
+  Eigen::VectorXd means = getParametersInitialValues(m);
   Eigen::VectorXd deviations = getParametersStdDev(m);
   Eigen::VectorXd parameters = m.getParameters();
   double log_likelihood = 0.0;
@@ -43,7 +43,7 @@ double ModelPrior::getLogLikelihood(const Model& m) const
 
 double ModelPrior::getLogLikelihood(const Model& m, const std::set<int>& used_indices) const
 {
-  Eigen::VectorXd means = getParametersMeans(m);
+  Eigen::VectorXd means = getParametersInitialValues(m);
   Eigen::VectorXd deviations = getParametersStdDev(m);
   Eigen::VectorXd parameters = m.getParameters();
   double log_likelihood = 0.0;

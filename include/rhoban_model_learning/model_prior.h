@@ -12,8 +12,8 @@ class ModelPrior : public rhoban_utils::JsonSerializable
 {
 public:
   /// Return the average value for each parameter in prior
-  virtual Eigen::VectorXd getParametersMeans(const Model& m) const = 0;
-  virtual Eigen::VectorXd getParametersMeans(const Model& m, const std::set<int>& used_indices) const;
+  virtual Eigen::VectorXd getParametersInitialValues(const Model& m) const = 0;
+  virtual Eigen::VectorXd getParametersInitialValues(const Model& m, const std::set<int>& used_indices) const;
 
   /// Return the standard deviation of each parameter according to the prior
   virtual Eigen::VectorXd getParametersStdDev(const Model& m) const = 0;

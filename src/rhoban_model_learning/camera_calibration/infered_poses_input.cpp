@@ -1,4 +1,4 @@
-#include "rhoban_model_learning/humanoid_models/infered_poses_input.h"
+#include "rhoban_model_learning/camera_calibration/infered_poses_input.h"
 #include <rhoban_utils/util.h>
 
 namespace rhoban_model_learning
