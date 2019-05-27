@@ -16,6 +16,7 @@ public:
   double getPxStddev() const;
 
   const rhoban::CameraModel& getCameraModel() const;
+  const PoseModel& getCameraCorrectionModel() const;
 
   const PoseModel& getPose(int idx) const;
 

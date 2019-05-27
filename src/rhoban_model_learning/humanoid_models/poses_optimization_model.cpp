@@ -13,6 +13,7 @@ POM::PosesOptimizationModel() : CompositeModel()
 {
   models["noise"] = std::unique_ptr<Model>(new VisionNoiseModel);
   models["camera"] = std::unique_ptr<Model>(new CameraModel);
+  models["camera_correction"] = std::unique_ptr<Model>(new PoseModel);
   models["poses"] = std::unique_ptr<Model>(new MultiPosesModel);
   models["tags"] = std::unique_ptr<Model>(new ArucoCollection);
 }
@@ -29,6 +30,11 @@ double POM::getPxStddev() const
 const rhoban::CameraModel& POM::getCameraModel() const
 {
   return static_cast<const CameraModel&>(*models.at("camera")).model;
+}
+
+const PoseModel& POM::getCameraCorrectionModel() const
+{
+  return static_cast<const PoseModel&>(*models.at("camera_correction"));
 }
 
 const PoseModel& POM::getPose(int idx) const
