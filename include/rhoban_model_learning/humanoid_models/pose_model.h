@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rhoban_model_learning/model.h"
+#include <opencv2/core.hpp>
 
 #include <Eigen/Geometry>
 
@@ -29,8 +30,7 @@ public:
   void setParameters(const Eigen::VectorXd& new_params) override;
   std::vector<std::string> getParametersNames() const override;
 
-  void setPosition(const Eigen::Vector3d pos_);
-  void setOrientation(const Eigen::Quaterniond orientation_);
+  void setFromOpenCV(const cv::Mat r_vec, cv::Mat t_vec);
 
   Json::Value toJson() const override;
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;

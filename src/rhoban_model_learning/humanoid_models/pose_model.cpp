@@ -1,5 +1,7 @@
 #include "rhoban_model_learning/humanoid_models/pose_model.h"
 
+#include <opencv2/core/eigen.hpp>
+#include <opencv2/calib3d.hpp>
 #include <rhoban_utils/util.h>
 
 namespace rhoban_model_learning
@@ -59,16 +61,17 @@ void PoseModel::setParameters(const Eigen::VectorXd& new_params)
   orientation.normalize();
 }
 
-void PoseModel::setPosition(const Eigen::Vector3d pos_)
+void PoseModel::setFromOpenCV(const cv::Mat r_vec, cv::Mat t_vec)
 {
-  pos = pos_;
+  cv::Mat r_mat_cv;
+  cv::Rodrigues(r_vec, r_mat_cv);
+
+  Eigen::Matrix3d r_mat_eigen;
+  cv::cv2eigen(r_mat_cv, r_mat_eigen);
+  orientation = Eigen::Quaterniond(r_mat_eigen);
+  cv::cv2eigen(t_vec, pos);
 }
 
-void PoseModel::setOrientation(const Eigen::Quaterniond orientation_)
-{
-  orientation = orientation_;
-  orientation.normalize();
-}
 std::vector<std::string> PoseModel::getParametersNames() const
 {
   return { "x", "y", "z", "qx", "qy", "qz", "qw" };
