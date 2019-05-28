@@ -1,11 +1,11 @@
-#include "rhoban_model_learning/humanoid_models/infered_poses_data_set_reader.h"
+#include "rhoban_model_learning/camera_calibration/infered_poses_data_set_reader.h"
 
 #include <gtest/gtest.h>
 
 using namespace std;
 using namespace rhoban_model_learning;
 
-typedef InferedPosesHumanoidDataSetReader IPHDSR;
+typedef InferedPosesDataSetReader IPDSR;
 
 string getAbsoluteTestFilePrefix()
 {
@@ -14,9 +14,9 @@ string getAbsoluteTestFilePrefix()
   return currentDirPath + "/../ressources/humanoid_models/";
 }
 
-TEST(InferedPosesHumanoidDataSetReader, artificialFile)
+TEST(InferedPosesDataSetReader, artificialFile)
 {
-  IPHDSR reader;
+  IPDSR reader;
   std::default_random_engine engine;
   reader.loadFile(getAbsoluteTestFilePrefix() + "infered_poses_data_set_reader.json");
   DataSet data = reader.extractSamples(getAbsoluteTestFilePrefix() + "infered_poses_data.csv", &engine);

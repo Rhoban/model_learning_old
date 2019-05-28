@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rhoban_model_learning/model.h"
+#include "rhoban_model_learning/humanoid_models/pose_model.h"
 #include <rhoban_utils/angle.h>
 
 #include <Eigen/Geometry>
@@ -23,6 +24,8 @@ public:
 
   void setPosition(const Eigen::Vector2d pos_);
   void setAngle(const double);
+
+  PoseModel get3DPose() const;
 
   Json::Value toJson() const override;
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;

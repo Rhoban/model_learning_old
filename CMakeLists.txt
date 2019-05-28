@@ -9,6 +9,7 @@ link_directories(${OpenCV_DIR}/lib ${OpenCV_DIR}/3rdparty/lib)
 find_package(catkin REQUIRED COMPONENTS
   rhoban_bbo
   robot_model
+  hl_monitoring
   )
 
 option(BUILD_MODEL_LEARNING_TOOLS "Build the tools from model learning" OFF)
@@ -92,8 +93,8 @@ target_link_libraries(model_learner ${catkin_LIBRARIES} rhoban_model_learning)
 #add_executable(ball_trajectory_predictor tools/ball_trajectory_predictor.cpp)
 #target_link_libraries(ball_trajectory_predictor ${catkin_LIBRARIES} rhoban_model_learning)
 if (BUILD_MODEL_LEARNING_TOOLS)
-  add_executable(marker_extractor tools/marker_extractor.cpp)
-  target_link_libraries(marker_extractor ${catkin_LIBRARIES} ${OpenCV_LIBS} rhoban_model_learning)
+  add_executable(marker_board_extractor tools/marker_board_extractor.cpp)
+  target_link_libraries(marker_board_extractor ${catkin_LIBRARIES} ${OpenCV_LIBS} rhoban_model_learning)
 
   add_executable(opencv_camera_calibration tools/opencv_camera_calibration.cpp)
   target_link_libraries(opencv_camera_calibration ${catkin_LIBRARIES} ${OpenCV_LIBS} rhoban_model_learning)
@@ -104,6 +105,7 @@ enable_testing()
 set(TESTS
   composite_model
   basic_models/linear_model
+  basic_models/pose_2d_model
   humanoid_models/calibration_model
   humanoid_models/pose_model
   humanoid_models/poses_optimization_data_set_reader

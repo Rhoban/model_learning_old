@@ -144,7 +144,7 @@ Json::Value IPDSR::toJson() const
   v["nb_training_images"] = nb_training_images;
   v["nb_validation_images"] = nb_validation_images;
   v["nb_tags_per_image"] = nb_tags_per_image;
-  v["nb_tags_to_infer_pose"] = nb_tags_to_infer_pose;
+  // v["nb_tags_to_infer_pose"] = nb_tags_to_infer_pose;
   v["grid_height"] = grid_height;
   v["grid_width"] = grid_width;
   v["verbose"] = verbose;
@@ -156,26 +156,16 @@ void IPDSR::fromJson(const Json::Value& v, const std::string& dir_name)
   rhoban_utils::tryRead(v, "nb_training_images", &nb_training_images);
   rhoban_utils::tryRead(v, "nb_validation_images", &nb_validation_images);
   rhoban_utils::tryRead(v, "nb_tags_per_image", &nb_tags_per_image);
-  rhoban_utils::tryRead(v, "nb_tags_to_infer_pose", &nb_tags_to_infer_pose);
+  // rhoban_utils::tryRead(v, "nb_tags_to_infer_pose", &nb_tags_to_infer_pose);
+  nb_tags_to_infer_pose = 5;
   rhoban_utils::tryRead(v, "verbose", &verbose);
   rhoban_utils::tryRead(v, "grid_height", &grid_height);
   rhoban_utils::tryRead(v, "grid_width", &grid_width);
 
-  if (3 > nb_tags_to_infer_pose)
+  if (5 > nb_tags_to_infer_pose)
   {
-    throw std::runtime_error(DEBUG_INFO + " the number of tags (" + std::to_string(nb_tags_to_infer_pose) +
-                             " should be bigger than 2.");
-  }
-
-  if (grid_height < nb_tags_to_infer_pose)
-  {
-    throw std::runtime_error(DEBUG_INFO + " the number of tags (" + std::to_string(nb_tags_to_infer_pose) +
-                             " should be smaller than grid_height.");
-  }
-  if (grid_width < nb_tags_to_infer_pose)
-  {
-    throw std::runtime_error(DEBUG_INFO + " the number of tags (" + std::to_string(nb_tags_to_infer_pose) +
-                             " should be smaller than grid_width.");
+    throw std::runtime_error(DEBUG_INFO + " the number of tags to infer pose (" +
+                             std::to_string(nb_tags_to_infer_pose) + " should be bigger or equal to 5.");
   }
 }
 

@@ -25,13 +25,15 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
   const PosesOptimizationInput& input = dynamic_cast<const PosesOptimizationInput&>(raw_input);
   const PosesOptimizationModel& model = dynamic_cast<const PosesOptimizationModel&>(raw_model);
   // First: get marker position in world and pose
-  PoseModel camera_pose = model.getPose(input.image_id);
-  Eigen::Vector3d marker_pos_world = model.getTagPosition(input.aruco_id);
+  Eigen::Vector3d marker_pose = model.getTagPosition(input.aruco_id);
+  PoseModel robot_pose = model.getRobot3DPose();
+  Eigen::Vector3d marker_pose_in_self = robot_pose.getPosInSelf(marker_pose);
+  PoseModel selfToCamera;
+  Eigen::Vector3d marker_pose_in_camera = selfToCamera.getPosInSelf(marker_pose_in_self);
 
-  Eigen::Vector3d marker_pos_camera = camera_pose.getPosInSelf(marker_pos_world);
-  std::cout << "Marker pos in world: " << marker_pos_world.transpose() << std::endl;
-  std::cout << "Marker pos in camera: " << marker_pos_camera.transpose() << std::endl;
-  Eigen::Vector2d pixel = cv2Eigen(model.getCameraModel().getImgFromObject(eigen2CV(marker_pos_camera)));
+  std::cout << "Marker pos in self: " << marker_pose_in_self.transpose() << std::endl;
+  std::cout << "Marker pos in camera: " << marker_pose_in_camera.transpose() << std::endl;
+  Eigen::Vector2d pixel = cv2Eigen(model.getCameraModel().getImgFromObject(eigen2CV(marker_pose_in_camera)));
 
   // Add noise if required
   if (engine != nullptr)

@@ -2,7 +2,6 @@
     "nb_training_images" : 4,
     "nb_validation_images" : 2,
     "nb_tags_per_image" : 2,
-    "nb_tags_to_infer_pose" : 3,
     "verbose" : false
 }
 

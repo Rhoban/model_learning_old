@@ -26,6 +26,14 @@ Eigen::VectorXd Pose2DModel::getParameters() const
   return parameters;
 }
 
+PoseModel Pose2DModel::get3DPose() const
+{
+  PoseModel pose;
+  pose.setPosition(Eigen::Vector3d(pos(0), pos(1), 0));
+  Eigen::Quaterniond q(Eigen::AngleAxisd(angle.getSignedValueRad(), Eigen::Vector3d(0, 0, 1)));
+  pose.setOrientation(q);
+}
+
 void Pose2DModel::setParameters(const Eigen::VectorXd& new_params)
 {
   pos = new_params.segment(0, 2);
