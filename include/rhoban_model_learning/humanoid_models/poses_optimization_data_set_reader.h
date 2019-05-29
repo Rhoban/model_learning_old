@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rhoban_model_learning/data_set_reader.h"
+#include <hl_monitoring/replay_image_provider.h>
 
 namespace rhoban_model_learning
 {
@@ -31,6 +32,9 @@ private:
 
   /// Printing debug information
   bool verbose;
+
+  ///
+  hl_monitoring::ReplayImageProvider replay_image_provider;
 };
 
 }  // namespace rhoban_model_learning

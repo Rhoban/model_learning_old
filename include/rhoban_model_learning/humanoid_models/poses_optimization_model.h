@@ -5,8 +5,6 @@
 
 #include "robot_model/camera_model.h"
 
-#include <hl_monitoring/replay_image_provider.h>
-
 namespace rhoban_model_learning
 {
 class PosesOptimizationModel : public CompositeModel
@@ -27,8 +25,6 @@ public:
 
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;
   std::string getClassName() const;
-
-  hl_monitoring::ReplayImageProvider log_provider;
 };
 
 }  // namespace rhoban_model_learning

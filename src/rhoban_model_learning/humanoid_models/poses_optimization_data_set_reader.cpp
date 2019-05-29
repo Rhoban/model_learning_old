@@ -6,6 +6,9 @@
 #include <rhoban_utils/tables/string_table.h>
 #include <rhoban_utils/util.h>
 
+#include <hl_monitoring/replay_image_provider.h>
+#include "hl_monitoring/utils.h"
+
 #include <iostream>
 
 namespace rhoban_model_learning
@@ -34,6 +37,13 @@ DataSet PODSR::extractSamples(const std::string& file_path, std::default_random_
     double pixel_y = std::stod(row_content.at("pixel_y"));
     samples_by_image[image_id].push_back(
         Sample(std::unique_ptr<Input>(new POI(image_id, marker_id)), Eigen::Vector2d(pixel_x, pixel_y)));
+  }
+
+  for (size_t img_id = 0; img_id < samples_by_image.size(); img_id++)
+  {
+    cv::Mat rvec;
+    cv::Mat tvec;
+    hl_monitoring::pose3DToCV(replay_image_provider.getCameraMetaInformation(img_id).pose(), &rvec, &tvec);
   }
 
   // Get valid images indices
@@ -106,6 +116,9 @@ void PODSR::fromJson(const Json::Value& v, const std::string& dir_name)
   rhoban_utils::tryRead(v, "training_tags_per_image", &training_tags_per_image);
   rhoban_utils::tryRead(v, "validation_tags_per_image", &validation_tags_per_image);
   rhoban_utils::tryRead(v, "verbose", &verbose);
+  std::string path_frames_pb;
+  rhoban_utils::tryRead(v, "camera_from_self", &path_frames_pb);
+  replay_image_provider.loadMetaInformation(path_frames_pb);
 }
 
 }  // namespace rhoban_model_learning
