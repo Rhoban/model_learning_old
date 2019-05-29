@@ -10,7 +10,7 @@ parser.add_argument('-f', action='store', dest='path', help='the path to the avi
 args = parser.parse_args()
 
 
-aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_1000)
+aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_100)
 parameters = aruco.DetectorParameters_create()
 parameters.cornerRefinementMethod = aruco.CORNER_REFINE_SUBPIX
 

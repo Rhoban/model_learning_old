@@ -28,8 +28,8 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
   Eigen::Vector3d marker_pose = model.getTagPosition(input.aruco_id);
   PoseModel robot_pose = model.getRobot3DPose();
   Eigen::Vector3d marker_pose_in_self = robot_pose.getPosInSelf(marker_pose);
-  PoseModel selfToCamera;
-  Eigen::Vector3d marker_pose_in_camera = selfToCamera.getPosInSelf(marker_pose_in_self);
+  PoseModel camera_from_self = input.camera_from_field;
+  Eigen::Vector3d marker_pose_in_camera = camera_from_self.getPosInSelf(marker_pose_in_self);
 
   std::cout << "Marker pos in self: " << marker_pose_in_self.transpose() << std::endl;
   std::cout << "Marker pos in camera: " << marker_pose_in_camera.transpose() << std::endl;

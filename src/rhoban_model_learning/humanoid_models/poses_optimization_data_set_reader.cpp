@@ -1,6 +1,7 @@
 #include "rhoban_model_learning/humanoid_models/poses_optimization_data_set_reader.h"
 
 #include "rhoban_model_learning/humanoid_models/poses_optimization_input.h"
+#include "rhoban_model_learning/humanoid_models/pose_model.h"
 
 #include <rhoban_random/tools.h>
 #include <rhoban_utils/tables/string_table.h>
@@ -35,15 +36,15 @@ DataSet PODSR::extractSamples(const std::string& file_path, std::default_random_
     int marker_id = std::stoi(row_content.at("marker_id"));
     double pixel_x = std::stod(row_content.at("pixel_x"));
     double pixel_y = std::stod(row_content.at("pixel_y"));
-    samples_by_image[image_id].push_back(
-        Sample(std::unique_ptr<Input>(new POI(image_id, marker_id)), Eigen::Vector2d(pixel_x, pixel_y)));
-  }
 
-  for (size_t img_id = 0; img_id < samples_by_image.size(); img_id++)
-  {
-    cv::Mat rvec;
-    cv::Mat tvec;
-    hl_monitoring::pose3DToCV(replay_image_provider.getCameraMetaInformation(img_id).pose(), &rvec, &tvec);
+    cv::Mat r_vec;
+    cv::Mat t_vec;
+    hl_monitoring::pose3DToCV(replay_image_provider.getCameraMetaInformation(image_id).pose(), &r_vec, &t_vec);
+    PoseModel camera_from_field;
+    camera_from_field.setFromOpenCV(r_vec, t_vec);
+
+    samples_by_image[image_id].push_back(Sample(std::unique_ptr<Input>(new POI(image_id, marker_id, camera_from_field)),
+                                                Eigen::Vector2d(pixel_x, pixel_y)));
   }
 
   // Get valid images indices
