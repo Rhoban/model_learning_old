@@ -78,7 +78,7 @@ int main(int argc, char** argv)
                                                     "path to file containing result of markers detection", true,
                                                     "markers_seen.csv", "markers_seen_path", cmd);
     TCLAP::ValueArg<int> nb_images_arg("n", "nb-images", "Number of images used for training", false, 20, "int", cmd);
-    TCLAP::ValueArg<int> cols_arg("cs", "cols", "Width of the images used", false, 640, "nb_cols", cmd);
+    TCLAP::ValueArg<int> cols_arg("c", "cols", "Width of the images used", false, 640, "nb_cols", cmd);
     TCLAP::ValueArg<int> rows_arg("r", "rows", "Height of the images used", false, 480, "nb_rows", cmd);
     TCLAP::ValueArg<std::string> output_arg("o", "output", "Path to which the model is saved", false, "model.json",
                                             "output.json", cmd);
