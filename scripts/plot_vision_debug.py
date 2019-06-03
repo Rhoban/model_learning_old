@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import csv
 import matplotlib
 import matplotlib.pyplot as plt

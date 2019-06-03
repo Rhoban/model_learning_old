@@ -49,19 +49,19 @@ Eigen::VectorXd IPHP::predictObservation(const Input& raw_input, const Model& ra
   camera_pose_in_sheet.setFromOpenCV(r_vec, t_vec);
   //
 
-  // std::vector<cv::Point3d> marker_pos_world_container{ eigen2CV(model.getTagPosition(input.aruco_id)) };
-  // std::vector<cv::Point2d> pixel_container{};
-  // cv::projectPoints(marker_pos_world_container, r_vec, t_vec, cameraMatrix, cameraDistortionCoeffs, pixel_container);
+  std::vector<cv::Point3d> marker_pos_world_container{ eigen2CV(model.getTagPosition(input.aruco_id)) };
+  std::vector<cv::Point2d> pixel_container{};
+  cv::projectPoints(marker_pos_world_container, r_vec, t_vec, cameraMatrix, cameraDistortionCoeffs, pixel_container);
 
-  // Eigen::Vector2d pixel = cv2Eigen(pixel_container[0]);
-  // // Add noise if required
-  // if (engine != nullptr)
-  // {
-  //   std::normal_distribution<double> observation_noise(0, model.getPxStddev());
-  //   pixel(0) += observation_noise(*engine);
-  //   pixel(1) += observation_noise(*engine);
-  // }
-  // return pixel;
+  Eigen::Vector2d pixel = cv2Eigen(pixel_container[0]);
+  // Add noise if required
+  if (engine != nullptr)
+  {
+    std::normal_distribution<double> observation_noise(0, model.getPxStddev());
+    pixel(0) += observation_noise(*engine);
+    pixel(1) += observation_noise(*engine);
+  }
+  return pixel;
 }
 
 double IPHP::computeLogLikelihood(const Sample& sample, const Model& raw_model,

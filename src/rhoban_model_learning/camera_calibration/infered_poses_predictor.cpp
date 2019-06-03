@@ -7,7 +7,6 @@
 
 #include <rhoban_utils/angle.h>
 #include <rhoban_utils/util.h>
-#include "rhoban_utils/logging/csv.h"
 #include <robot_model/camera_model.h>
 
 #include <opencv2/core/eigen.hpp>

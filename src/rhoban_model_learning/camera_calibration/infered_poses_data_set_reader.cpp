@@ -91,7 +91,6 @@ DataSet IPDSR::extractSamples(const std::string& file_path, std::default_random_
 
     // We remove the tags used to infer the pose
     std::vector<int> ivec(grid_width * grid_height);
-    int i = 0;
     std::iota(ivec.begin(), ivec.end(), 0);
     std::vector<int> remaining_tags;
     std::set_difference(ivec.begin(), ivec.end(), id_tags_to_infer.begin(), id_tags_to_infer.end(),

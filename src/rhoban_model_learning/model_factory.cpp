@@ -8,6 +8,11 @@
 #include "rhoban_model_learning/camera_calibration/infered_poses_model.h"
 #include "rhoban_model_learning/humanoid_models/rotation_model.h"
 #include "rhoban_model_learning/humanoid_models/vision_noise_model.h"
+#include "rhoban_model_learning/humanoid_models/poses_optimization_model.h"
+#include "rhoban_model_learning/humanoid_models/pose_model.h"
+#include "rhoban_model_learning/basic_models/pose_2d_model.h"
+#include "rhoban_model_learning/basic_models/pose_rpy_model.h"
+#include "rhoban_model_learning/basic_models/doubles_model.h"
 
 #include "rhoban_model_learning/tags/aruco_collection.h"
 #include "rhoban_model_learning/tags/aruco_cube.h"
@@ -28,7 +33,7 @@ ModelFactory::ModelFactory()
   // Humanoid models
   registerBuilder("CameraModel", []() { return std::unique_ptr<Model>(new CameraModel); });
   registerBuilder("MultiPosesModel", []() { return std::unique_ptr<Model>(new MultiPosesModel); });
-  //  registerBuilder("PosesOptimizationModel", []() { return std::unique_ptr<Model>(new PosesOptimizationModel); });
+  registerBuilder("PosesOptimizationModel", []() { return std::unique_ptr<Model>(new PosesOptimizationModel); });
   registerBuilder("InferedPosesModel", []() { return std::unique_ptr<Model>(new InferedPosesModel); });
   registerBuilder("RotationModel", []() { return std::unique_ptr<Model>(new RotationModel); });
   registerBuilder("VisionNoiseModel", []() { return std::unique_ptr<Model>(new VisionNoiseModel); });
@@ -36,6 +41,10 @@ ModelFactory::ModelFactory()
   registerBuilder("ArucoCollection", []() { return std::unique_ptr<Model>(new ArucoCollection); });
   registerBuilder("ArucoCube", []() { return std::unique_ptr<Model>(new ArucoCube); });
   registerBuilder("TagsSheet", []() { return std::unique_ptr<Model>(new TagsSheet); });
+  registerBuilder("PoseModel", []() { return std::unique_ptr<Model>(new PoseModel); });
+  registerBuilder("PoseRPYModel", []() { return std::unique_ptr<Model>(new PoseModel); });
+  registerBuilder("Pose2DModel", []() { return std::unique_ptr<Model>(new Pose2DModel); });
+  registerBuilder("DoublesModel", []() { return std::unique_ptr<Model>(new DoublesModel); });
 
   //  registerBuilder("VisionCorrectionModel",
   //                  []() { return std::unique_ptr<Model>(new VisionCorrectionModel); });

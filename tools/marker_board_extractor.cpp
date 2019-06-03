@@ -44,7 +44,7 @@ MarkerSeenCollection detectChessboard(const std::vector<std::string>& img_paths,
     if (success)
     {
       cv::TermCriteria criteria(cv::TermCriteria::Type::COUNT + cv::TermCriteria::Type::EPS, 50, 0.0001);
-      cv::cornerSubPix(gray, corners, cv::Size(5,5), cv::Size(-1,-1), criteria);
+      cv::cornerSubPix(gray, corners, cv::Size(5, 5), cv::Size(-1, -1), criteria);
       if (display)
       {
         cv::drawChessboardCorners(bgr, pattern_size, corners, success);
@@ -80,7 +80,8 @@ int main(int argc, char** argv)
     SwitchArg ycrcb_arg("", "ycrcb", "Consider input as ycrcb images", cmd);
     ValueArg<int> rows_arg("r", "rows", "Number of rows in pattern", false, 9, "nbRows", cmd);
     ValueArg<int> cols_arg("c", "cols", "Number of cols in pattern", false, 6, "nbCols", cmd);
-    ValueArg<double> marker_size_arg("m", "marker_size", "Size of a marker in meters", false, 0.02, "markerSize[m]", cmd);
+    ValueArg<double> marker_size_arg("m", "marker_size", "Size of a marker in meters", false, 0.02, "markerSize[m]",
+                                     cmd);
 
     cmd.parse(argc, argv);
 

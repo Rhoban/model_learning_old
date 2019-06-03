@@ -98,6 +98,9 @@ if (BUILD_MODEL_LEARNING_TOOLS)
 
   add_executable(opencv_camera_calibration tools/opencv_camera_calibration.cpp)
   target_link_libraries(opencv_camera_calibration ${catkin_LIBRARIES} ${OpenCV_LIBS} rhoban_model_learning)
+
+  add_executable(aruco_extractor tools/aruco_extractor.cpp)
+  target_link_libraries(aruco_extractor ${catkin_LIBRARIES} ${OpenCV_LIBS} rhoban_model_learning)
 endif()
 
 enable_testing()
@@ -112,6 +115,7 @@ set(TESTS
   humanoid_models/infered_poses_data_set_reader
   tags/aruco_cube
   tags/tags_sheet
+  tags/aruco_tag
 # TODO: reintegrate
 #  humanoid_models/vision_correction_model
 )

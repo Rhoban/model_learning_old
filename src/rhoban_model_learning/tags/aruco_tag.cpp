@@ -12,4 +12,12 @@ ArucoTag::ArucoTag(int marker_id, double marker_size, const Eigen::Vector3d& mar
 {
 }
 
+Eigen::Vector3d ArucoTag::getCorner(int corner_id) const
+{
+  double half_size = marker_size / 2;
+  double x = -half_size + marker_size * (corner_id % 2);
+  double y = -half_size + marker_size * (corner_id / 2);
+  return orientation * (Eigen::Vector3d(x, y, 0) + marker_center);
+}
+
 }  // namespace rhoban_model_learning

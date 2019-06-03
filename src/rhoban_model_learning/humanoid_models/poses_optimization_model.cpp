@@ -3,6 +3,7 @@
 #include <rhoban_model_learning/camera_calibration/camera_model.h>
 #include "rhoban_model_learning/humanoid_models/vision_noise_model.h"
 #include "rhoban_model_learning/basic_models/pose_2d_model.h"
+#include "rhoban_model_learning/basic_models/pose_rpy_model.h"
 #include "rhoban_model_learning/tags/aruco_collection.h"
 
 namespace rhoban_model_learning
@@ -13,7 +14,7 @@ POM::PosesOptimizationModel() : CompositeModel()
 {
   models["noise"] = std::unique_ptr<Model>(new VisionNoiseModel);
   models["camera"] = std::unique_ptr<Model>(new CameraModel);
-  models["camera_correction"] = std::unique_ptr<Model>(new PoseModel);
+  models["camera_correction"] = std::unique_ptr<Model>(new DoublesModel);
   models["robot_2d_pose"] = std::unique_ptr<Model>(new Pose2DModel);
   models["tags"] = std::unique_ptr<Model>(new ArucoCollection);
 }
@@ -32,9 +33,9 @@ const rhoban::CameraModel& POM::getCameraModel() const
   return static_cast<const CameraModel&>(*models.at("camera")).model;
 }
 
-const PoseModel& POM::getCameraCorrectionModel() const
+const DoublesModel& POM::getCameraCorrectionModel() const
 {
-  return static_cast<const PoseModel&>(*models.at("camera_correction"));
+  return static_cast<const DoublesModel&>(*models.at("camera_correction"));
 }
 
 const PoseModel POM::getRobot3DPose() const
@@ -72,7 +73,7 @@ void POM::fromJson(const Json::Value& json_value, const std::string& dir_name)
   // Checking content
   checkType<VisionNoiseModel>("noise");
   checkType<CameraModel>("camera");
-  checkType<PoseModel>("camera_correction");
+  checkType<DoublesModel>("camera_correction");
   checkType<TagsCollection>("tags");
 }
 

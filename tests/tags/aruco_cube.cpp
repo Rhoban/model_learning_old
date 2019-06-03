@@ -30,6 +30,7 @@ TEST(ArucoCube, singleElement)
     const Eigen::Vector3d& expected_pos = expected_positions[idx];
     EXPECT_EQ((size_t)1, markers.count(marker_id));
     ArucoTag tag = markers.at(marker_id);
+    std::cout << "marker_id : " << marker_id << std::endl;
     EXPECT_NEAR(expected_pos(0), tag.marker_center(0), 0.001);
     EXPECT_NEAR(expected_pos(1), tag.marker_center(1), 0.001);
     EXPECT_NEAR(expected_pos(2), tag.marker_center(2), 0.001);

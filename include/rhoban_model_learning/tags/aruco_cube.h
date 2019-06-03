@@ -3,6 +3,7 @@
 #include "rhoban_model_learning/model.h"
 #include "rhoban_model_learning/tags/tags_sheet.h"
 #include "rhoban_model_learning/tags/tags_collection.h"
+#include "rhoban_model_learning/basic_models/pose_rpy_model.h"
 
 namespace rhoban_model_learning
 {
@@ -37,7 +38,7 @@ private:
   void updateSheets();
 
   /// The pose of the cube
-  PoseModel pose;
+  PoseRPYModel pose;
 
   /// The distance between two opposite sides
   double side;

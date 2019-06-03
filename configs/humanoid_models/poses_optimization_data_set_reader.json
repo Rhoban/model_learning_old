@@ -1,9 +1,9 @@
 {
     "class name" : "PosesOptimizationDataSetReader",
     "content" : {
-        "nb_images" : 4,
-        "training_tags_per_image" : 4,
-        "validation_tags_per_image" : 2,
+        "nb_training_tags" : 400,
+        "nb_validation_tags" : 100,
+        "camera_from_self" : "camera_from_self.pb",
         "verbose" : false
     }
 }

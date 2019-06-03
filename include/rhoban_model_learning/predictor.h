@@ -2,6 +2,7 @@
 
 #include "rhoban_model_learning/model.h"
 #include "rhoban_model_learning/sample.h"
+#include "rhoban_utils/logging/csv.h"
 
 #include "rhoban_utils/serialization/json_serializable.h"
 

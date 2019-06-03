@@ -21,14 +21,11 @@ public:
   void fromJson(const Json::Value& v, const std::string& dir_name) override;
 
 private:
-  /// Number of images used for the data set
-  int nb_images;
-
   /// For each image, the number of tags used for training
-  int training_tags_per_image;
+  int nb_training_tags;
 
   /// For each image, the number of tags used for validation
-  int validation_tags_per_image;
+  int nb_validation_tags;
 
   /// Printing debug information
   bool verbose;

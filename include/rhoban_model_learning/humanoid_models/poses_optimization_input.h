@@ -21,7 +21,7 @@ public:
   int aruco_id;
 
   /// Camera from field pose
-  PoseModel camera_from_field;
+  PoseModel camera_from_self;
 };
 
 }  // namespace rhoban_model_learning

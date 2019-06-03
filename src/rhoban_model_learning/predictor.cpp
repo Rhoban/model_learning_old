@@ -79,6 +79,10 @@ void Predictor::fromJson(const Json::Value& v, const std::string& dir_name)
 void Predictor::exportPredictionsToCSV(const Model& raw_model, const SampleVector& sample_vector,
                                        const std::string& filename, char separator) const
 {
+  (void)raw_model;
+  (void)sample_vector;
+  (void)filename;
+  (void)separator;
   std::cout << DEBUG_INFO + "exportPredictionsToCSV not implemented." << std::endl;
 }
 

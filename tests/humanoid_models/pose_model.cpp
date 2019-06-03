@@ -15,10 +15,10 @@ TEST(defaultConstructor, defaultPose)
   EXPECT_FLOAT_EQ(parameters(0), 0);
   EXPECT_FLOAT_EQ(parameters(1), 0);
   EXPECT_FLOAT_EQ(parameters(2), 0);
-  EXPECT_FLOAT_EQ(parameters(3), 0);
+  EXPECT_FLOAT_EQ(parameters(3), 1);
   EXPECT_FLOAT_EQ(parameters(4), 0);
   EXPECT_FLOAT_EQ(parameters(5), 0);
-  EXPECT_FLOAT_EQ(parameters(6), 1);
+  EXPECT_FLOAT_EQ(parameters(6), 0);
 }
 
 TEST(getPosInSelf, defaultPose)
@@ -51,7 +51,10 @@ TEST(getPosInSelf, rotatedPose)
   Eigen::VectorXd parameters = Eigen::VectorXd::Zero(7);
   // Rotation of PI/2 around x-axis
   Eigen::Quaterniond q(Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitX()));
-  parameters.segment(3, 4) = q.coeffs();
+  parameters(3) = q.w();
+  parameters(4) = q.x();
+  parameters(5) = q.y();
+  parameters(6) = q.z();
   p.setParameters(parameters);
   Eigen::Vector3d pos_world(0, 1, 2);
   Eigen::Vector3d pos_self = p.getPosInSelf(pos_world);
@@ -67,7 +70,10 @@ TEST(getPosInSelf, rotAndTranslatePose)
   // Rotation of PI/2 around z-axis + pos = (0,2,0)
   parameters(1) = 2;
   Eigen::Quaterniond q(Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitZ()));
-  parameters.segment(3, 4) = q.coeffs();
+  parameters(3) = q.w();
+  parameters(4) = q.x();
+  parameters(5) = q.y();
+  parameters(6) = q.z();
   p.setParameters(parameters);
   Eigen::Vector3d pos_world(0, 0, 0);
   Eigen::Vector3d pos_self = p.getPosInSelf(pos_world);

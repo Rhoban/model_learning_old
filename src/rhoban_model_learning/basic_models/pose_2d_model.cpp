@@ -4,7 +4,7 @@
 
 namespace rhoban_model_learning
 {
-Pose2DModel::Pose2DModel() : Model(), pos(Eigen::Vector2d::Zero()), angle(0)
+Pose2DModel::Pose2DModel() : Model(), pos(Eigen::Vector2d::Zero()), angle(rhoban_utils::Angle(0))
 {
 }
 
@@ -19,7 +19,7 @@ int Pose2DModel::getParametersSize() const
 
 Eigen::VectorXd Pose2DModel::getParameters() const
 {
-  Eigen::VectorXd parameters;
+  Eigen::Vector3d parameters;
   parameters(0) = pos(0);
   parameters(1) = pos(1);
   parameters(2) = angle.getSignedValue();
@@ -32,6 +32,8 @@ PoseModel Pose2DModel::get3DPose() const
   pose.setPosition(Eigen::Vector3d(pos(0), pos(1), 0));
   Eigen::Quaterniond q(Eigen::AngleAxisd(angle.getSignedValueRad(), Eigen::Vector3d(0, 0, 1)));
   pose.setOrientation(q);
+
+  return pose;
 }
 
 void Pose2DModel::setParameters(const Eigen::VectorXd& new_params)
@@ -66,7 +68,12 @@ void Pose2DModel::fromJson(const Json::Value& v, const std::string& dir_name)
 {
   (void)dir_name;
   rhoban_utils::tryReadEigen(v, "pos", &pos);
-  rhoban_utils::tryRead(v, "theta", &angle);
+  if (v.isObject() && v.isMember("theta"))
+  {
+    double raw_angle = 0;
+    rhoban_utils::tryRead(v, "theta", &raw_angle);
+    angle = rhoban_utils::Angle(raw_angle);
+  }
 }
 
 std::string Pose2DModel::getClassName() const

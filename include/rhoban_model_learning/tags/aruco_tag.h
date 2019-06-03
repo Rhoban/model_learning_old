@@ -13,6 +13,17 @@ public:
   ArucoTag(int marker_id, double marker_size, const Eigen::Vector3d& marker_center,
            const Eigen::Quaterniond& orientation);
 
+  /// The corners are numbered from 0 to 3 counter-clockwise.
+  ///    x ->
+  ///    ___________
+  /// y |0        1|
+  ///   |          |
+  /// | |          |
+  /// v |          |
+  ///   |2        3|
+  ///    ___________
+  Eigen::Vector3d getCorner(int corner_id) const;
+
   /// The aruco identifier
   int marker_id;
 

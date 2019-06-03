@@ -9,11 +9,11 @@ namespace rhoban_model_learning
 {
 /// This model stocks the position and the orientation of an object in a 3d
 /// world
-class PoseModel : public Model
+class PoseRPYModel : public Model
 {
 public:
-  PoseModel();
-  PoseModel(const PoseModel& other);
+  PoseRPYModel();
+  PoseRPYModel(const PoseRPYModel& other);
 
   /// Return the position inside pose of a point in World referential
   Eigen::Vector3d getPosInSelf(const Eigen::Vector3d& pos_in_world) const;
@@ -30,9 +30,9 @@ public:
   void setParameters(const Eigen::VectorXd& new_params) override;
   std::vector<std::string> getParametersNames() const override;
 
-  void setFromOpenCV(const cv::Mat r_vec, cv::Mat t_vec);
   void setOrientation(const Eigen::Quaterniond orientation_);
   void setPosition(const Eigen::Vector3d pos_);
+  void setFromOpenCV(const cv::Mat r_vec, cv::Mat t_vec);
 
   Json::Value toJson() const override;
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;

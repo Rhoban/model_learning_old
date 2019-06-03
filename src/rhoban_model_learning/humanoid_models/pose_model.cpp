@@ -3,6 +3,7 @@
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/calib3d.hpp>
 #include <rhoban_utils/util.h>
+#include <rhoban_utils/angle.h>
 
 namespace rhoban_model_learning
 {
@@ -45,7 +46,10 @@ Eigen::VectorXd PoseModel::getParameters() const
 {
   Eigen::VectorXd parameters(7);
   parameters.segment(0, 3) = pos;
-  parameters.segment(3, 4) = orientation.coeffs();
+  parameters(3) = orientation.w();
+  parameters(4) = orientation.x();
+  parameters(5) = orientation.y();
+  parameters(6) = orientation.z();
   return parameters;
 }
 
@@ -57,7 +61,19 @@ void PoseModel::setParameters(const Eigen::VectorXd& new_params)
                              std::to_string(new_params.rows()));
   }
   pos = new_params.segment(0, 3);
-  orientation = Eigen::Quaterniond(Eigen::Vector4d(new_params.segment(3, 4)));
+  // w,x,y,z
+  orientation = Eigen::Quaterniond(new_params(3), new_params(4), new_params(5), new_params(6));
+  orientation.normalize();
+}
+
+void PoseModel::setPosition(const Eigen::Vector3d pos_)
+{
+  pos = pos_;
+}
+
+void PoseModel::setOrientation(const Eigen::Quaterniond orientation_)
+{
+  orientation = orientation_;
   orientation.normalize();
 }
 
@@ -74,26 +90,33 @@ void PoseModel::setFromOpenCV(const cv::Mat r_vec, cv::Mat t_vec)
 
 std::vector<std::string> PoseModel::getParametersNames() const
 {
-  return { "x", "y", "z", "qx", "qy", "qz", "qw" };
+  return { "x", "y", "z", "qw", "qx", "qy", "qz" };
 }
 
 Json::Value PoseModel::toJson() const
 {
   Json::Value v;
   v["pos"] = rhoban_utils::vector2Json(pos);
-  v["orientation"] = rhoban_utils::vector2Json(orientation.coeffs());
+  v["orientation"] = rhoban_utils::val2Json<Eigen::Quaterniond>(orientation);
   return v;
 }
 
 void PoseModel::fromJson(const Json::Value& v, const std::string& dir_name)
 {
   (void)dir_name;
-  Eigen::Vector4d orientation_tmp;
   rhoban_utils::tryReadEigen(v, "pos", &pos);
   if (v.isObject() && v.isMember("orientation"))
   {
-    Eigen::Vector4d orientation_tmp = rhoban_utils::readEigen<4, 1>(v, "orientation");
-    orientation = Eigen::Quaterniond(orientation_tmp);
+    orientation = rhoban_utils::read<Eigen::Quaterniond>(v, "orientation");
+    orientation.normalize();
+  }
+  else if (v.isObject() && v.isMember("angle") && v.isMember("axis"))
+  {
+    Eigen::Vector3d axis = rhoban_utils::readEigen<3, 1>(v, "axis");
+    axis.normalize();
+    double angle_deg = 0;
+    rhoban_utils::tryRead(v, "angle", &angle_deg);
+    orientation = Eigen::Quaterniond(Eigen::AngleAxisd(rhoban_utils::deg2rad(angle_deg), axis));
     orientation.normalize();
   }
 }

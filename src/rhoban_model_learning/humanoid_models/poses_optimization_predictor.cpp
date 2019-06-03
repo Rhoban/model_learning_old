@@ -28,12 +28,17 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
   Eigen::Vector3d marker_pose = model.getTagPosition(input.aruco_id);
   PoseModel robot_pose = model.getRobot3DPose();
   Eigen::Vector3d marker_pose_in_self = robot_pose.getPosInSelf(marker_pose);
-  PoseModel camera_from_self = input.camera_from_field;
-  Eigen::Vector3d marker_pose_in_camera = camera_from_self.getPosInSelf(marker_pose_in_self);
+  PoseModel camera_from_self = input.camera_from_self;
+  Eigen::Vector3d marker_pose_in_camera = camera_from_self.getPosFromSelf(marker_pose_in_self);
+  Eigen::Vector3d camera_to_pitch_axis(0, -0.0215, -0.064);
+  double angle_rad = rhoban_utils::deg2rad(model.getCameraCorrectionModel().getParameter(0));
+  Eigen::AngleAxisd r(angle_rad, Eigen::Vector3d::UnitY());
+  Eigen::Vector3d tmp_marker_pose_in_camera = marker_pose_in_camera - camera_to_pitch_axis;
+  Eigen::Vector3d marker_pose_in_camera_corrected = r * tmp_marker_pose_in_camera + camera_to_pitch_axis;
 
-  std::cout << "Marker pos in self: " << marker_pose_in_self.transpose() << std::endl;
-  std::cout << "Marker pos in camera: " << marker_pose_in_camera.transpose() << std::endl;
-  Eigen::Vector2d pixel = cv2Eigen(model.getCameraModel().getImgFromObject(eigen2CV(marker_pose_in_camera)));
+  // std::cout << "Marker " << input.aruco_id << " pos in self: " << marker_pose_in_self.transpose() << std::endl;
+  // std::cout << "Marker " << input.aruco_id << " pos in camera: " << marker_pose_in_camera.transpose() << std::endl;
+  Eigen::Vector2d pixel = cv2Eigen(model.getCameraModel().getImgFromObject(eigen2CV(marker_pose_in_camera_corrected)));
 
   // Add noise if required
   if (engine != nullptr)
@@ -70,6 +75,29 @@ Eigen::VectorXi POP::getObservationsCircularity() const
 std::string POP::getClassName() const
 {
   return "PosesOptimizationPredictor";
+}
+
+void POP::exportPredictionsToCSV(const Model& raw_model, const SampleVector& sample_vector, const std::string& filename,
+                                 char separator) const
+{
+  rhoban_utils::CSV* csv = new rhoban_utils::CSV();
+  csv->open(filename, separator);
+
+  const PosesOptimizationModel& model = dynamic_cast<const PosesOptimizationModel&>(raw_model);
+
+  for (const auto& sample : sample_vector)
+  {
+    const PosesOptimizationInput& input = dynamic_cast<const PosesOptimizationInput&>(sample->getInput());
+    Eigen::Vector2d prediction = predictObservation(input, model, nullptr);
+    Eigen::Vector2d observation = sample->getObservation();
+    csv->push("marker_id", input.aruco_id);
+    csv->push("obs_x", observation.x());
+    csv->push("obs_y", observation.y());
+    csv->push("pred_x", prediction.x());
+    csv->push("pred_y", prediction.y());
+    csv->newLine();
+  }
+  csv->close();
 }
 
 }  // namespace rhoban_model_learning

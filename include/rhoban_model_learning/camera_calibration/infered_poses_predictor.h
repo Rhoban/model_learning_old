@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rhoban_model_learning/predictor.h"
-#include "rhoban_model_learning/sample.h"
 
 namespace rhoban_model_learning
 {
