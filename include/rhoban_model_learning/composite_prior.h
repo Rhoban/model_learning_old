@@ -19,7 +19,7 @@ public:
   /// - std::out_of_range if 'name' is not a member of 'm'
   const Model& getSubModel(const Model& m, const std::string& name) const;
 
-  Eigen::VectorXd getParametersMeans(const Model& m) const override;
+  Eigen::VectorXd getParametersInitialValues(const Model& m) const override;
   Eigen::VectorXd getParametersStdDev(const Model& m) const override;
 
   std::string getClassName() const override;

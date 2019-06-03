@@ -4,7 +4,7 @@ set(SOURCES
   data_set_reader_factory.cpp
   default_data_set_reader.cpp
   default_input.cpp
-  default_prior.cpp
+  independent_gaussians_prior.cpp
   default_space.cpp
   deviation_based_space.cpp
   model.cpp
@@ -18,4 +18,5 @@ set(SOURCES
   predictor_factory.cpp
   sample.cpp
   tools.cpp
+  uniform_prior.cpp
 )

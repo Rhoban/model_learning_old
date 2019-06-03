@@ -43,7 +43,7 @@
         "content" : {
             "priors" : {
                 "noise" : {
-                    "class name" : "DefaultPrior",
+                    "class name" : "IndependentGaussiansPrior",
                     "content" : {
                         "means" : {
                             "rows" : 1,
@@ -56,7 +56,7 @@
                     }
                 },
                 "camera" : {
-                    "class name" : "DefaultPrior",
+                    "class name" : "IndependentGaussiansPrior",
                     "content" : {
                         "means" : {
                             "rows" : 9,
@@ -69,7 +69,7 @@
                     }
                 },
                 "poses" : {
-                    "class name" : "DefaultPrior",
+                    "class name" : "IndependentGaussiansPrior",
                     "content" : {
                         "means" : {
                             "rows" : 28,
@@ -82,7 +82,7 @@
                     }
                 },
                 "tags" : {
-                    "class name" : "DefaultPrior",
+                    "class name" : "IndependentGaussiansPrior",
                     "content" : {
                         // Problems might occur if points are not in front of the camera
                         "means" : {

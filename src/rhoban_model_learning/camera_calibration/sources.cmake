@@ -2,4 +2,8 @@ set(SOURCES
   camera_model.cpp
   marker_collection.cpp
   marker_seen_collection.cpp
+  infered_poses_model.cpp
+  infered_poses_predictor.cpp
+  infered_poses_input.cpp
+  infered_poses_data_set_reader.cpp
 )

@@ -7,12 +7,12 @@
 namespace rhoban_model_learning
 {
 /// Default prior is a mean vector and a mean of stddevs
-class DefaultPrior : public ModelPrior
+class IndependentGaussiansPrior : public ModelPrior
 {
 public:
-  DefaultPrior();
+  IndependentGaussiansPrior();
 
-  Eigen::VectorXd getParametersMeans(const Model& m) const override;
+  Eigen::VectorXd getParametersInitialValues(const Model& m) const override;
   Eigen::VectorXd getParametersStdDev(const Model& m) const override;
 
   std::string getClassName() const override;

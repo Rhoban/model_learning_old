@@ -61,4 +61,7 @@ int main(int argc, char** argv)
 
   // Save model in Json format
   r.model->saveFile("trained_model.json");
+
+  // Save obsevation prediction results
+  learner.exportValidationResulstToCSV(*r.model, data, "predictionResults.csv", ',');
 }

@@ -14,7 +14,7 @@ size_t CompositePrior::getNbParameters(const Model& m) const
   size_t total_rows = 0;
   for (const auto& entry : priors)
   {
-    total_rows += entry.second->getParametersMeans(getSubModel(m, entry.first)).rows();
+    total_rows += entry.second->getParametersInitialValues(getSubModel(m, entry.first)).rows();
   }
   return total_rows;
 }
@@ -24,13 +24,13 @@ const Model& CompositePrior::getSubModel(const Model& m, const std::string& name
   return (dynamic_cast<const CompositeModel&>(m)).getModel(name);
 }
 
-Eigen::VectorXd CompositePrior::getParametersMeans(const Model& m) const
+Eigen::VectorXd CompositePrior::getParametersInitialValues(const Model& m) const
 {
   Eigen::VectorXd params(getNbParameters(m));
   int idx = 0;
   for (const auto& entry : priors)
   {
-    Eigen::VectorXd local_params = entry.second->getParametersMeans(getSubModel(m, entry.first));
+    Eigen::VectorXd local_params = entry.second->getParametersInitialValues(getSubModel(m, entry.first));
     params.segment(idx, local_params.rows()) = local_params;
     idx += local_params.rows();
   }
