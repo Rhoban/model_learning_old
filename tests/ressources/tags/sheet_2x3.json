@@ -1,12 +1,12 @@
 {
     "marker_size" : 0.2,
     "markers_ids" : [2,4,5,8,1,6],
-    "dx" : 0.1,
-    "dy" : 0.2,
-    "cols" : 3,
+    "dy" : 0.1,
+    "dz" : 0.2,
     "rows" : 2,
+    "cols" : 3,
     "sheet_pose" : {
-        "pos" : [0,0,0],
-        "orientation" : [1,0,0,1]// rotation of pi/2 over x axis
+        "pos" : [0,0,1],
+        "orientation" : [1,0,1,0]// rotation of pi/2 over y axis
     }
 }

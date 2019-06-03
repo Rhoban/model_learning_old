@@ -23,18 +23,19 @@ TEST(TagsSheet, singleElement)
   EXPECT_EQ(0, tag.marker_center(0));
   EXPECT_EQ(0, tag.marker_center(1));
   EXPECT_EQ(1, tag.marker_center(2));
-  EXPECT_NEAR(0.707, tag.orientation.coeffs()(0), 0.01);
-  EXPECT_NEAR(0.0, tag.orientation.coeffs()(1), 0.01);
-  EXPECT_NEAR(0.0, tag.orientation.coeffs()(2), 0.01);
-  EXPECT_NEAR(0.707, tag.orientation.coeffs()(3), 0.01);
+  EXPECT_NEAR(0.707, tag.orientation.w(), 0.01);
+  EXPECT_NEAR(0.0, tag.orientation.x(), 0.01);
+  EXPECT_NEAR(0.707, tag.orientation.y(), 0.01);
+  EXPECT_NEAR(0.0, tag.orientation.z(), 0.01);
 }
+
 TEST(TagsSheet, twoByThree)
 {
   // Expected content
   std::vector<int> markers_ids = { 2, 4, 5, 8, 1, 6 };
-  std::vector<Eigen::Vector3d> expected_pos = { Eigen::Vector3d(-0.1, 0.0, 0.1), Eigen::Vector3d(0.0, 0.0, 0.1),
-                                                Eigen::Vector3d(0.1, 0.0, 0.1),  Eigen::Vector3d(-0.1, 0.0, -0.1),
-                                                Eigen::Vector3d(0.0, 0.0, -0.1), Eigen::Vector3d(0.1, 0.0, -0.1) };
+  std::vector<Eigen::Vector3d> expected_pos = { Eigen::Vector3d(-0.1, -0.1, 1.0), Eigen::Vector3d(-0.1, 0.0, 1.0),
+                                                Eigen::Vector3d(-0.1, 0.1, 1.0),  Eigen::Vector3d(0.1, -0.1, 1.0),
+                                                Eigen::Vector3d(0.1, 0.0, 1.0),   Eigen::Vector3d(0.1, 0.1, 1.0) };
   // Loading + checking
   TagsSheet s;
   s.loadFile(getAbsoluteTestFilePrefix() + "sheet_2x3.json");
@@ -45,10 +46,9 @@ TEST(TagsSheet, twoByThree)
     int marker_id = markers_ids[idx];
     EXPECT_EQ((size_t)1, markers.count(marker_id));
     const ArucoTag& tag = markers.at(marker_id);
-    for (int d = 0; d < 3; d++)
-    {
-      EXPECT_NEAR(expected_pos[idx](d), tag.marker_center(d), std::pow(10, -6));
-    }
+    EXPECT_NEAR(expected_pos[idx](0), tag.marker_center(0), std::pow(10, -6));
+    EXPECT_NEAR(expected_pos[idx](1), tag.marker_center(1), std::pow(10, -6));
+    EXPECT_NEAR(expected_pos[idx](2), tag.marker_center(2), std::pow(10, -6));
   }
 }
 

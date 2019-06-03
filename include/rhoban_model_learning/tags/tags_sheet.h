@@ -11,21 +11,19 @@ namespace rhoban_model_learning
 /// Represent a rows*cols sheet of aruco markers with a rectangular pattern
 ///
 /// e.g. a 3*2 sheet of aruco Tags
-///           ----dx--->
-///    |    id[0]     id[1]
+///
+///   / \   id[4]       id[5]
 ///    |
-///   dy
-///    |
-///   \ /   id[2]     id[3]
+///   dz    id[2]   .   id[3]
+///                 x
+///         id[0]       id[1]
 ///
-///
-///
-///         id[4]     id[5]
+///           ----dy--->
 class TagsSheet : public Model, public TagsCollection
 {
 public:
   TagsSheet();
-  TagsSheet(double marker_size, double dx, double dy, int cols, int rows, const PoseModel& sheet_pose,
+  TagsSheet(double marker_size, double dy, double dz, int cols, int rows, const PoseModel& sheet_pose,
             const std::vector<int>& markers_ids);
   TagsSheet(const TagsSheet& other);
 
@@ -47,7 +45,7 @@ public:
 private:
   /// center and orientation of the sheet
   /// - center: sheet_center
-  /// - orientation: x-axis -> left of the sheet, y-axis -> bottom of the sheet
+  /// - orientation: y-axis -> left of the sheet, z-axis -> top of the sheet
   /// This is the only customizable parameters, other are supposed to be 'known'
   PoseModel sheet_pose;
 
@@ -55,10 +53,10 @@ private:
   double marker_size;
 
   /// Spacing between two columns of tags (center to center) [m]
-  double dx;
+  double dy;
 
   /// Delta between two lines of tags (center to center) [m]
-  double dy;
+  double dz;
 
   /// Number of columns in the sheet
   int cols;
