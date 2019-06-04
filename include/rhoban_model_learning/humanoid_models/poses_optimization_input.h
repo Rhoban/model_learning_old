@@ -9,7 +9,7 @@ class PosesOptimizationInput : public Input
 {
 public:
   PosesOptimizationInput();
-  PosesOptimizationInput(int image_id, int aruco_id, PoseModel pose);
+  PosesOptimizationInput(int image_id, int aruco_id, int corner_id, PoseModel pose);
   PosesOptimizationInput(const PosesOptimizationInput& other);
 
   std::unique_ptr<Input> clone() const override;
@@ -19,6 +19,9 @@ public:
 
   /// Marker identifier
   int aruco_id;
+
+  /// Corner identifier
+  int corner_id;
 
   /// Camera from field pose
   PoseModel camera_from_self;

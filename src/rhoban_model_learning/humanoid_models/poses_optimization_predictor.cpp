@@ -24,21 +24,30 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
   // Can generate bad_cast error
   const PosesOptimizationInput& input = dynamic_cast<const PosesOptimizationInput&>(raw_input);
   const PosesOptimizationModel& model = dynamic_cast<const PosesOptimizationModel&>(raw_model);
+
   // First: get marker position in world and pose
-  Eigen::Vector3d marker_pose = model.getTagPosition(input.aruco_id);
+  Eigen::Vector3d marker_pose = model.getCornerPosition(input.aruco_id, input.corner_id);
   PoseModel robot_pose = model.getRobot3DPose();
   Eigen::Vector3d marker_pose_in_self = robot_pose.getPosInSelf(marker_pose);
+
   PoseModel camera_from_self = input.camera_from_self;
   Eigen::Vector3d marker_pose_in_camera = camera_from_self.getPosFromSelf(marker_pose_in_self);
+
+  PoseModel camera_correction = model.getCameraCorrectionModel();
+  Eigen::Vector3d marker_pose_in_camera_corrected = camera_correction.getPosInSelf(marker_pose_in_camera);
+
   Eigen::Vector3d camera_to_pitch_axis(0, -0.0215, -0.064);
-  double angle_rad = rhoban_utils::deg2rad(model.getCameraCorrectionModel().getParameter(0));
+  double angle_rad = rhoban_utils::deg2rad(model.getPitchCorrectionModel().getParameter(0));
   Eigen::AngleAxisd r(angle_rad, Eigen::Vector3d::UnitY());
-  Eigen::Vector3d tmp_marker_pose_in_camera = marker_pose_in_camera - camera_to_pitch_axis;
-  Eigen::Vector3d marker_pose_in_camera_corrected = r * tmp_marker_pose_in_camera + camera_to_pitch_axis;
+  Eigen::Vector3d tmp_marker_pose_with_pitch_and_camera_corrected =
+      marker_pose_in_camera_corrected - camera_to_pitch_axis;
+  Eigen::Vector3d marker_pose_with_pitch_and_camera_corrected =
+      r * tmp_marker_pose_with_pitch_and_camera_corrected + camera_to_pitch_axis;
 
   // std::cout << "Marker " << input.aruco_id << " pos in self: " << marker_pose_in_self.transpose() << std::endl;
   // std::cout << "Marker " << input.aruco_id << " pos in camera: " << marker_pose_in_camera.transpose() << std::endl;
-  Eigen::Vector2d pixel = cv2Eigen(model.getCameraModel().getImgFromObject(eigen2CV(marker_pose_in_camera_corrected)));
+  Eigen::Vector2d pixel =
+      cv2Eigen(model.getCameraModel().getImgFromObject(eigen2CV(marker_pose_with_pitch_and_camera_corrected)));
 
   // Add noise if required
   if (engine != nullptr)

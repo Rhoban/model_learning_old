@@ -17,10 +17,12 @@ public:
   double getPxStddev() const;
 
   const rhoban::CameraModel& getCameraModel() const;
-  const DoublesModel& getCameraCorrectionModel() const;
+  const DoublesModel& getPitchCorrectionModel() const;
+  const PoseModel& getCameraCorrectionModel() const;
   const PoseModel getRobot3DPose() const;
 
   const Eigen::Vector3d& getTagPosition(int tag_idx) const;
+  const Eigen::Vector3d getCornerPosition(int tag_idx, int corner_idx) const;
 
   virtual std::unique_ptr<Model> clone() const;
 

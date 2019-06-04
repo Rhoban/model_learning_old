@@ -149,7 +149,10 @@ Json::Value PoseModel::toJson() const
   if (mode == PoseModel::Mode::RPY)
   {
     Eigen::Vector3d angles = orientation.toRotationMatrix().eulerAngles(0, 1, 2);
-    v["rpy"] = rhoban_utils::vector2Json(angles);
+    double roll_deg = rhoban_utils::rad2deg(angles[0]);
+    double pitch_deg = rhoban_utils::rad2deg(angles[1]);
+    double yaw_deg = rhoban_utils::rad2deg(angles[2]);
+    v["rpy"] = rhoban_utils::vector2Json(Eigen::Vector3d(roll_deg, pitch_deg, yaw_deg));
   }
   else if (mode == PoseModel::Mode::Quaternion)
   {

@@ -55,9 +55,8 @@ int main(int argc, char** argv)
     cv::Ptr<cv::aruco::Dictionary> dic = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_100);
 
     rhoban_utils::StringTable markers_data(
-        { "image_id", "marker_id", "pixel_x", "pixel_y" },
-        { { "image_id", {} }, { "marker_id", {} }, { "pixel_x", {} }, { "pixel_y", {} } });
-    std::cout << "Fin initialisation avant lecture." << std::endl;
+        { "image_id", "marker_id", "corner_id", "pixel_x", "pixel_y" },
+        { { "image_id", {} }, { "marker_id", {} }, { "corner_id", {} }, { "pixel_x", {} }, { "pixel_y", {} } });
 
     int image_id = 0;
     while (true)
@@ -79,7 +78,7 @@ int main(int argc, char** argv)
       std::vector<int> marker_ids;
       std::vector<std::vector<cv::Point2f>> marker_corners;
       cv::aruco::detectMarkers(gray, dic, marker_corners, marker_ids, params);
-      cv::aruco::drawDetectedMarkers(gray, marker_corners, marker_ids, cv::Scalar(0, 0, 255));
+      // cv::aruco::drawDetectedMarkers(gray, marker_corners, marker_ids, cv::Scalar(0, 0, 255));
 
       // int width, height;
       // int higherSize = 320;
@@ -103,12 +102,15 @@ int main(int argc, char** argv)
 
       for (size_t i = 0; i < marker_ids.size(); i++)
       {
-        cv::Point2f center = getCenter(marker_corners[i]);
-        std::map<std::string, std::string> row = { { "image_id", std::to_string(image_id) },
-                                                   { "marker_id", std::to_string(marker_ids[i]) },
-                                                   { "pixel_x", std::to_string(center.x) },
-                                                   { "pixel_y", std::to_string(center.y) } };
-        markers_data.insertRow(row);
+        for (int j = 0; j < 4; j++)
+        {
+          std::map<std::string, std::string> row = { { "image_id", std::to_string(image_id) },
+                                                     { "marker_id", std::to_string(marker_ids[i]) },
+                                                     { "corner_id", std::to_string(j) },
+                                                     { "pixel_x", std::to_string(marker_corners[i][j].x) },
+                                                     { "pixel_y", std::to_string(marker_corners[i][j].y) } };
+          markers_data.insertRow(row);
+        }
       }
       image_id++;
     }

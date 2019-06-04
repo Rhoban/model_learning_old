@@ -27,12 +27,18 @@ DataSet PODSR::extractSamples(const std::string& file_path, std::default_random_
 {
   StringTable data = StringTable::buildFromFile(file_path);
 
-  std::vector<Sample> samples;
+  std::map<std::vector<int>, std::unique_ptr<Sample>> samples_by_corner_id_marker_id_image_id;
+  std::set<std::vector<int>> keys;
+  std::set<int> marker_ids;
   for (size_t row = 0; row < data.nbRows(); row++)
   {
     std::map<std::string, std::string> row_content = data.getRow(row);
     int image_id = std::stoi(row_content.at("image_id"));
     int marker_id = std::stoi(row_content.at("marker_id"));
+    marker_ids.insert(marker_id);
+    int corner_id = std::stoi(row_content.at("corner_id"));
+    std::vector<int> key{ marker_id, corner_id, image_id };
+    keys.insert(key);
     double pixel_x = std::stod(row_content.at("pixel_x"));
     double pixel_y = std::stod(row_content.at("pixel_y"));
 
@@ -42,29 +48,66 @@ DataSet PODSR::extractSamples(const std::string& file_path, std::default_random_
     PoseModel camera_from_self;
     camera_from_self.setFromOpenCV(r_vec, t_vec);
 
-    samples.push_back(Sample(std::unique_ptr<Input>(new POI(image_id, marker_id, camera_from_self)),
-                             Eigen::Vector2d(pixel_x, pixel_y)));
+    samples_by_corner_id_marker_id_image_id[key] = std::unique_ptr<Sample>(
+        new Sample(std::unique_ptr<Input>(new POI(image_id, marker_id, corner_id, camera_from_self)),
+                   Eigen::Vector2d(pixel_x, pixel_y)));
   }
 
-  size_t nb_tags = nb_validation_tags + nb_training_tags;
-  if (samples.size() < nb_tags)
+  std::map<int, int> validation_corner_id_per_marker_id;
+  for (auto const& marker_id : marker_ids)
   {
-    throw std::runtime_error(DEBUG_INFO + " not enough tags (" + std::to_string(samples.size()) + " tags available, " +
-                             std::to_string(nb_training_tags + nb_validation_tags) + " required)");
+    int corner_id = (int)rhoban_random::getKDistinctFromN(1, 4, engine)[0];  // chose randomly a corner
+    validation_corner_id_per_marker_id[marker_id] = corner_id;
   }
+
+  std::vector<std::vector<int>> training_sample_candidates_indexes;
+  std::vector<std::vector<int>> validation_sample_candidates_indexes;
+  for (auto const& key : keys)
+  {
+    int marker_id = key[0];
+    int corner_id = key[1];
+    if (corner_id == validation_corner_id_per_marker_id[marker_id])
+    {
+      validation_sample_candidates_indexes.push_back(key);
+    }
+    else
+    {
+      training_sample_candidates_indexes.push_back(key);
+    }
+  }
+
+  // Checking if enough tags
+  int training_candidates_size = training_sample_candidates_indexes.size();
+  if (training_candidates_size < nb_training_tags)
+  {
+    throw std::runtime_error(DEBUG_INFO + " not enough tags (" + std::to_string(training_candidates_size) +
+                             " tags available, " + std::to_string(nb_training_tags) + " required)");
+  }
+  int validation_candidates_size = validation_sample_candidates_indexes.size();
+  if (validation_candidates_size < nb_validation_tags)
+  {
+    throw std::runtime_error(DEBUG_INFO + " not enough tags (" + std::to_string(validation_candidates_size) +
+                             " tags available, " + std::to_string(nb_validation_tags) + " required)");
+  }
+
   // Separating samples
   DataSet data_set;
-  std::vector<size_t> chosen_indices = rhoban_random::getKDistinctFromN(nb_tags, samples.size(), engine);
-  std::vector<size_t> set_sizes = { (size_t)nb_training_tags, (size_t)nb_validation_tags };
-  std::vector<std::vector<size_t>> samples_separation =
-      rhoban_random::splitIndices(samples.size() - 1, set_sizes, engine);
-  for (size_t training_idx : samples_separation[0])
+  //// Training
+  std::vector<size_t> chosen_training_indices =
+      rhoban_random::getKDistinctFromN(nb_training_tags, training_candidates_size, engine);
+  for (size_t training_index : chosen_training_indices)
   {
-    data_set.training_set.push_back(samples[training_idx].clone());
+    std::vector<int> sample_index = training_sample_candidates_indexes[training_index];
+    data_set.training_set.push_back(samples_by_corner_id_marker_id_image_id[sample_index]->clone());
   }
-  for (size_t validation_idx : samples_separation[1])
+
+  //// Validation
+  std::vector<size_t> chosen_validation_indices =
+      rhoban_random::getKDistinctFromN(nb_validation_tags, validation_candidates_size, engine);
+  for (size_t validation_index : chosen_validation_indices)
   {
-    data_set.validation_set.push_back(samples[validation_idx].clone());
+    std::vector<int> sample_index = validation_sample_candidates_indexes[validation_index];
+    data_set.validation_set.push_back(samples_by_corner_id_marker_id_image_id[sample_index]->clone());
   }
 
   return data_set;

@@ -2,17 +2,20 @@
 
 namespace rhoban_model_learning
 {
-PosesOptimizationInput::PosesOptimizationInput() : image_id(-1), aruco_id(-1)
+PosesOptimizationInput::PosesOptimizationInput() : image_id(-1), aruco_id(-1), corner_id(-1)
 {
 }
 
-PosesOptimizationInput::PosesOptimizationInput(int image_id, int aruco_id, PoseModel camera_from_self)
-  : image_id(image_id), aruco_id(aruco_id), camera_from_self(camera_from_self)
+PosesOptimizationInput::PosesOptimizationInput(int image_id, int aruco_id, int corner_id, PoseModel camera_from_self)
+  : image_id(image_id), aruco_id(aruco_id), corner_id(corner_id), camera_from_self(camera_from_self)
 {
 }
 
 PosesOptimizationInput::PosesOptimizationInput(const PosesOptimizationInput& other)
-  : image_id(other.image_id), aruco_id(other.aruco_id), camera_from_self(other.camera_from_self)
+  : image_id(other.image_id)
+  , aruco_id(other.aruco_id)
+  , corner_id(other.corner_id)
+  , camera_from_self(other.camera_from_self)
 {
 }
 
