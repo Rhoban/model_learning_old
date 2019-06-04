@@ -73,6 +73,7 @@ void ArucoCube::fromJson(const Json::Value& v, const std::string& dir_path)
   rhoban_utils::tryRead(v, "side", &side);
   if (v.isObject() && v.isMember("pose"))
   {
+    std::cout << "Calling pose reading." << std::endl;
     pose.fromJson(v["pose"], dir_path);
   }
   if (v.isObject() && v.isMember("sheets"))
@@ -104,9 +105,8 @@ void ArucoCube::updateSheets()
       throw std::runtime_error(DEBUG_INFO + "Invalid face id: " + std::to_string(face_id));
     }
     // Computing transformations
-    Eigen::Quaterniond sheet_orientation = Eigen::AngleAxisd(-M_PI / 2, Eigen::Vector3d::UnitX()) *
-                                           Eigen::AngleAxisd((3 - face_id) * M_PI / 2, Eigen::Vector3d::UnitY()) *
-                                           pose.orientation;
+    Eigen::Quaterniond sheet_orientation =
+        pose.orientation * Eigen::AngleAxisd(face_id * M_PI / 2, Eigen::Vector3d::UnitZ());
     Eigen::Vector3d center_in_cube = Eigen::Matrix3d(Eigen::AngleAxisd(face_id * M_PI / 2, Eigen::Vector3d::UnitZ())) *
                                      Eigen::Vector3d(side / 2, 0, 0);
     Eigen::Vector3d center_in_world = pose.getPosFromSelf(center_in_cube);

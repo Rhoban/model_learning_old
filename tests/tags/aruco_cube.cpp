@@ -20,9 +20,9 @@ TEST(ArucoCube, singleElement)
   EXPECT_EQ((size_t)7, markers.size());
   std::vector<int> expected_markers = { 1, 2, 3, 4, 5, 6, 8 };
   std::vector<Eigen::Vector3d> expected_positions = {
-    Eigen::Vector3d(0.65, -0.05, -0.9), Eigen::Vector3d(0.65, 0.05, -0.9),  Eigen::Vector3d(0.65, -0.05, -1.0),
-    Eigen::Vector3d(0.65, 0.05, -1.0),  Eigen::Vector3d(0.65, -0.05, -1.1), Eigen::Vector3d(0.65, 0.05, -1.1),
-    Eigen::Vector3d(0.35, 0.00, -1.0)
+    Eigen::Vector3d(0.6, -0.05, -0.85), Eigen::Vector3d(0.6, 0.05, -0.85),  Eigen::Vector3d(0.5, -0.05, -0.85),
+    Eigen::Vector3d(0.5, 0.05, -0.85),  Eigen::Vector3d(0.4, -0.05, -0.85), Eigen::Vector3d(0.4, 0.05, -0.85),
+    Eigen::Vector3d(0.35, 0.00, -1.15)
   };
   for (size_t idx = 0; idx < expected_markers.size(); idx++)
   {

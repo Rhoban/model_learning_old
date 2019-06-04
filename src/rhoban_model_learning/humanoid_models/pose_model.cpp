@@ -5,14 +5,19 @@
 #include <rhoban_utils/util.h>
 #include <rhoban_utils/angle.h>
 
+#include <iostream>
 namespace rhoban_model_learning
 {
 PoseModel::PoseModel()
-  : Model(), pos(Eigen::Vector3d::Zero()), orientation(Eigen::Quaterniond(Eigen::Vector4d(0, 0, 0, 1)))
+  : Model()
+  , pos(Eigen::Vector3d::Zero())
+  , orientation(Eigen::Quaterniond(1, 0, 0, 0))
+  , mode(PoseModel::Mode::Quaternion)
 {
 }
 
-PoseModel::PoseModel(const PoseModel& other) : Model(other), pos(other.pos), orientation(other.orientation)
+PoseModel::PoseModel(const PoseModel& other)
+  : Model(other), pos(other.pos), orientation(other.orientation), mode(other.mode)
 {
 }
 
@@ -39,30 +44,66 @@ Eigen::Matrix<double, 3, 3> PoseModel::getRotationToSelf() const
 
 int PoseModel::getParametersSize() const
 {
-  return 7;
+  if (mode == PoseModel::Mode::RPY)
+  {
+    return 6;
+  }
+  if (mode == PoseModel::Mode::Quaternion)
+  {
+    return 7;
+  }
+  else
+  {
+    throw std::runtime_error(DEBUG_INFO + " only RPY and Quaternion modes are implemented.");
+  }
 }
 
 Eigen::VectorXd PoseModel::getParameters() const
 {
-  Eigen::VectorXd parameters(7);
-  parameters.segment(0, 3) = pos;
-  parameters(3) = orientation.w();
-  parameters(4) = orientation.x();
-  parameters(5) = orientation.y();
-  parameters(6) = orientation.z();
-  return parameters;
+  if (mode == PoseModel::Mode::RPY)
+  {
+    Eigen::VectorXd parameters(6);
+    parameters.segment(0, 3) = pos;
+    parameters.segment(3, 3) = orientation.toRotationMatrix().eulerAngles(0, 1, 2);
+    return parameters;
+  }
+  else if (mode == PoseModel::Mode::Quaternion)
+  {
+    Eigen::VectorXd parameters(7);
+    parameters.segment(0, 3) = pos;
+    parameters(3) = orientation.w();
+    parameters(4) = orientation.x();
+    parameters(5) = orientation.y();
+    parameters(6) = orientation.z();
+    return parameters;
+  }
+  else
+  {
+    throw std::runtime_error(DEBUG_INFO + " only RPY and Quaternion modes are implemented.");
+  }
 }
 
 void PoseModel::setParameters(const Eigen::VectorXd& new_params)
 {
-  if (new_params.rows() != 7)
+  if (new_params.rows() != getParametersSize())
   {
-    throw std::runtime_error(DEBUG_INFO + " invalid size for new_params, expecting 7, got " +
-                             std::to_string(new_params.rows()));
+    throw std::runtime_error(DEBUG_INFO + " invalid size for new_params, expecting " +
+                             std::to_string(getParametersSize()) + ", got " + std::to_string(new_params.rows()));
   }
   pos = new_params.segment(0, 3);
   // w,x,y,z
-  orientation = Eigen::Quaterniond(new_params(3), new_params(4), new_params(5), new_params(6));
+  if (mode == PoseModel::Mode::RPY)
+  {
+    double roll = new_params(3);
+    double pitch = new_params(4);
+    double yaw = new_params(5);
+    orientation = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX()) *
+                  Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) * Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ());
+  }
+  else if (mode == PoseModel::Mode::Quaternion)
+  {
+    orientation = Eigen::Quaterniond(new_params(3), new_params(4), new_params(5), new_params(6));
+  }
   orientation.normalize();
 }
 
@@ -90,25 +131,57 @@ void PoseModel::setFromOpenCV(const cv::Mat r_vec, cv::Mat t_vec)
 
 std::vector<std::string> PoseModel::getParametersNames() const
 {
-  return { "x", "y", "z", "qw", "qx", "qy", "qz" };
+  if (mode == PoseModel::Mode::RPY)
+  {
+    return { "x", "y", "z", "roll", "pitch", "yaw" };
+  }
+  else if (mode == PoseModel::Mode::Quaternion)
+  {
+    return { "x", "y", "z", "qw", "qx", "qy", "qz" };
+  }
+  else
+  {
+    throw std::runtime_error(DEBUG_INFO + " only RPY and Quaternion modes are implemented.");
+  }
 }
 
 Json::Value PoseModel::toJson() const
 {
   Json::Value v;
   v["pos"] = rhoban_utils::vector2Json(pos);
-  v["orientation"] = rhoban_utils::val2Json<Eigen::Quaterniond>(orientation);
+  if (mode == PoseModel::Mode::RPY)
+  {
+    Eigen::Vector3d angles = orientation.toRotationMatrix().eulerAngles(0, 1, 2);
+    v["rpy"] = rhoban_utils::vector2Json(angles);
+  }
+  else if (mode == PoseModel::Mode::Quaternion)
+  {
+    v["orientation"] = rhoban_utils::val2Json<Eigen::Quaterniond>(orientation);
+  }
+  else
+  {
+    throw std::runtime_error(DEBUG_INFO + " only RPY and Quaternion modes are implemented.");
+  }
   return v;
 }
 
 void PoseModel::fromJson(const Json::Value& v, const std::string& dir_name)
 {
   (void)dir_name;
+  std::cout << "Pose reading." << std::endl;
   rhoban_utils::tryReadEigen(v, "pos", &pos);
+  std::cout << "Pose read." << std::endl;
   if (v.isObject() && v.isMember("orientation"))
   {
+    std::cout << "Quat reading." << std::endl;
     orientation = rhoban_utils::read<Eigen::Quaterniond>(v, "orientation");
+    std::cout << "w : " << orientation.w() << std::endl;
+    std::cout << "x : " << orientation.x() << std::endl;
+    std::cout << "y : " << orientation.y() << std::endl;
+    std::cout << "z : " << orientation.z() << std::endl;
     orientation.normalize();
+
+    mode = PoseModel::Mode::Quaternion;
   }
   else if (v.isObject() && v.isMember("angle") && v.isMember("axis"))
   {
@@ -118,6 +191,19 @@ void PoseModel::fromJson(const Json::Value& v, const std::string& dir_name)
     rhoban_utils::tryRead(v, "angle", &angle_deg);
     orientation = Eigen::Quaterniond(Eigen::AngleAxisd(rhoban_utils::deg2rad(angle_deg), axis));
     orientation.normalize();
+    mode = PoseModel::Mode::Quaternion;  // AngleAxis parameters are note implemented
+  }
+  else if (v.isObject() && v.isMember("rpy"))
+  {
+    Eigen::Vector3d angles = rhoban_utils::readEigen<3, 1>(v, "rpy");
+    double roll = rhoban_utils::deg2rad(angles(0));
+    double pitch = rhoban_utils::deg2rad(angles(1));
+    double yaw = rhoban_utils::deg2rad(angles(2));
+    orientation = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX()) *
+                  Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) * Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ());
+    orientation.normalize();
+
+    mode = PoseModel::Mode::RPY;  // AngleAxis parameters are note implemented
   }
 }
 

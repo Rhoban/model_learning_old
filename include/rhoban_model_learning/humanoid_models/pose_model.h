@@ -46,6 +46,15 @@ public:
   /// Orientation of the object
   Eigen::Quaterniond orientation;
 
+  enum Mode
+  {
+    Quaternion,
+    AngleAxis,
+    RPY
+  };
+
+  Mode mode;
+
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
