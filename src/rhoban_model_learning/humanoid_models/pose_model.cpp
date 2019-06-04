@@ -9,10 +9,7 @@
 namespace rhoban_model_learning
 {
 PoseModel::PoseModel()
-  : Model()
-  , pos(Eigen::Vector3d::Zero())
-  , orientation(Eigen::Quaterniond(1, 0, 0, 0))
-  , mode(PoseModel::Mode::Quaternion)
+  : Model(), pos(Eigen::Vector3d::Zero()), orientation(Eigen::Quaterniond(1, 0, 0, 0)), mode(PoseModel::Mode::RPY)
 {
 }
 
@@ -168,17 +165,10 @@ Json::Value PoseModel::toJson() const
 void PoseModel::fromJson(const Json::Value& v, const std::string& dir_name)
 {
   (void)dir_name;
-  std::cout << "Pose reading." << std::endl;
   rhoban_utils::tryReadEigen(v, "pos", &pos);
-  std::cout << "Pose read." << std::endl;
   if (v.isObject() && v.isMember("orientation"))
   {
-    std::cout << "Quat reading." << std::endl;
     orientation = rhoban_utils::read<Eigen::Quaterniond>(v, "orientation");
-    std::cout << "w : " << orientation.w() << std::endl;
-    std::cout << "x : " << orientation.x() << std::endl;
-    std::cout << "y : " << orientation.y() << std::endl;
-    std::cout << "z : " << orientation.z() << std::endl;
     orientation.normalize();
 
     mode = PoseModel::Mode::Quaternion;

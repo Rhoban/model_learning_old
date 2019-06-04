@@ -73,7 +73,6 @@ void ArucoCube::fromJson(const Json::Value& v, const std::string& dir_path)
   rhoban_utils::tryRead(v, "side", &side);
   if (v.isObject() && v.isMember("pose"))
   {
-    std::cout << "Calling pose reading." << std::endl;
     pose.fromJson(v["pose"], dir_path);
   }
   if (v.isObject() && v.isMember("sheets"))

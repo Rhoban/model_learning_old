@@ -20,7 +20,7 @@
                         "tangential_coeffs":[0, 0]
                     }
                 },
-                "camera_correction" : {
+                "pitch_correction" : {
                     "class name" : "DoublesModel",
                     "content" : {
                         "params" : {
@@ -119,7 +119,7 @@
                         }
                     }
                 },
-                "camera_correction" : {
+                "pitch_correction" : {
                     "class name" : "IndependentGaussiansPrior",
                     "content" : {
                         "means" : {
@@ -180,5 +180,5 @@
             "population_size" : 20
         }
     },
-    "indices_names" : ["noise:all", "tags:all", "robot_2d_pose:all", "camera_correction:all"]//incomplete
+    "indices_names" : ["noise:all", "tags:all", "robot_2d_pose:all", "pitch_correction:all"]//incomplete
 }

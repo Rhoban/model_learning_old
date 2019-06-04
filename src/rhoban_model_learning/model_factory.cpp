@@ -11,7 +11,6 @@
 #include "rhoban_model_learning/humanoid_models/poses_optimization_model.h"
 #include "rhoban_model_learning/humanoid_models/pose_model.h"
 #include "rhoban_model_learning/basic_models/pose_2d_model.h"
-#include "rhoban_model_learning/basic_models/pose_rpy_model.h"
 #include "rhoban_model_learning/basic_models/doubles_model.h"
 
 #include "rhoban_model_learning/tags/aruco_collection.h"
@@ -42,7 +41,6 @@ ModelFactory::ModelFactory()
   registerBuilder("ArucoCube", []() { return std::unique_ptr<Model>(new ArucoCube); });
   registerBuilder("TagsSheet", []() { return std::unique_ptr<Model>(new TagsSheet); });
   registerBuilder("PoseModel", []() { return std::unique_ptr<Model>(new PoseModel); });
-  registerBuilder("PoseRPYModel", []() { return std::unique_ptr<Model>(new PoseModel); });
   registerBuilder("Pose2DModel", []() { return std::unique_ptr<Model>(new Pose2DModel); });
   registerBuilder("DoublesModel", []() { return std::unique_ptr<Model>(new DoublesModel); });
 

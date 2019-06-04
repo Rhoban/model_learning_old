@@ -49,30 +49,32 @@ TEST(get3DPose, offsetPose)
 TEST(get3DPose, rotatedPose)
 {
   Pose2DModel p2d;
-  PoseModel p3d = p2d.get3DPose();
 
-  Eigen::VectorXd parameters = Eigen::VectorXd::Zero(7);
+  Eigen::VectorXd parameters = Eigen::VectorXd::Zero(3);
   parameters(2) = 90;
-  p3d.setParameters(parameters);
+  p2d.setParameters(parameters);
+
+  PoseModel p3d = p2d.get3DPose();
 
   Eigen::Vector3d pos_world(0, 1, 2);
   Eigen::Vector3d pos_self = p3d.getPosInSelf(pos_world);
 
   EXPECT_NEAR(pos_self(0), 1, epsilon);
-  EXPECT_NEAR(pos_self(1), 1, epsilon);
+  EXPECT_NEAR(pos_self(1), 0, epsilon);
   EXPECT_NEAR(pos_self(2), 2, epsilon);
 }
 
 TEST(get3DPose, rotAndTranslatePose)
 {
   Pose2DModel p2d;
-  PoseModel p3d = p2d.get3DPose();
 
-  Eigen::VectorXd parameters = Eigen::VectorXd::Zero(7);
+  Eigen::VectorXd parameters = Eigen::VectorXd::Zero(3);
   parameters(0) = -1;
   parameters(1) = 1;
   parameters(2) = 90;
-  p3d.setParameters(parameters);
+  p2d.setParameters(parameters);
+
+  PoseModel p3d = p2d.get3DPose();
 
   Eigen::Vector3d pos_world(0, 1, 2);
   Eigen::Vector3d pos_self = p3d.getPosInSelf(pos_world);

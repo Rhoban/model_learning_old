@@ -17,7 +17,7 @@ IPHM::InferedPosesHumanoidModel() : CompositeModel()
 {
   models["noise"] = std::unique_ptr<Model>(new VisionNoiseModel);
   models["camera"] = std::unique_ptr<Model>(new CameraModel);
-  models["camera_correction"] = std::unique_ptr<Model>(new PoseModel);
+  models["pitch_correction"] = std::unique_ptr<Model>(new PoseModel);
   models["aruco_collection"] = std::unique_ptr<Model>(new ArucoCollection);
 }
 
@@ -37,7 +37,7 @@ const rhoban::CameraModel& IPHM::getCameraModel() const
 
 const PoseModel& IPHM::getCameraCorrection() const
 {
-  return static_cast<const PoseModel&>(*models.at("camera_correction"));
+  return static_cast<const PoseModel&>(*models.at("pitch_correction"));
 }
 
 std::unique_ptr<Model> IPHM::clone() const
@@ -59,7 +59,7 @@ void IPHM::fromJson(const Json::Value& v, const std::string& dir_name)
   // Checking that content has been appropriately set
   checkType<VisionNoiseModel>("noise");
   checkType<CameraModel>("camera");
-  checkType<PoseModel>("camera_correction");
+  checkType<PoseModel>("pitch_correction");
   checkType<ArucoCollection>("aruco_collection");
 }
 
