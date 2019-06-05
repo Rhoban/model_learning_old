@@ -25,7 +25,7 @@ public:
   void setPosition(const Eigen::Vector2d pos_);
   void setAngle(const double);
 
-  PoseModel get3DPose() const;
+  const PoseModel get3DPose() const;
 
   Json::Value toJson() const override;
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;

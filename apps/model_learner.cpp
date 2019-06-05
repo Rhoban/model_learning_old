@@ -29,6 +29,7 @@ int main(int argc, char** argv)
   std::default_random_engine engine = rhoban_random::getRandomEngine();
   DataSet data = input_reader->extractSamples(argv[3], &engine);
 
+  learner.exportValidationResulstToCSV(learner.getModel(), data, "predictionResultsUntrained.csv", ',');
   // Learn model
   std::cout << "Learn model." << std::endl;
   ModelLearner::Result r = learner.learnParameters(data, &engine);
@@ -63,5 +64,5 @@ int main(int argc, char** argv)
   r.model->saveFile("trained_model.json");
 
   // Save obsevation prediction results
-  learner.exportValidationResulstToCSV(*r.model, data, "predictionResults.csv", ',');
+  learner.exportValidationResulstToCSV(*r.model, data, "predictionResultsTrained.csv", ',');
 }

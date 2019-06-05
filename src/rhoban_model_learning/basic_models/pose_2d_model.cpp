@@ -26,7 +26,7 @@ Eigen::VectorXd Pose2DModel::getParameters() const
   return parameters;
 }
 
-PoseModel Pose2DModel::get3DPose() const
+const PoseModel Pose2DModel::get3DPose() const
 {
   PoseModel pose;
   pose.setPosition(Eigen::Vector3d(pos(0), pos(1), 0));
