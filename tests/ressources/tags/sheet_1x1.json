@@ -3,8 +3,8 @@
     "markers_ids" : [32],
     "cols" : 1,
     "rows" : 1,
-    "sheet_pose" : {
+    "pose" : {
         "pos" : [0,0,1],
-        "orientation" : [1,0,1,0]// rotation of pi/2 over y axis
+        "quaternion" : [1,0,1,0]// rotation of pi/2 over y axis
     }
 }

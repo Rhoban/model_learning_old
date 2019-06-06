@@ -46,6 +46,7 @@ DataSet PODSR::extractSamples(const std::string& file_path, std::default_random_
     cv::Mat t_vec;
     hl_monitoring::pose3DToCV(replay_image_provider.getCameraMetaInformation(image_id).pose(), &r_vec, &t_vec);
     PoseModel camera_from_self;
+    camera_from_self.setMode(PoseModel::Mode::Quaternion);
     camera_from_self.setFromOpenCV(r_vec, t_vec);
 
     samples_by_corner_id_marker_id_image_id[key] = std::unique_ptr<Sample>(

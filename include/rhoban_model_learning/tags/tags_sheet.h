@@ -23,7 +23,7 @@ class TagsSheet : public Model, public TagsCollection
 {
 public:
   TagsSheet();
-  TagsSheet(double marker_size, double dy, double dz, int cols, int rows, const PoseModel& sheet_pose,
+  TagsSheet(double marker_size, double dy, double dz, int cols, int rows, const PoseModel& pose,
             const std::vector<int>& markers_ids);
   TagsSheet(const TagsSheet& other);
 
@@ -47,7 +47,7 @@ private:
   /// - center: sheet_center
   /// - orientation: y-axis -> left of the sheet, z-axis -> top of the sheet
   /// This is the only customizable parameters, other are supposed to be 'known'
-  PoseModel sheet_pose;
+  PoseModel pose;
 
   /// Size of an aruco marker (all markers of a sheet have the same size) [m]
   double marker_size;

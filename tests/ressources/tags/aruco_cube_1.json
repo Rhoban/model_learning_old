@@ -2,7 +2,7 @@
     "side" : 0.3,
     "pose" : {
         "pos" : [0.5,0,-1],
-        "orientation" : [1,0,-1,0] //rotation of -PI/2 with respect to the y axis
+        "quaternion" : [1,0,-1,0] //rotation of -PI/2 with respect to the y axis
     },
     "sheets" : {
         "0" : {

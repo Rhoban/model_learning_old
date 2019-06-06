@@ -9,7 +9,7 @@
 namespace rhoban_model_learning
 {
 PoseModel::PoseModel()
-  : Model(), pos(Eigen::Vector3d::Zero()), orientation(Eigen::Quaterniond(1, 0, 0, 0)), mode(PoseModel::Mode::RPY)
+  : Model(), pos(Eigen::Vector3d::Zero()), orientation(Eigen::VectorXd::Zero(3)), mode(PoseModel::Mode::RPY)
 {
 }
 
@@ -31,77 +31,71 @@ Eigen::Vector3d PoseModel::getPosFromSelf(const Eigen::Vector3d& pos_in_self) co
 
 Eigen::Matrix<double, 3, 3> PoseModel::getRotationFromSelf() const
 {
-  return orientation.toRotationMatrix();
+  Eigen::Matrix3d rotation;
+  if (mode == PoseModel::Mode::RPY)
+  {
+    double roll = rhoban_utils::deg2rad(orientation(0));
+    double pitch = rhoban_utils::deg2rad(orientation(1));
+    double yaw = rhoban_utils::deg2rad(orientation(2));
+    rotation = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX()) * Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
+               Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ());
+  }
+  else if (mode == PoseModel::Mode::Quaternion)
+  {
+    rotation = Eigen::Quaterniond(orientation(0), orientation(1), orientation(2), orientation(3))
+                   .normalized()
+                   .toRotationMatrix();
+  }
+  return rotation;
+}
+
+Eigen::Quaterniond PoseModel::getQuaternion() const
+{
+  Eigen::Quaterniond quat(getRotationFromSelf());
+  return quat;
 }
 
 Eigen::Matrix<double, 3, 3> PoseModel::getRotationToSelf() const
 {
-  return orientation.toRotationMatrix().transpose();
+  return getRotationFromSelf().transpose();
 }
 
 int PoseModel::getParametersSize() const
 {
+  int size = 0;
   if (mode == PoseModel::Mode::RPY)
   {
-    return 6;
+    size = 6;
   }
-  if (mode == PoseModel::Mode::Quaternion)
+  else if (mode == PoseModel::Mode::Quaternion)
   {
-    return 7;
+    size = 7;
   }
-  else
-  {
-    throw std::runtime_error(DEBUG_INFO + " only RPY and Quaternion modes are implemented.");
-  }
+  return size;
 }
 
 Eigen::VectorXd PoseModel::getParameters() const
 {
+  Eigen::VectorXd parameters;
   if (mode == PoseModel::Mode::RPY)
   {
-    Eigen::VectorXd parameters(6);
+    parameters.resize(6);
     parameters.segment(0, 3) = pos;
-    parameters.segment(3, 3) = orientation.toRotationMatrix().eulerAngles(0, 1, 2);
-    return parameters;
+    parameters.segment(3, 3) = orientation;
   }
   else if (mode == PoseModel::Mode::Quaternion)
   {
-    Eigen::VectorXd parameters(7);
+    parameters.resize(7);
     parameters.segment(0, 3) = pos;
-    parameters(3) = orientation.w();
-    parameters(4) = orientation.x();
-    parameters(5) = orientation.y();
-    parameters(6) = orientation.z();
-    return parameters;
+    parameters.segment(3, 4) = orientation;
   }
-  else
-  {
-    throw std::runtime_error(DEBUG_INFO + " only RPY and Quaternion modes are implemented.");
-  }
+  return parameters;
 }
 
 void PoseModel::setParameters(const Eigen::VectorXd& new_params)
 {
-  if (new_params.rows() != getParametersSize())
-  {
-    throw std::runtime_error(DEBUG_INFO + " invalid size for new_params, expecting " +
-                             std::to_string(getParametersSize()) + ", got " + std::to_string(new_params.rows()));
-  }
-  pos = new_params.segment(0, 3);
-  // w,x,y,z
-  if (mode == PoseModel::Mode::RPY)
-  {
-    double roll = new_params(3);
-    double pitch = new_params(4);
-    double yaw = new_params(5);
-    orientation = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX()) *
-                  Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) * Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ());
-  }
-  else if (mode == PoseModel::Mode::Quaternion)
-  {
-    orientation = Eigen::Quaterniond(new_params(3), new_params(4), new_params(5), new_params(6));
-  }
-  orientation.normalize();
+  setPosition(new_params.segment(0, 3));
+  setOrientation(new_params.segment(3, new_params.rows() - 3));
 }
 
 void PoseModel::setPosition(const Eigen::Vector3d pos_)
@@ -109,36 +103,81 @@ void PoseModel::setPosition(const Eigen::Vector3d pos_)
   pos = pos_;
 }
 
-void PoseModel::setOrientation(const Eigen::Quaterniond orientation_)
+void PoseModel::setOrientation(const Eigen::Quaterniond quat)
 {
+  if (mode != PoseModel::Mode::Quaternion)
+  {
+    throw std::runtime_error(DEBUG_INFO + " only Quaternion modes is implemented for this method.");
+  }
+  orientation(0) = quat.w();
+  orientation(1) = quat.x();
+  orientation(2) = quat.y();
+  orientation(3) = quat.z();
+}
+
+void PoseModel::setOrientation(const Eigen::VectorXd orientation_)
+{
+  if (orientation.rows() != orientation_.rows())
+  {
+    throw std::runtime_error(DEBUG_INFO + " invalid size for new_params, expecting " +
+                             std::to_string(getParametersSize()) + ", got " + std::to_string(orientation.rows()));
+  }
   orientation = orientation_;
-  orientation.normalize();
 }
 
 void PoseModel::setFromOpenCV(const cv::Mat r_vec, cv::Mat t_vec)
 {
+  if (mode != PoseModel::Mode::Quaternion)
+  {
+    throw std::runtime_error(DEBUG_INFO + " only Quaternion modes is implemented for this method.");
+  }
+  Eigen::Vector3d position;
+  cv::cv2eigen(t_vec, position);
+  setPosition(position);
+
   cv::Mat r_mat_cv;
   cv::Rodrigues(r_vec, r_mat_cv);
-
   Eigen::Matrix3d r_mat_eigen;
   cv::cv2eigen(r_mat_cv, r_mat_eigen);
-  orientation = Eigen::Quaterniond(r_mat_eigen);
-  cv::cv2eigen(t_vec, pos);
+  setOrientation(Eigen::Quaterniond(r_mat_eigen));
 }
 
 std::vector<std::string> PoseModel::getParametersNames() const
 {
+  std::vector<std::string> parameters_name;
   if (mode == PoseModel::Mode::RPY)
   {
-    return { "x", "y", "z", "roll", "pitch", "yaw" };
+    parameters_name = { "x", "y", "z", "roll", "pitch", "yaw" };
   }
   else if (mode == PoseModel::Mode::Quaternion)
   {
-    return { "x", "y", "z", "qw", "qx", "qy", "qz" };
+    parameters_name = { "x", "y", "z", "qw", "qx", "qy", "qz" };
   }
-  else
+  return parameters_name;
+}
+
+void PoseModel::setMode(const PoseModel::Mode mode_)
+{
+  if (mode == mode_)
   {
-    throw std::runtime_error(DEBUG_INFO + " only RPY and Quaternion modes are implemented.");
+    return;
+  }
+  mode = mode_;
+
+  if (mode == PoseModel::Mode::RPY)
+  {
+    orientation.resize(3);
+    orientation(0) = 0;
+    orientation(1) = 0;
+    orientation(2) = 0;
+  }
+  else if (mode == PoseModel::Mode::Quaternion)
+  {
+    orientation.resize(4);
+    orientation(0) = 1;
+    orientation(1) = 0;
+    orientation(2) = 0;
+    orientation(3) = 0;
   }
 }
 
@@ -148,19 +187,17 @@ Json::Value PoseModel::toJson() const
   v["pos"] = rhoban_utils::vector2Json(pos);
   if (mode == PoseModel::Mode::RPY)
   {
-    Eigen::Vector3d angles = orientation.toRotationMatrix().eulerAngles(0, 1, 2);
-    double roll_deg = rhoban_utils::rad2deg(angles[0]);
-    double pitch_deg = rhoban_utils::rad2deg(angles[1]);
-    double yaw_deg = rhoban_utils::rad2deg(angles[2]);
-    v["rpy"] = rhoban_utils::vector2Json(Eigen::Vector3d(roll_deg, pitch_deg, yaw_deg));
+    // Angles are stored in deg
+    Eigen::Vector3d angles_normalized;
+    angles_normalized(0) = rhoban_utils::normalizeDeg(orientation(0));
+    angles_normalized(1) = rhoban_utils::normalizeDeg(orientation(1));
+    angles_normalized(2) = rhoban_utils::normalizeDeg(orientation(2));
+    v["rpy"] = rhoban_utils::vector2Json(angles_normalized);
   }
   else if (mode == PoseModel::Mode::Quaternion)
   {
-    v["orientation"] = rhoban_utils::val2Json<Eigen::Quaterniond>(orientation);
-  }
-  else
-  {
-    throw std::runtime_error(DEBUG_INFO + " only RPY and Quaternion modes are implemented.");
+    Eigen::Vector4d orientation_ = orientation;
+    v["quaternion"] = rhoban_utils::vector2Json(orientation_);
   }
   return v;
 }
@@ -169,34 +206,21 @@ void PoseModel::fromJson(const Json::Value& v, const std::string& dir_name)
 {
   (void)dir_name;
   rhoban_utils::tryReadEigen(v, "pos", &pos);
-  if (v.isObject() && v.isMember("orientation"))
+  if (v.isObject() && v.isMember("rpy"))
   {
-    orientation = rhoban_utils::read<Eigen::Quaterniond>(v, "orientation");
-    orientation.normalize();
+    setMode(PoseModel::Mode::RPY);
 
-    mode = PoseModel::Mode::Quaternion;
-  }
-  else if (v.isObject() && v.isMember("angle") && v.isMember("axis"))
-  {
-    Eigen::Vector3d axis = rhoban_utils::readEigen<3, 1>(v, "axis");
-    axis.normalize();
-    double angle_deg = 0;
-    rhoban_utils::tryRead(v, "angle", &angle_deg);
-    orientation = Eigen::Quaterniond(Eigen::AngleAxisd(rhoban_utils::deg2rad(angle_deg), axis));
-    orientation.normalize();
-    mode = PoseModel::Mode::Quaternion;  // AngleAxis parameters are note implemented
-  }
-  else if (v.isObject() && v.isMember("rpy"))
-  {
     Eigen::Vector3d angles = rhoban_utils::readEigen<3, 1>(v, "rpy");
-    double roll = rhoban_utils::deg2rad(angles(0));
-    double pitch = rhoban_utils::deg2rad(angles(1));
-    double yaw = rhoban_utils::deg2rad(angles(2));
-    orientation = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX()) *
-                  Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) * Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ());
-    orientation.normalize();
-
-    mode = PoseModel::Mode::RPY;  // AngleAxis parameters are note implemented
+    double roll = rhoban_utils::normalizeDeg(angles(0));
+    double pitch = rhoban_utils::normalizeDeg(angles(1));
+    double yaw = rhoban_utils::normalizeDeg(angles(2));
+    Eigen::Vector3d angles_normalized(roll, pitch, yaw);
+    setOrientation(angles_normalized);
+  }
+  else if (v.isObject() && v.isMember("quaternion"))
+  {
+    setMode(PoseModel::Mode::Quaternion);
+    setOrientation(rhoban_utils::readEigen<4, 1>(v, "quaternion"));
   }
 }
 
@@ -209,5 +233,4 @@ std::unique_ptr<Model> PoseModel::clone() const
 {
   return std::unique_ptr<Model>(new PoseModel(*this));
 }
-
 }  // namespace rhoban_model_learning

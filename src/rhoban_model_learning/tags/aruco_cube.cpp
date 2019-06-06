@@ -8,6 +8,7 @@ namespace rhoban_model_learning
 {
 ArucoCube::ArucoCube() : pose(), sheets()
 {
+  pose.setMode(PoseModel::Mode::Quaternion);
 }
 
 ArucoCube::ArucoCube(const ArucoCube& other) : pose(other.pose), sheets(other.sheets)
@@ -105,7 +106,7 @@ void ArucoCube::updateSheets()
     }
     // Computing transformations
     Eigen::Quaterniond sheet_orientation =
-        pose.orientation * Eigen::AngleAxisd(face_id * M_PI / 2, Eigen::Vector3d::UnitZ());
+        pose.getQuaternion() * Eigen::AngleAxisd(face_id * M_PI / 2, Eigen::Vector3d::UnitZ());
     Eigen::Vector3d center_in_cube = Eigen::Matrix3d(Eigen::AngleAxisd(face_id * M_PI / 2, Eigen::Vector3d::UnitZ())) *
                                      Eigen::Vector3d(side / 2, 0, 0);
     Eigen::Vector3d center_in_world = pose.getPosFromSelf(center_in_cube);

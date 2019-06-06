@@ -29,6 +29,7 @@ Eigen::VectorXd Pose2DModel::getParameters() const
 const PoseModel Pose2DModel::get3DPose() const
 {
   PoseModel pose;
+  pose.setMode(PoseModel::Mode::Quaternion);
   pose.setPosition(Eigen::Vector3d(pos(0), pos(1), 0));
   Eigen::Quaterniond q(Eigen::AngleAxisd(angle.getSignedValueRad(), Eigen::Vector3d(0, 0, 1)));
   pose.setOrientation(q);

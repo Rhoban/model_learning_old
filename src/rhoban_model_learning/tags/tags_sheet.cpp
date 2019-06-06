@@ -5,18 +5,19 @@
 namespace rhoban_model_learning
 {
 TagsSheet::TagsSheet()
-  : sheet_pose(), marker_size(0.09), dy(0.12), dz(0.10), cols(2), rows(3), markers_ids({ 0, 1, 2, 3, 4, 5 })
+  : pose(), marker_size(0.09), dy(0.12), dz(0.10), cols(2), rows(3), markers_ids({ 0, 1, 2, 3, 4, 5 })
 {
+  pose.setMode(PoseModel::Mode::Quaternion);
 }
 
-TagsSheet::TagsSheet(double marker_size, double dy, double dz, int cols, int rows, const PoseModel& sheet_pose,
+TagsSheet::TagsSheet(double marker_size, double dy, double dz, int cols, int rows, const PoseModel& pose,
                      const std::vector<int>& markers_ids)
-  : sheet_pose(sheet_pose), marker_size(marker_size), dy(dy), dz(dz), cols(cols), rows(rows), markers_ids(markers_ids)
+  : pose(pose), marker_size(marker_size), dy(dy), dz(dz), cols(cols), rows(rows), markers_ids(markers_ids)
 {
 }
 
 TagsSheet::TagsSheet(const TagsSheet& other)
-  : sheet_pose(other.sheet_pose)
+  : pose(other.pose)
   , marker_size(other.marker_size)
   , dy(other.dy)
   , dz(other.dz)
@@ -28,8 +29,8 @@ TagsSheet::TagsSheet(const TagsSheet& other)
 
 void TagsSheet::setPose(const Eigen::Vector3d& pos, const Eigen::Quaterniond& orientation)
 {
-  sheet_pose.pos = pos;
-  sheet_pose.orientation = orientation;
+  pose.setPosition(pos);
+  pose.setOrientation(orientation);
 }
 
 std::map<int, ArucoTag> TagsSheet::getMarkers() const
@@ -50,30 +51,30 @@ std::map<int, ArucoTag> TagsSheet::getMarkers() const
       coeff_z = row - (rows - 1) / 2.0;
     }
     Eigen::Vector3d marker_center_self(0, dy * coeff_y, dz * coeff_z);
-    Eigen::Vector3d marker_center = sheet_pose.getPosFromSelf(marker_center_self);
-    markers[marker_id] = ArucoTag(marker_id, marker_size, marker_center, sheet_pose.orientation);
+    Eigen::Vector3d marker_center = pose.getPosFromSelf(marker_center_self);
+    markers[marker_id] = ArucoTag(marker_id, marker_size, marker_center, pose.getQuaternion());
   }
   return markers;
 }
 
 int TagsSheet::getParametersSize() const
 {
-  return sheet_pose.getParametersSize();
+  return pose.getParametersSize();
 }
 
 Eigen::VectorXd TagsSheet::getParameters() const
 {
-  return sheet_pose.getParameters();
+  return pose.getParameters();
 }
 
 void TagsSheet::setParameters(const Eigen::VectorXd& new_params)
 {
-  sheet_pose.setParameters(new_params);
+  pose.setParameters(new_params);
 }
 
 std::vector<std::string> TagsSheet::getParametersNames() const
 {
-  return sheet_pose.getParametersNames();
+  return pose.getParametersNames();
 }
 
 Json::Value TagsSheet::toJson() const
@@ -85,7 +86,7 @@ Json::Value TagsSheet::toJson() const
   v["dz"] = dz;
   v["cols"] = cols;
   v["rows"] = rows;
-  v["sheet_pose"] = sheet_pose.toJson();
+  v["pose"] = pose.toJson();
   return v;
 }
 
@@ -98,9 +99,9 @@ void TagsSheet::fromJson(const Json::Value& v, const std::string& dir_path)
   rhoban_utils::tryRead(v, "cols", &cols);
   rhoban_utils::tryRead(v, "rows", &rows);
   rhoban_utils::tryReadVector(v, "markers_ids", &markers_ids);
-  if (v.isObject() && v.isMember("sheet_pose"))
+  if (v.isObject() && v.isMember("pose"))
   {
-    sheet_pose.fromJson(v["sheet_pose"], dir_path);
+    pose.fromJson(v["pose"], dir_path);
   }
 }
 

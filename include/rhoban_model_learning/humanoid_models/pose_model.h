@@ -23,6 +23,8 @@ public:
   Eigen::Matrix<double, 3, 3> getRotationToSelf() const;
   /// Return the self to world rotation matrix
   Eigen::Matrix<double, 3, 3> getRotationFromSelf() const;
+  /// Return the self to world quaternion
+  Eigen::Quaterniond getQuaternion() const;
 
   int getParametersSize() const override;
 
@@ -31,7 +33,8 @@ public:
   std::vector<std::string> getParametersNames() const override;
 
   void setFromOpenCV(const cv::Mat r_vec, cv::Mat t_vec);
-  void setOrientation(const Eigen::Quaterniond orientation_);
+  void setOrientation(const Eigen::Quaterniond quat);
+  void setOrientation(const Eigen::VectorXd orientation);
   void setPosition(const Eigen::Vector3d pos_);
 
   Json::Value toJson() const override;
@@ -44,14 +47,16 @@ public:
   Eigen::Vector3d pos;
 
   /// Orientation of the object
-  Eigen::Quaterniond orientation;
+  Eigen::VectorXd orientation;
 
   enum Mode
   {
     Quaternion,
-    AngleAxis,
     RPY
   };
+
+  /// Resets the orientation
+  void setMode(const Mode mode_);
 
   Mode mode;
 

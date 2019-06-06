@@ -2,7 +2,7 @@
     "side" : 0.3,
     "pose" : {
         "pos" : [0.5,0,-1],
-        "orientation" : [1,0,0,0]
+        "quaternion" : [1,0,0,0]
     },
     "sheets" : {
         "0" : {
