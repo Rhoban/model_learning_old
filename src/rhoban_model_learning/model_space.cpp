@@ -1,4 +1,5 @@
 #include "rhoban_model_learning/model_space.h"
+#include "rhoban_model_learning/model_space_factory.h"
 
 #include "rhoban_model_learning/model.h"
 
@@ -28,6 +29,14 @@ void ModelSpace::append(const Model& m, const ModelPrior& prior, const std::set<
     out << parameters_names[i] << ": [" << parameters_spaces(i, 0) << "," << parameters_spaces(i, 1) << "]"
         << std::endl;
   }
+}
+
+std::unique_ptr<ModelSpace> ModelSpace::clone() const
+{
+  Json::Value v = toJson();
+  std::unique_ptr<ModelSpace> other = ModelSpaceFactory().build(getClassName());
+  other->fromJson(v, "./");
+  return other;
 }
 
 }  // namespace rhoban_model_learning

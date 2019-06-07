@@ -11,6 +11,7 @@ class CompositePrior : public ModelPrior
 {
 public:
   CompositePrior();
+  CompositePrior(const CompositePrior& other);
 
   size_t getNbParameters(const Model& m) const;
 
@@ -25,6 +26,8 @@ public:
   std::string getClassName() const override;
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;
   Json::Value toJson() const override;
+
+  std::unique_ptr<ModelPrior> clone() const override;
 
 private:
   std::map<std::string, std::unique_ptr<ModelPrior>> priors;

@@ -2,6 +2,8 @@
 
 #include "rhoban_utils/serialization/json_serializable.h"
 
+#include <memory>
+
 namespace rhoban_model_learning
 {
 class Model;
@@ -25,6 +27,10 @@ public:
   /// Return the loglikelihood of Model parameters according to the prior based
   /// on parameters of the provided indices
   virtual double getLogLikelihood(const Model& m, const std::set<int>& used_indices) const;
+
+  /// Default method for cloning is to serialize the object to Json and deserialize
+  /// it which might be too time consuming for some classes
+  virtual std::unique_ptr<ModelPrior> clone() const;
 };
 
 }  // namespace rhoban_model_learning

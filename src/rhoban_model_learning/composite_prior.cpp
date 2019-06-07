@@ -9,6 +9,14 @@ CompositePrior::CompositePrior() : ModelPrior()
 {
 }
 
+CompositePrior::CompositePrior(const CompositePrior& other) : ModelPrior()
+{
+  for (const auto& entry : other.priors)
+  {
+    priors[entry.first] = entry.second->clone();
+  }
+}
+
 size_t CompositePrior::getNbParameters(const Model& m) const
 {
   size_t total_rows = 0;
@@ -68,6 +76,11 @@ void CompositePrior::fromJson(const Json::Value& v, const std::string& dir_name)
 std::string CompositePrior::getClassName() const
 {
   return "CompositePrior";
+}
+
+std::unique_ptr<ModelPrior> CompositePrior::clone() const
+{
+  return std::unique_ptr<ModelPrior>(new CompositePrior(*this));
 }
 
 }  // namespace rhoban_model_learning

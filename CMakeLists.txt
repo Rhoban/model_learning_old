@@ -79,9 +79,8 @@ target_link_libraries(rhoban_model_learning
 add_executable(model_learner apps/model_learner.cpp)
 target_link_libraries(model_learner ${catkin_LIBRARIES} rhoban_model_learning)
 
-# TODO integrate back
-#add_executable(model_learning_analyzer apps/model_learning_analyzer.cpp)
-#target_link_libraries(model_learning_analyzer ${catkin_LIBRARIES} rhoban_model_learning)
+add_executable(model_learning_analyzer apps/model_learning_analyzer.cpp)
+target_link_libraries(model_learning_analyzer ${catkin_LIBRARIES} rhoban_model_learning)
 
 # TODO integrate back tools
 #add_executable(vision_correction_debug tools/vision_correction_debug.cpp)

@@ -6,6 +6,11 @@ IndependentGaussiansPrior::IndependentGaussiansPrior()
 {
 }
 
+IndependentGaussiansPrior::IndependentGaussiansPrior(const IndependentGaussiansPrior& other)
+  : means(other.means), deviations(other.deviations)
+{
+}
+
 Eigen::VectorXd IndependentGaussiansPrior::getParametersInitialValues(const Model& m) const
 {
   (void)m;
@@ -36,6 +41,11 @@ Json::Value IndependentGaussiansPrior::toJson() const
   v["means"] = rhoban_utils::vector2Json(means);
   v["deviations"] = rhoban_utils::vector2Json(deviations);
   return v;
+}
+
+std::unique_ptr<ModelPrior> IndependentGaussiansPrior::clone() const
+{
+  return std::unique_ptr<ModelPrior>(new IndependentGaussiansPrior(*this));
 }
 
 }  // namespace rhoban_model_learning

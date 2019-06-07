@@ -6,6 +6,10 @@ DefaultSpace::DefaultSpace()
 {
 }
 
+DefaultSpace::DefaultSpace(const DefaultSpace& other) : space(other.space)
+{
+}
+
 Eigen::MatrixXd DefaultSpace::getParametersSpace(const Model& m, const ModelPrior& p) const
 {
   (void)m;
@@ -29,6 +33,11 @@ Json::Value DefaultSpace::toJson() const
   Json::Value v;
   v["space"] = rhoban_utils::matrix2Json(space);
   return v;
+}
+
+std::unique_ptr<ModelSpace> DefaultSpace::clone() const
+{
+  return std::unique_ptr<ModelSpace>(new DefaultSpace(*this));
 }
 
 }  // namespace rhoban_model_learning

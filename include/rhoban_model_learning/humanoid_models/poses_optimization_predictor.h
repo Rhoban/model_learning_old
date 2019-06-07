@@ -26,6 +26,8 @@ public:
 
   void exportPredictionsToCSV(const Model& raw_model, const SampleVector& sample_vector, const std::string& filename,
                               char separator = ',') const override;
+
+  virtual std::unique_ptr<Predictor> clone() const override;
 };
 
 }  // namespace rhoban_model_learning

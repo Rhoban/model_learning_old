@@ -113,4 +113,9 @@ void POP::exportPredictionsToCSV(const Model& raw_model, const SampleVector& sam
   csv->close();
 }
 
+std::unique_ptr<Predictor> PosesOptimizationPredictor::clone() const
+{
+  return std::unique_ptr<Predictor>(new PosesOptimizationPredictor());
+}
+
 }  // namespace rhoban_model_learning

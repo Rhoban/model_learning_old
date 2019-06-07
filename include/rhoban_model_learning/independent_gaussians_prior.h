@@ -11,6 +11,7 @@ class IndependentGaussiansPrior : public ModelPrior
 {
 public:
   IndependentGaussiansPrior();
+  IndependentGaussiansPrior(const IndependentGaussiansPrior& other);
 
   Eigen::VectorXd getParametersInitialValues(const Model& m) const override;
   Eigen::VectorXd getParametersStdDev(const Model& m) const override;
@@ -18,6 +19,8 @@ public:
   std::string getClassName() const override;
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;
   Json::Value toJson() const override;
+
+  std::unique_ptr<ModelPrior> clone() const override;
 
 private:
   Eigen::VectorXd means;

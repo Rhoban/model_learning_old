@@ -1,4 +1,5 @@
 #include "rhoban_model_learning/model_prior.h"
+#include "rhoban_model_learning/model_prior_factory.h"
 
 #include "rhoban_model_learning/model.h"
 #include "rhoban_model_learning/tools.h"
@@ -59,6 +60,14 @@ double ModelPrior::getLogLikelihood(const Model& m, const std::set<int>& used_in
     log_likelihood += distrib.getLogLikelihood(parameters(i));
   }
   return log_likelihood;
+}
+
+std::unique_ptr<ModelPrior> ModelPrior::clone() const
+{
+  Json::Value v = toJson();
+  std::unique_ptr<ModelPrior> other = ModelPriorFactory().build(getClassName());
+  other->fromJson(v, "./");
+  return other;
 }
 
 }  // namespace rhoban_model_learning

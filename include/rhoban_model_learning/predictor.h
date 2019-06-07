@@ -4,6 +4,8 @@
 #include "rhoban_model_learning/sample.h"
 #include "rhoban_utils/logging/csv.h"
 
+#include <memory>
+
 #include "rhoban_utils/serialization/json_serializable.h"
 
 namespace rhoban_model_learning
@@ -44,6 +46,10 @@ public:
   /// It should be reimplemented.
   virtual void exportPredictionsToCSV(const Model& raw_model, const SampleVector& sample_vector,
                                       const std::string& filename, char separator = ',') const;
+
+  /// Default method for cloning is to serialize the object to Json and deserialize
+  /// it which might be too time consuming for some classes
+  virtual std::unique_ptr<Predictor> clone() const;
 
 protected:
   /// The number of samples used to fit a distribution if necessary

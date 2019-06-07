@@ -1,4 +1,5 @@
 #include "rhoban_model_learning/predictor.h"
+#include "rhoban_model_learning/predictor_factory.h"
 
 #include "rhoban_random/multivariate_gaussian.h"
 #include "rhoban_utils/threading/multi_core.h"
@@ -84,6 +85,14 @@ void Predictor::exportPredictionsToCSV(const Model& raw_model, const SampleVecto
   (void)filename;
   (void)separator;
   std::cout << DEBUG_INFO + "exportPredictionsToCSV not implemented." << std::endl;
+}
+
+std::unique_ptr<Predictor> Predictor::clone() const
+{
+  Json::Value v = toJson();
+  std::unique_ptr<Predictor> other = PredictorFactory().build(getClassName());
+  other->fromJson(v, "./");
+  return other;
 }
 
 }  // namespace rhoban_model_learning

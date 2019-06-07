@@ -63,7 +63,7 @@ for id_tag in res:
                       [diff[0] for diff in diffs], [diff[1] for diff in diffs],
                       errors,
                       angles='xy',
-                      scale=0.1,
+                      scale=1,
                       scale_units='xy',
                       width=0.002,
                       headwidth=4,
