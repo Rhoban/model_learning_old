@@ -13,7 +13,7 @@ typedef CalibrationModel CM;
 CM::CalibrationModel() : CompositeModel()
 {
   models["camera"] = std::unique_ptr<Model>(new CameraModel);
-  models["cameraOffset"] = std::unique_ptr<Model>(new RotationModel);
+  models["camOffset"] = std::unique_ptr<Model>(new RotationModel);
   models["imuOffset"] = std::unique_ptr<Model>(new RotationModel);
   models["neckOffset"] = std::unique_ptr<Model>(new RotationModel);
   models["noise"] = std::unique_ptr<Model>(new VisionNoiseModel);
