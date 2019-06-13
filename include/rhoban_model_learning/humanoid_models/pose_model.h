@@ -26,6 +26,9 @@ public:
   /// Return the self to world quaternion
   Eigen::Quaterniond getQuaternion() const;
 
+  /// Return the self to world Affine3d
+  Eigen::Affine3d getAffine3d() const;
+
   int getParametersSize() const override;
 
   Eigen::VectorXd getParameters() const override;
@@ -46,7 +49,7 @@ public:
   /// Position of the object inside the world referential
   Eigen::Vector3d pos;
 
-  /// Orientation of the object
+  /// Orientation of the object (world from self orientation)
   Eigen::VectorXd orientation;
 
   enum Mode

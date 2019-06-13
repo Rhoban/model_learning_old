@@ -25,43 +25,38 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
   const PosesOptimizationInput& input = dynamic_cast<const PosesOptimizationInput&>(raw_input);
   const PosesOptimizationModel& model = dynamic_cast<const PosesOptimizationModel&>(raw_model);
 
+  CalibrationModel calibration_model = model.getCalibrationModel();
+
   // Frames
-  PoseModel camera_from_self = input.camera_from_self;
-  PoseModel camera_correction = model.getCameraCorrectionModel();
-  PoseModel head_base_correction = model.getHeadBaseCorrectionModel();
-  PoseModel camera_from_head_base = input.camera_from_head_base;
+  Eigen::Affine3d camera_from_self = input.camera_from_self;
+  Eigen::Affine3d camera_from_head_base = input.camera_from_head_base;
   PoseModel robot_pose = model.getRobot3DPose();
 
   // Get marker pose in world frame
   Eigen::Vector3d marker_pose = model.getCornerPosition(input.aruco_id, input.corner_id);
 
-  // Get marker pose in head base frame (head_base <- camera <- self <- world)
+  // Get marker pose in self
   Eigen::Vector3d marker_pose_in_self = robot_pose.getPosInSelf(marker_pose);
-  Eigen::Vector3d marker_pose_in_camera = camera_from_self.getPosFromSelf(marker_pose_in_self);
 
-  // Apply head base correction
-  Eigen::Vector3d marker_pose_in_head_base = camera_from_head_base.getPosInSelf(marker_pose_in_camera);
-  Eigen::Vector3d marker_pose_head_base_corrected_in_head_base =
-      head_base_correction.getPosInSelf(marker_pose_in_head_base);
-  Eigen::Vector3d marker_pose_head_base_corrected_in_camera =
-      camera_from_head_base.getPosFromSelf(marker_pose_head_base_corrected_in_head_base);
+  // Get marker pose in camera after correction
+  Eigen::Affine3d camera_from_self_after_correction =
+      calibration_model.getCameraFromSelfAfterCorrection(camera_from_self, camera_from_head_base);
+  Eigen::Vector3d marker_pose_in_camera_after_correction = camera_from_self_after_correction * marker_pose_in_self;
 
-  // Apply camera correction
-  Eigen::Vector3d marker_pose_head_base_and_camera_corrected_in_camera =
-      camera_correction.getPosInSelf(marker_pose_head_base_corrected_in_camera);
   // Eigen::Vector3d marker_pose_head_base_and_camera_corrected_in_camera =
-  //     camera_correction.getPosInSelf(marker_pose_in_camera);
+  //     camera_corrected_from_camera.getPosInSelf(marker_pose_in_camera);
 
   // std::cout << "Marker " << input.aruco_id << " pos in self: " << marker_pose_in_self.transpose() << std::endl;
   // std::cout << "Marker " << input.aruco_id
   //           << " pos in camera: " << marker_pose_head_base_and_camera_corrected_in_camera.transpose() << std::endl;
+
   Eigen::Vector2d pixel =
-      cv2Eigen(model.getCameraModel().getImgFromObject(eigen2CV(marker_pose_head_base_and_camera_corrected_in_camera)));
+      cv2Eigen(calibration_model.getCameraModel().getImgFromObject(eigen2CV(marker_pose_in_camera_after_correction)));
 
   // Add noise if required
   if (engine != nullptr)
   {
-    std::normal_distribution<double> observation_noise(0, model.getPxStddev());
+    std::normal_distribution<double> observation_noise(0, calibration_model.getPxStddev());
     pixel(0) += observation_noise(*engine);
     pixel(1) += observation_noise(*engine);
   }
@@ -71,12 +66,13 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
 double POP::computeLogLikelihood(const Sample& sample, const Model& raw_model, std::default_random_engine* engine) const
 {
   const PosesOptimizationModel& model = dynamic_cast<const PosesOptimizationModel&>(raw_model);
+  CalibrationModel calibration_model = model.getCalibrationModel();
 
   (void)engine;
   Eigen::Vector2d prediction = predictObservation(sample.getInput(), model, nullptr);
   Eigen::Vector2d observation = sample.getObservation();
 
-  double px_stddev = model.getPxStddev();
+  double px_stddev = calibration_model.getPxStddev();
   double px_var = px_stddev * px_stddev;
   Eigen::MatrixXd covar(2, 2);
   covar << px_var, 0, 0, px_var;

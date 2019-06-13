@@ -55,6 +55,19 @@ Eigen::Quaterniond PoseModel::getQuaternion() const
   return quat;
 }
 
+Eigen::Affine3d PoseModel::getAffine3d() const
+{
+  Eigen::Matrix3d rotation = getRotationFromSelf();
+
+  Eigen::Matrix4d mat;  // Your Transformation Matrix
+  mat.setIdentity();    // Set to Identity to make bottom row of Matrix 0,0,0,1
+  mat.block<3, 3>(0, 0) = rotation;
+  mat.block<3, 1>(0, 3) = pos.transpose();
+
+  Eigen::Affine3d trans(mat);
+  return trans;
+}
+
 Eigen::Matrix<double, 3, 3> PoseModel::getRotationToSelf() const
 {
   return getRotationFromSelf().transpose();

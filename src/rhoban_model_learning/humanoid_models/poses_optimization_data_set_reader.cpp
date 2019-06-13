@@ -43,18 +43,12 @@ DataSet PODSR::extractSamples(const std::string& file_path, std::default_random_
     double pixel_y = std::stod(row_content.at("pixel_y"));
 
     // camera from self
-    cv::Mat r_vec;
-    cv::Mat t_vec;
-    hl_monitoring::pose3DToCV(camera_from_self_poses.getCameraMetaInformation(image_id).pose(), &r_vec, &t_vec);
-    PoseModel camera_from_self;
-    camera_from_self.setMode(PoseModel::Mode::Quaternion);
-    camera_from_self.setFromOpenCV(r_vec, t_vec);
+    Eigen::Affine3d camera_from_self =
+        hl_monitoring::getAffineFromProtobuf(camera_from_self_poses.getCameraMetaInformation(image_id).pose());
 
-    // head base from camera
-    hl_monitoring::pose3DToCV(camera_from_head_base_poses.getCameraMetaInformation(image_id).pose(), &r_vec, &t_vec);
-    PoseModel camera_from_head_base;
-    camera_from_head_base.setMode(PoseModel::Mode::Quaternion);
-    camera_from_head_base.setFromOpenCV(r_vec, t_vec);
+    // camera from self
+    Eigen::Affine3d camera_from_head_base =
+        hl_monitoring::getAffineFromProtobuf(camera_from_head_base_poses.getCameraMetaInformation(image_id).pose());
 
     samples_by_corner_id_marker_id_image_id[key] = std::unique_ptr<Sample>(new Sample(
         std::unique_ptr<Input>(new POI(image_id, marker_id, corner_id, camera_from_self, camera_from_head_base)),

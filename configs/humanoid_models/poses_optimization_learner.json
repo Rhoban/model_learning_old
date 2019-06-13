@@ -20,7 +20,7 @@
                         "tangential_coeffs":[-0.0018, 0.0035]
                     }
                 },
-                "camera_correction" : {
+                "camera_corrected_from_camera" : {
                     "class name" : "PoseModel",
                     "content" : {
                         "pos" : [0,0,0],
@@ -180,7 +180,7 @@
                         }
                     }
                 },
-                "camera_correction" : {
+                "camera_corrected_from_camera" : {
                     "class name" : "IndependentGaussiansPrior",
                     "content" : {
                         "means" : {
@@ -254,5 +254,5 @@
             "population_size" : 30
         }
     },
-    "indices_names" : ["noise:all", "robot_2d_pose:all", "tags:all", "pitch_correction:all", "camera_correction:roll", "camera_correction:pitch", "camera_correction:yaw"]//incomplete
+    "indices_names" : ["noise:all", "robot_2d_pose:all", "tags:all", "pitch_correction:all", "camera_corrected_from_camera:roll", "camera_corrected_from_camera:pitch", "camera_corrected_from_camera:yaw"]//incomplete
 }

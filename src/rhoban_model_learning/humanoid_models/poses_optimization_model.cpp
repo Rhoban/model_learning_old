@@ -1,7 +1,5 @@
 #include "rhoban_model_learning/humanoid_models/poses_optimization_model.h"
 
-#include <rhoban_model_learning/camera_calibration/camera_model.h>
-#include "rhoban_model_learning/humanoid_models/vision_noise_model.h"
 #include "rhoban_model_learning/basic_models/pose_2d_model.h"
 #include "rhoban_model_learning/tags/aruco_collection.h"
 
@@ -11,10 +9,7 @@ typedef PosesOptimizationModel POM;
 
 POM::PosesOptimizationModel() : CompositeModel()
 {
-  models["noise"] = std::unique_ptr<Model>(new VisionNoiseModel);
-  models["camera"] = std::unique_ptr<Model>(new CameraModel);
-  models["camera_correction"] = std::unique_ptr<Model>(new PoseModel);
-  models["head_base_correction"] = std::unique_ptr<Model>(new PoseModel);
+  models["calibration_model"] = std::unique_ptr<Model>(new CalibrationModel);
   models["robot_2d_pose"] = std::unique_ptr<Model>(new Pose2DModel);
   models["tags"] = std::unique_ptr<Model>(new ArucoCollection);
 }
@@ -23,24 +18,9 @@ POM::PosesOptimizationModel(const PosesOptimizationModel& other) : CompositeMode
 {
 }
 
-double POM::getPxStddev() const
+const CalibrationModel POM::getCalibrationModel() const
 {
-  return static_cast<const VisionNoiseModel&>(*models.at("noise")).px_stddev;
-}
-
-const rhoban::CameraModel& POM::getCameraModel() const
-{
-  return static_cast<const CameraModel&>(*models.at("camera")).model;
-}
-
-const PoseModel& POM::getCameraCorrectionModel() const
-{
-  return static_cast<const PoseModel&>(*models.at("camera_correction"));
-}
-
-const PoseModel& POM::getHeadBaseCorrectionModel() const
-{
-  return static_cast<const PoseModel&>(*models.at("head_base_correction"));
+  return static_cast<const CalibrationModel&>(*models.at("calibration_model"));
 }
 
 const PoseModel POM::getRobot3DPose() const
@@ -95,10 +75,8 @@ void POM::fromJson(const Json::Value& json_value, const std::string& dir_name)
 {
   CompositeModel::fromJson(json_value, dir_name);
   // Checking content
-  checkType<VisionNoiseModel>("noise");
-  checkType<CameraModel>("camera");
-  checkType<PoseModel>("camera_correction");
-  checkType<PoseModel>("head_base_correction");
+  checkType<CalibrationModel>("calibration_model");
+  checkType<Pose2DModel>("robot_2d_pose");
   checkType<TagsCollection>("tags");
 }
 

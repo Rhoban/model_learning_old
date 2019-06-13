@@ -2,6 +2,7 @@
 
 #include "rhoban_model_learning/composite_model.h"
 #include "rhoban_model_learning/humanoid_models/rotation_model.h"
+#include "rhoban_model_learning/humanoid_models/pose_model.h"
 
 #include "robot_model/camera_model.h"
 
@@ -27,19 +28,27 @@ public:
   /// throws error if name is not valid
   const RotationModel& getRotationModel(const std::string& name) const;
 
-  /// Return the [roll,yaw,pitch] offsets of camera using [rad]
-  Eigen::Vector3d getCameraOffsetsRad() const;
-  /// Return the [roll,yaw,pitch] offsets of the IMU using [rad]
-  Eigen::Vector3d getImuOffsetsRad() const;
-  /// Return the [roll,yaw,pitch] offsets of neck using [rad]
-  Eigen::Vector3d getNeckOffsetsRad() const;
-  /// Return the parameters of the camera using Leph format
+  /// Interface for ModelService
+  const Eigen::Affine3d getCameraFromSelfAfterCorrection(Eigen::Affine3d camera_from_self,
+                                                         Eigen::Affine3d head_base_from_camera) const;
+
+  /// Camera pose correction model
+  const Eigen::Affine3d getCameraCorrectedFromCamera() const;
+  /// Head base pose correction model
+  const Eigen::Affine3d getHeadBaseCorrectedFromHeadBase() const;
+
   const rhoban::CameraModel& getCameraModel() const;
 
   virtual std::unique_ptr<Model> clone() const;
 
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;
   std::string getClassName() const;
+
+  void setCameraFromSelf(PoseModel pose);
+  void setCameraFromHeadBase(PoseModel pose);
+
+  PoseModel camera_from_self;
+  PoseModel camera_from_head_base;
 };
 
 }  // namespace rhoban_model_learning

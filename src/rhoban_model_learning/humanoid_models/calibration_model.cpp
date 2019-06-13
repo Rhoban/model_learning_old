@@ -13,9 +13,8 @@ typedef CalibrationModel CM;
 CM::CalibrationModel() : CompositeModel()
 {
   models["camera"] = std::unique_ptr<Model>(new CameraModel);
-  models["camOffset"] = std::unique_ptr<Model>(new RotationModel);
-  models["imuOffset"] = std::unique_ptr<Model>(new RotationModel);
-  models["neckOffset"] = std::unique_ptr<Model>(new RotationModel);
+  models["camera_corrected_from_camera"] = std::unique_ptr<Model>(new PoseModel);
+  models["head_base_corrected_from_head_base"] = std::unique_ptr<Model>(new PoseModel);
   models["noise"] = std::unique_ptr<Model>(new VisionNoiseModel);
 }
 
@@ -28,29 +27,39 @@ double CM::getPxStddev() const
   return static_cast<const VisionNoiseModel&>(*models.at("noise")).px_stddev;
 }
 
-const RotationModel& CM::getRotationModel(const std::string& name) const
+const Eigen::Affine3d CM::getCameraFromSelfAfterCorrection(Eigen::Affine3d camera_from_self,
+                                                           Eigen::Affine3d head_base_from_camera) const
 {
-  return static_cast<const RotationModel&>(*models.at(name));
+  Eigen::Affine3d camera_corrected_from_camera = getCameraCorrectedFromCamera();
+  Eigen::Affine3d head_base_corrected_from_head_base = getHeadBaseCorrectedFromHeadBase();
+  Eigen::Affine3d camera_from_head_base = head_base_from_camera.inverse();
+
+  return camera_corrected_from_camera * camera_from_head_base * head_base_corrected_from_head_base *
+         head_base_from_camera * camera_from_self;
 }
 
-Eigen::Vector3d CM::getCameraOffsetsRad() const
+const Eigen::Affine3d CM::getCameraCorrectedFromCamera() const
 {
-  return M_PI / 180 * getRotationModel("camOffset").getRPY();
+  return (static_cast<const PoseModel&>(*models.at("camera_corrected_from_camera"))).getAffine3d();
 }
 
-Eigen::Vector3d CM::getImuOffsetsRad() const
+const Eigen::Affine3d CM::getHeadBaseCorrectedFromHeadBase() const
 {
-  return M_PI / 180 * getRotationModel("imuOffset").getRPY();
-}
-
-Eigen::Vector3d CM::getNeckOffsetsRad() const
-{
-  return M_PI / 180 * getRotationModel("neckOffset").getRPY();
+  return (static_cast<const PoseModel&>(*models.at("head_base_corrected_from_head_base"))).getAffine3d();
 }
 
 const rhoban::CameraModel& CM::getCameraModel() const
 {
   return static_cast<const CameraModel&>(*models.at("camera")).model;
+}
+
+void CM::setCameraFromSelf(PoseModel pose)
+{
+  camera_from_self = pose;
+}
+void CM::setCameraFromHeadBase(PoseModel pose)
+{
+  camera_from_head_base = pose;
 }
 
 std::unique_ptr<Model> CM::clone() const
@@ -79,27 +88,19 @@ void CM::fromJson(const Json::Value& v, const std::string& dir_name)
   }
   try
   {
-    dynamic_cast<const RotationModel&>(*models.at("imuOffset"));
+    dynamic_cast<const PoseModel&>(*models.at("head_base_corrected_from_head_base"));
   }
   catch (const std::bad_cast& e)
   {
-    throw std::runtime_error(DEBUG_INFO + " invalid type for 'imuOffset'");
+    throw std::runtime_error(DEBUG_INFO + " invalid type for 'head_base_corrected_from_head_base'");
   }
   try
   {
-    dynamic_cast<const RotationModel&>(*models.at("camOffset"));
+    dynamic_cast<const PoseModel&>(*models.at("camera_corrected_from_camera"));
   }
   catch (const std::bad_cast& e)
   {
-    throw std::runtime_error(DEBUG_INFO + " invalid type for 'camOffset'");
-  }
-  try
-  {
-    dynamic_cast<const RotationModel&>(*models.at("neckOffset"));
-  }
-  catch (const std::bad_cast& e)
-  {
-    throw std::runtime_error(DEBUG_INFO + " invalid type for 'neckOffset'");
+    throw std::runtime_error(DEBUG_INFO + " invalid type for 'camera_corrected_from_camera'");
   }
 }
 

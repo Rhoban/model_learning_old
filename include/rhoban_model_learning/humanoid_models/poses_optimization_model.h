@@ -1,8 +1,9 @@
 #pragma once
 
 #include "rhoban_model_learning/composite_model.h"
-#include "rhoban_model_learning/humanoid_models/pose_model.h"
 #include "rhoban_model_learning/basic_models/doubles_model.h"
+#include "rhoban_model_learning/humanoid_models/pose_model.h"
+#include "rhoban_model_learning/humanoid_models/calibration_model.h"
 
 #include "robot_model/camera_model.h"
 
@@ -17,8 +18,7 @@ public:
   double getPxStddev() const;
 
   const rhoban::CameraModel& getCameraModel() const;
-  const PoseModel& getHeadBaseCorrectionModel() const;
-  const PoseModel& getCameraCorrectionModel() const;
+  const CalibrationModel getCalibrationModel() const;
   const PoseModel getRobot3DPose() const;
 
   const Eigen::Vector3d& getTagPosition(int tag_idx) const;

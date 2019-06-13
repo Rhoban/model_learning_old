@@ -10,6 +10,7 @@
 #include "rhoban_model_learning/humanoid_models/vision_noise_model.h"
 #include "rhoban_model_learning/humanoid_models/poses_optimization_model.h"
 #include "rhoban_model_learning/humanoid_models/pose_model.h"
+#include "rhoban_model_learning/humanoid_models/calibration_model.h"
 #include "rhoban_model_learning/basic_models/pose_2d_model.h"
 #include "rhoban_model_learning/basic_models/doubles_model.h"
 
@@ -43,6 +44,7 @@ ModelFactory::ModelFactory()
   registerBuilder("PoseModel", []() { return std::unique_ptr<Model>(new PoseModel); });
   registerBuilder("Pose2DModel", []() { return std::unique_ptr<Model>(new Pose2DModel); });
   registerBuilder("DoublesModel", []() { return std::unique_ptr<Model>(new DoublesModel); });
+  registerBuilder("CalibrationModel", []() { return std::unique_ptr<Model>(new CalibrationModel); });
 
   //  registerBuilder("VisionCorrectionModel",
   //                  []() { return std::unique_ptr<Model>(new VisionCorrectionModel); });

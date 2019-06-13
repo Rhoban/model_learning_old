@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rhoban_model_learning/input.h"
-#include "rhoban_model_learning/humanoid_models/pose_model.h"
+#include <Eigen/Geometry>
 
 namespace rhoban_model_learning
 {
@@ -9,8 +9,8 @@ class PosesOptimizationInput : public Input
 {
 public:
   PosesOptimizationInput();
-  PosesOptimizationInput(int image_id, int aruco_id, int corner_id, PoseModel camera_from_self,
-                         PoseModel camera_from_head_base);
+  PosesOptimizationInput(int image_id, int aruco_id, int corner_id, Eigen::Affine3d camera_from_self,
+                         Eigen::Affine3d camera_from_head_base);
   PosesOptimizationInput(const PosesOptimizationInput& other);
 
   std::unique_ptr<Input> clone() const override;
@@ -25,10 +25,10 @@ public:
   int corner_id;
 
   /// Camera from self pose
-  PoseModel camera_from_self;
+  Eigen::Affine3d camera_from_self;
 
   /// Head base from camera
-  PoseModel camera_from_head_base;
+  Eigen::Affine3d camera_from_head_base;
 };
 
 }  // namespace rhoban_model_learning

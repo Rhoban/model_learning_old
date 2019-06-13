@@ -6,8 +6,8 @@ PosesOptimizationInput::PosesOptimizationInput() : image_id(-1), aruco_id(-1), c
 {
 }
 
-PosesOptimizationInput::PosesOptimizationInput(int image_id, int aruco_id, int corner_id, PoseModel camera_from_self,
-                                               PoseModel camera_from_head_base)
+PosesOptimizationInput::PosesOptimizationInput(int image_id, int aruco_id, int corner_id,
+                                               Eigen::Affine3d camera_from_self, Eigen::Affine3d camera_from_head_base)
   : image_id(image_id)
   , aruco_id(aruco_id)
   , corner_id(corner_id)
