@@ -1,0 +1,261 @@
+{
+    "nb_runs" : 15,
+    "models" : {
+        "model" : {
+            "class name" : "PosesOptimizationModel",
+            "content" : {
+                "models" : {
+                    "calibration_model":{
+                        "class name": "CalibrationModel",
+                        "content":{
+                            "models":{
+                                "noise" : {
+                                    "class name" : "VisionNoiseModel",
+                                    "content" : {}
+                                },
+                                "camera" : {
+                                    "class name" : "CameraModel",
+                                    "content" : {
+                                        "center_x" : 322,
+                                        "center_y" : 241,
+                                        "focal_x" : 482,
+                                        "focal_y" : 482,
+                                        "img_width" : 644,
+                                        "img_height" : 482,
+                                        "radial_coeffs" : [ 0, 0, 0 ],
+                                        "tangential_coeffs" : [ 0, 0]
+                                    }
+                                },
+                                "camera_corrected_from_camera" : {
+                                    "class name" : "PoseModel",
+                                    "content" : {
+                                        "pos" : [0,0,0],
+                                        "rpy" : [0,0,0]
+                                    }
+                                },
+                                "head_base_corrected_from_head_base" : {
+                                    "class name" : "PoseModel",
+                                    "content" : {
+                                        "pos" : [0,0,0],
+                                        "rpy" : [0,0,0]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "robot_2d_pose" : {
+                        "class name" : "Pose2DModel",
+                        "content" : {
+                            "pos" : [0,-3],
+                            "theta" : 90
+                        }
+                    },
+                    "tags" : {
+                        "class name" : "ArucoCollection",
+                        "content" : {
+                            "models" : {
+                                "cube_0" : {
+                                    "class name" : "ArucoCube",
+                                    "content" :
+                                    {
+                                        "side" : 0.266,
+                                        "pose":{
+                                            "pos" : [0,0.75,0.164],
+                                            "rpy" : [0,0,0]
+                                        },
+                                        "sheets" : {
+                                            "3" : {
+                                                "marker_size" : 0.19,
+                                                "markers_ids" : [0],
+                                                "cols" : 1,
+                                                "rows" : 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "cube_1" : {
+                                    "class name" : "ArucoCube",
+                                    "content" :
+                                    {
+                                        "side" : 0.3,
+                                        "pose":{
+                                            "pos" : [-3.5,-2.5,0.164],
+                                            "rpy" : [0,0,0]
+                                        },
+                                        "sheets" : {
+                                            "0" : {
+                                                "marker_size" : 0.19,
+                                                "markers_ids" : [1],
+                                                "cols" : 1,
+                                                "rows" : 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "cube_2" : {
+                                    "class name" : "ArucoCube",
+                                    "content" :
+                                    {
+                                        "side" : 0.3,
+                                        "pose":{
+                                            "pos" : [4.5,-3,0.164],
+                                            "rpy" : [0,0,90]
+                                        },
+                                        "sheets" : {
+                                            "2" : {
+                                                "marker_size" : 0.19,
+                                                "markers_ids" : [2],
+                                                "cols" : 1,
+                                                "rows" : 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "sheet_3":{
+                                    "class name" : "TagsSheet",
+                                    "content" :{
+                                        "pose":{
+                                            "pos" : [0,-2.3,0.02],
+                                            "rpy" : [0,-90,0]
+                                        },
+                                        "marker_size" : 0.19,
+                                        "markers_ids" : [3],
+                                        "cols" :1,
+                                        "rows" :1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "prior" : {
+        "class name" : "CompositePrior",
+        "content" : {
+            "priors" : {
+                "calibration_model":{
+                    "class name" : "CompositePrior",
+                    "content" : {
+                        "priors":{
+                            "noise" : {
+                                "class name" : "IndependentGaussiansPrior",
+                                "content" : {
+                                    "means" : {
+                                        "rows" : 1,
+                                        "values" : [8]
+                                    },
+                                    "deviations" : {
+                                        "rows" : 1,
+                                        "values" : [4]
+                                    }
+                                }
+                            },
+                            "camera" : {
+                                "class name" : "IndependentGaussiansPrior",
+                                "content" : {
+                                    "means" : {
+                                        "rows" : 8,
+                                        "values" : [322,241,482,0,0,0,0,0]
+                                    },
+                                    "deviations" : {
+                                        "rows" : 8,
+                                        "values" : [10,10,10,0.1,0.1,0.1,0.1,0.1]
+                                    }
+                                }
+                            },
+                            "camera_corrected_from_camera" : {
+                                "class name" : "IndependentGaussiansPrior",
+                                "content" : {
+                                    "means" : {
+                                        "rows" : 6,
+                                        "values" : [0,0,0,0,0,0]
+                                    },
+                                    "deviations" : {
+                                        "rows" : 6,
+                                        "values" : [0.1,0.1,0.1,10,10,10]
+                                    }
+                                }
+                            },
+                            "head_base_corrected_from_head_base" : {
+                                "class name" : "IndependentGaussiansPrior",
+                                "content" : {
+                                    "means" : {
+                                        "rows" : 6,
+                                        "values" : [0,0,0,0,0,0]
+                                    },
+                                    "deviations" : {
+                                        "rows" : 6,
+                                        "values" : [0,0,0,10,10,10]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "robot_2d_pose" : {
+                    "class name" : "IndependentGaussiansPrior",
+                    "content" : {
+                        "means" : {
+                            "rows" : 3,
+                            "values" : [0, -3, 90]
+                        },
+                        "deviations" : {
+                            "rows" : 3,
+                            "values" : [0.05, 0.05, 5]
+                        }
+                    }
+                },
+                "tags" : {
+                    "class name" : "IndependentGaussiansPrior",
+                    "content" : {
+                        // Problems might occur if points are not in front of the camera
+                        "means" : {
+                            "rows" : 24,
+                            "values" : [0,0.75,0.164,0,0,0,-3.5,-3,0.164,0,0,0,3.5,-3,0.164,0,0,0,0,-2.35,0,0,-90,0]
+                        },
+                        "deviations" : {
+                            "rows" : 24,
+                            "values" : [0.1,0.1,0.05,3,3,3,0.05,0.1,0.05,3,3,3,0.05,0.05,0.05,3,3,3,0.1,0.2,0.05,3,3,3]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "space" : {
+        "class name" : "DeviationBasedSpace",
+        "content" : {
+            "ratio" : 2
+        }
+    },
+
+    "predictor" : {
+        "class name" : "PosesOptimizationPredictor",
+        "content" : {}
+    },
+    "optimizers" :{
+        "8000_30" : {
+            "class name" : "CMAESOptimizer",
+            "content" : {
+                "quiet" : false,
+                "nb_evaluations" : 8000,
+                "population_size" : 30
+            }
+        }
+    },
+    "readers":{
+        "1" : {
+            "class name" : "PosesOptimizationDataSetReader",
+            "content" : {
+                "nb_training_tags" : 1794,
+                "nb_validation_tags" : 598,
+                "camera_from_self" : "camera_from_self.pb",
+                "camera_from_head_base" : "camera_from_head_base.pb",
+                "verbose" : false
+            }
+        }
+    },
+    "indices_names" : ["calibration_model:camera:centerX", "calibration_model:camera:centerY", "calibration_model:camera:focal", "calibration_model:camera:k1", "calibration_model:noise:all", "robot_2d_pose:all", "tags:all", "calibration_model:camera_corrected_from_camera:roll", "calibration_model:camera_corrected_from_camera:pitch", "calibration_model:camera_corrected_from_camera:yaw", "calibration_model:camera_corrected_from_camera:z", "calibration_model:head_base_corrected_from_head_base:roll",  "calibration_model:head_base_corrected_from_head_base:pitch"]//incomplete
+}
