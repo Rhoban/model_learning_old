@@ -42,16 +42,23 @@ DataSet PODSR::extractSamples(const std::string& file_path, std::default_random_
     double pixel_x = std::stod(row_content.at("pixel_x"));
     double pixel_y = std::stod(row_content.at("pixel_y"));
 
+    // camera from self
     cv::Mat r_vec;
     cv::Mat t_vec;
-    hl_monitoring::pose3DToCV(replay_image_provider.getCameraMetaInformation(image_id).pose(), &r_vec, &t_vec);
+    hl_monitoring::pose3DToCV(camera_from_self_poses.getCameraMetaInformation(image_id).pose(), &r_vec, &t_vec);
     PoseModel camera_from_self;
     camera_from_self.setMode(PoseModel::Mode::Quaternion);
     camera_from_self.setFromOpenCV(r_vec, t_vec);
 
-    samples_by_corner_id_marker_id_image_id[key] = std::unique_ptr<Sample>(
-        new Sample(std::unique_ptr<Input>(new POI(image_id, marker_id, corner_id, camera_from_self)),
-                   Eigen::Vector2d(pixel_x, pixel_y)));
+    // head base from camera
+    hl_monitoring::pose3DToCV(camera_from_head_base_poses.getCameraMetaInformation(image_id).pose(), &r_vec, &t_vec);
+    PoseModel camera_from_head_base;
+    camera_from_head_base.setMode(PoseModel::Mode::Quaternion);
+    camera_from_head_base.setFromOpenCV(r_vec, t_vec);
+
+    samples_by_corner_id_marker_id_image_id[key] = std::unique_ptr<Sample>(new Sample(
+        std::unique_ptr<Input>(new POI(image_id, marker_id, corner_id, camera_from_self, camera_from_head_base)),
+        Eigen::Vector2d(pixel_x, pixel_y)));
   }
 
   std::map<int, int> validation_corner_id_per_marker_id;
@@ -135,7 +142,9 @@ void PODSR::fromJson(const Json::Value& v, const std::string& dir_name)
   rhoban_utils::tryRead(v, "verbose", &verbose);
   std::string path_frames_pb;
   rhoban_utils::tryRead(v, "camera_from_self", &path_frames_pb);
-  replay_image_provider.loadMetaInformation(path_frames_pb);
+  camera_from_self_poses.loadMetaInformation(path_frames_pb);
+  rhoban_utils::tryRead(v, "camera_from_head_base", &path_frames_pb);
+  camera_from_head_base_poses.loadMetaInformation(path_frames_pb);
 }
 
 }  // namespace rhoban_model_learning

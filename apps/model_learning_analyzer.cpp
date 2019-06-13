@@ -144,6 +144,14 @@ int main(int argc, char** argv)
           }
           params_sum += params;
           params_file << std::endl;
+
+          // Saving params
+          r.model->saveFile(model_name + "_" + optimizer_name + "_" + reader_name + "_" + std::to_string(run_id) +
+                            "_trained_model.json");
+          learner.exportValidationResulstToCSV(*r.model, data,
+                                               "predictionResultsTrained_" + model_name + "_" + optimizer_name + "_" +
+                                                   reader_name + "_" + std::to_string(run_id) + ".csv",
+                                               ',');
         }
         Eigen::VectorXd params_average = params_sum / conf.nb_runs;
         std::unique_ptr<Model> average_model = model.clone();

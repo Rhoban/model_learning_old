@@ -6,8 +6,13 @@ PosesOptimizationInput::PosesOptimizationInput() : image_id(-1), aruco_id(-1), c
 {
 }
 
-PosesOptimizationInput::PosesOptimizationInput(int image_id, int aruco_id, int corner_id, PoseModel camera_from_self)
-  : image_id(image_id), aruco_id(aruco_id), corner_id(corner_id), camera_from_self(camera_from_self)
+PosesOptimizationInput::PosesOptimizationInput(int image_id, int aruco_id, int corner_id, PoseModel camera_from_self,
+                                               PoseModel camera_from_head_base)
+  : image_id(image_id)
+  , aruco_id(aruco_id)
+  , corner_id(corner_id)
+  , camera_from_self(camera_from_self)
+  , camera_from_head_base(camera_from_head_base)
 {
 }
 
@@ -16,6 +21,7 @@ PosesOptimizationInput::PosesOptimizationInput(const PosesOptimizationInput& oth
   , aruco_id(other.aruco_id)
   , corner_id(other.corner_id)
   , camera_from_self(other.camera_from_self)
+  , camera_from_head_base(other.camera_from_head_base)
 {
 }
 

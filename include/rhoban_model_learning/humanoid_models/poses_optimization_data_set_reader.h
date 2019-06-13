@@ -11,7 +11,7 @@ public:
   PosesOptimizationDataSetReader();
 
   /// Throw an error if:
-  /// - none of `nb_training_images` and `nb_validation_images` is provided
+  /// - number of `nb_training_images` and `nb_validation_images` is provided
   /// - The sum of `nb_training_images` and `nb_validation_tags` is higher
   ///   than the number of images with at least 'min_tags'
   virtual DataSet extractSamples(const std::string& file_path, std::default_random_engine* engine) const override;
@@ -30,8 +30,11 @@ private:
   /// Printing debug information
   bool verbose;
 
-  ///
-  hl_monitoring::ReplayImageProvider replay_image_provider;
+  /// Camera from self poses
+  hl_monitoring::ReplayImageProvider camera_from_self_poses;
+
+  /// Head base from camera poses
+  hl_monitoring::ReplayImageProvider camera_from_head_base_poses;
 };
 
 }  // namespace rhoban_model_learning

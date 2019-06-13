@@ -17,7 +17,7 @@ public:
   double getPxStddev() const;
 
   const rhoban::CameraModel& getCameraModel() const;
-  const DoublesModel& getPitchCorrectionModel() const;
+  const PoseModel& getHeadBaseCorrectionModel() const;
   const PoseModel& getCameraCorrectionModel() const;
   const PoseModel getRobot3DPose() const;
 

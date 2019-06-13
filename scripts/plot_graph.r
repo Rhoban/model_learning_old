@@ -99,7 +99,7 @@ parametersPlot <- function(data_path, output_file = "parameters_analysis.png")
     g <- g + facet_wrap(~param, scales="free_y",ncol=3)
     g <- g + scale_x_log10(breaks=unique(data$reader))
     g <- g + theme_bw()
-    ggsave(output_file,width=16,height=9)
+    ggsave(output_file,width=16,height=40)
 }
 
 # Script OPTIONS

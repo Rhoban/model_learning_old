@@ -25,33 +25,38 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
   const PosesOptimizationInput& input = dynamic_cast<const PosesOptimizationInput&>(raw_input);
   const PosesOptimizationModel& model = dynamic_cast<const PosesOptimizationModel&>(raw_model);
 
-  // First: get marker pose in world frame
+  // Frames
+  PoseModel camera_from_self = input.camera_from_self;
+  PoseModel camera_correction = model.getCameraCorrectionModel();
+  PoseModel head_base_correction = model.getHeadBaseCorrectionModel();
+  PoseModel camera_from_head_base = input.camera_from_head_base;
+  PoseModel robot_pose = model.getRobot3DPose();
+
+  // Get marker pose in world frame
   Eigen::Vector3d marker_pose = model.getCornerPosition(input.aruco_id, input.corner_id);
 
-  // Then get marker pose in camera frame (world -> self -> camera)
-  PoseModel robot_pose = model.getRobot3DPose();
+  // Get marker pose in head base frame (head_base <- camera <- self <- world)
   Eigen::Vector3d marker_pose_in_self = robot_pose.getPosInSelf(marker_pose);
-
-  PoseModel camera_from_self = input.camera_from_self;
   Eigen::Vector3d marker_pose_in_camera = camera_from_self.getPosFromSelf(marker_pose_in_self);
 
-  // Apply neck pitch correction
-  Eigen::Vector3d camera_to_pitch_axis(0, -0.0215, -0.064);
-  double angle_rad = rhoban_utils::deg2rad(model.getPitchCorrectionModel().getParameter(0));
-  Eigen::AngleAxisd r(angle_rad, Eigen::Vector3d::UnitY());
-  Eigen::Vector3d tmp_marker_pose_in_camera_with_pitch_corrected = marker_pose_in_camera - camera_to_pitch_axis;
-  Eigen::Vector3d marker_pose_in_camera_with_pitch_corrected =
-      r * tmp_marker_pose_in_camera_with_pitch_corrected + camera_to_pitch_axis;
+  // Apply head base correction
+  Eigen::Vector3d marker_pose_in_head_base = camera_from_head_base.getPosInSelf(marker_pose_in_camera);
+  Eigen::Vector3d marker_pose_head_base_corrected_in_head_base =
+      head_base_correction.getPosInSelf(marker_pose_in_head_base);
+  Eigen::Vector3d marker_pose_head_base_corrected_in_camera =
+      camera_from_head_base.getPosFromSelf(marker_pose_head_base_corrected_in_head_base);
 
   // Apply camera correction
-  PoseModel camera_correction = model.getCameraCorrectionModel();
-  Eigen::Vector3d marker_pose_in_camera_with_pitch_and_camera_corrected =
-      camera_correction.getPosInSelf(marker_pose_in_camera_with_pitch_corrected);
+  Eigen::Vector3d marker_pose_head_base_and_camera_corrected_in_camera =
+      camera_correction.getPosInSelf(marker_pose_head_base_corrected_in_camera);
+  // Eigen::Vector3d marker_pose_head_base_and_camera_corrected_in_camera =
+  //     camera_correction.getPosInSelf(marker_pose_in_camera);
 
   // std::cout << "Marker " << input.aruco_id << " pos in self: " << marker_pose_in_self.transpose() << std::endl;
-  // std::cout << "Marker " << input.aruco_id << " pos in camera: " << marker_pose_in_camera.transpose() << std::endl;
-  Eigen::Vector2d pixel = cv2Eigen(
-      model.getCameraModel().getImgFromObject(eigen2CV(marker_pose_in_camera_with_pitch_and_camera_corrected)));
+  // std::cout << "Marker " << input.aruco_id
+  //           << " pos in camera: " << marker_pose_head_base_and_camera_corrected_in_camera.transpose() << std::endl;
+  Eigen::Vector2d pixel =
+      cv2Eigen(model.getCameraModel().getImgFromObject(eigen2CV(marker_pose_head_base_and_camera_corrected_in_camera)));
 
   // Add noise if required
   if (engine != nullptr)

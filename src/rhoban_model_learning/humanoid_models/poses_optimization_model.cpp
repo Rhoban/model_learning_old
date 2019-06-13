@@ -13,8 +13,8 @@ POM::PosesOptimizationModel() : CompositeModel()
 {
   models["noise"] = std::unique_ptr<Model>(new VisionNoiseModel);
   models["camera"] = std::unique_ptr<Model>(new CameraModel);
-  models["pitch_correction"] = std::unique_ptr<Model>(new DoublesModel);
   models["camera_correction"] = std::unique_ptr<Model>(new PoseModel);
+  models["head_base_correction"] = std::unique_ptr<Model>(new PoseModel);
   models["robot_2d_pose"] = std::unique_ptr<Model>(new Pose2DModel);
   models["tags"] = std::unique_ptr<Model>(new ArucoCollection);
 }
@@ -33,14 +33,14 @@ const rhoban::CameraModel& POM::getCameraModel() const
   return static_cast<const CameraModel&>(*models.at("camera")).model;
 }
 
-const DoublesModel& POM::getPitchCorrectionModel() const
-{
-  return static_cast<const DoublesModel&>(*models.at("pitch_correction"));
-}
-
 const PoseModel& POM::getCameraCorrectionModel() const
 {
   return static_cast<const PoseModel&>(*models.at("camera_correction"));
+}
+
+const PoseModel& POM::getHeadBaseCorrectionModel() const
+{
+  return static_cast<const PoseModel&>(*models.at("head_base_correction"));
 }
 
 const PoseModel POM::getRobot3DPose() const
@@ -97,8 +97,8 @@ void POM::fromJson(const Json::Value& json_value, const std::string& dir_name)
   // Checking content
   checkType<VisionNoiseModel>("noise");
   checkType<CameraModel>("camera");
-  checkType<DoublesModel>("pitch_correction");
   checkType<PoseModel>("camera_correction");
+  checkType<PoseModel>("head_base_correction");
   checkType<TagsCollection>("tags");
 }
 

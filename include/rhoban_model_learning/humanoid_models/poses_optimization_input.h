@@ -9,7 +9,8 @@ class PosesOptimizationInput : public Input
 {
 public:
   PosesOptimizationInput();
-  PosesOptimizationInput(int image_id, int aruco_id, int corner_id, PoseModel pose);
+  PosesOptimizationInput(int image_id, int aruco_id, int corner_id, PoseModel camera_from_self,
+                         PoseModel camera_from_head_base);
   PosesOptimizationInput(const PosesOptimizationInput& other);
 
   std::unique_ptr<Input> clone() const override;
@@ -23,8 +24,11 @@ public:
   /// Corner identifier
   int corner_id;
 
-  /// Camera from field pose
+  /// Camera from self pose
   PoseModel camera_from_self;
+
+  /// Head base from camera
+  PoseModel camera_from_head_base;
 };
 
 }  // namespace rhoban_model_learning
