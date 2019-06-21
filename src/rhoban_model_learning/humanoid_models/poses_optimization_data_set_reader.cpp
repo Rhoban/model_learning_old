@@ -8,7 +8,7 @@
 #include <rhoban_utils/util.h>
 
 #include <hl_monitoring/replay_image_provider.h>
-#include "hl_monitoring/utils.h"
+#include "hl_communication/utils.h"
 
 #include <iostream>
 
@@ -44,11 +44,11 @@ DataSet PODSR::extractSamples(const std::string& file_path, std::default_random_
 
     // camera from self
     Eigen::Affine3d camera_from_self =
-        hl_monitoring::getAffineFromProtobuf(camera_from_self_poses.getCameraMetaInformation(image_id).pose());
+        hl_communication::getAffineFromProtobuf(camera_from_self_poses.getCameraMetaInformation(image_id).pose());
 
     // camera from self
     Eigen::Affine3d camera_from_head_base =
-        hl_monitoring::getAffineFromProtobuf(camera_from_head_base_poses.getCameraMetaInformation(image_id).pose());
+        hl_communication::getAffineFromProtobuf(camera_from_head_base_poses.getCameraMetaInformation(image_id).pose());
 
     samples_by_corner_id_marker_id_image_id[key] = std::unique_ptr<Sample>(new Sample(
         std::unique_ptr<Input>(new POI(image_id, marker_id, corner_id, camera_from_self, camera_from_head_base)),
