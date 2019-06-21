@@ -1,0 +1,4 @@
+*  Observations
+** Camera correction :
+  - on tom, camera_correction:x and camera_correction:y doesn't seem to be necessary.
+

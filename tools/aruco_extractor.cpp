@@ -40,16 +40,22 @@ int main(int argc, char** argv)
     std::cout << "Definition des outils opencv." << std::endl;
     cv::Ptr<cv::aruco::DetectorParameters> params = new cv::aruco::DetectorParameters();
     std::cout << "Parametrage du detecteur." << std::endl;
-    std::cout << "adaptiveThreshConstant" << std::endl;
     params->adaptiveThreshConstant = 7;
-    std::cout << "adaptiveThreshWinSizeMin" << std::endl;
+    std::cout << "adaptiveThreshConstant: " << params->adaptiveThreshConstant << std::endl;
     params->adaptiveThreshWinSizeMin = 7;
-    std::cout << "adaptiveThreshWinSizeMax" << std::endl;
+    std::cout << "adaptiveThreshWinSizeMin: " << params->adaptiveThreshWinSizeMin << std::endl;
     params->adaptiveThreshWinSizeMax = 7;
-    std::cout << "adaptiveThreshWinSizeStep" << std::endl;
+    std::cout << "adaptiveThreshWinSizeMax: " << params->adaptiveThreshWinSizeMax << std::endl;
     params->adaptiveThreshWinSizeStep = 7;
-    std::cout << "refinement" << std::endl;
+    std::cout << "adaptiveThreshWinSizeStep: " << params->adaptiveThreshWinSizeStep << std::endl;
     params->doCornerRefinement = true;
+    std::cout << "refinement: true" << std::endl;
+    params->cornerRefinementMaxIterations = 50;
+    std::cout << "cornerRefinementMaxIterations: " << params->cornerRefinementMaxIterations << std::endl;
+    params->cornerRefinementMinAccuracy = 0.01;
+    std::cout << "cornerRefinementMinAccuracy: " << params->cornerRefinementMinAccuracy << std::endl;
+    params->cornerRefinementWinSize = 1;
+    std::cout << "cornerRefinementWinSize: " << params->cornerRefinementWinSize << std::endl;
 
     std::cout << "Creation du dictionnaire." << std::endl;
     cv::Ptr<cv::aruco::Dictionary> dic = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_100);

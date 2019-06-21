@@ -43,15 +43,26 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
       calibration_model.getCameraFromSelfAfterCorrection(camera_from_self, camera_from_head_base);
   Eigen::Vector3d marker_pose_in_camera_after_correction = camera_from_self_after_correction * marker_pose_in_self;
 
-  // Eigen::Vector3d marker_pose_head_base_and_camera_corrected_in_camera =
-  //     camera_corrected_from_camera.getPosInSelf(marker_pose_in_camera);
-
-  // std::cout << "Marker " << input.aruco_id << " pos in self: " << marker_pose_in_self.transpose() << std::endl;
-  // std::cout << "Marker " << input.aruco_id
-  //           << " pos in camera: " << marker_pose_head_base_and_camera_corrected_in_camera.transpose() << std::endl;
-
-  Eigen::Vector2d pixel =
-      cv2Eigen(calibration_model.getCameraModel().getImgFromObject(eigen2CV(marker_pose_in_camera_after_correction)));
+  Eigen::Vector2d pixel;
+  try
+  {
+    pixel = cv2Eigen(calibration_model.getCameraModel().getImgFromObject(
+        eigen2CV(marker_pose_in_camera_after_correction), true, false));
+  }
+  catch (const std::runtime_error& exc)
+  {
+    std::cout << "Marker " << input.aruco_id << " corner " << input.corner_id
+              << " pos in world: " << marker_pose.transpose() << std::endl;
+    std::cout << "Marker " << input.aruco_id << " corner " << input.corner_id
+              << " pos in self: " << marker_pose_in_self.transpose() << std::endl;
+    std::cout << "Marker " << input.aruco_id << " corner " << input.corner_id
+              << " pos in camera: " << marker_pose_in_camera_after_correction.transpose() << std::endl;
+    std::cout << "Camera pose in self before correction " << std::endl << camera_from_self.matrix() << std::endl;
+    std::cout << "Camera pose in self after correction " << std::endl
+              << camera_from_self_after_correction.matrix() << std::endl;
+    std::cerr << "error: " << exc.what() << std::endl;
+    exit(EXIT_FAILURE);
+  }
 
   // Add noise if required
   if (engine != nullptr)

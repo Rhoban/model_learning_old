@@ -36,6 +36,8 @@ public:
   const Eigen::Affine3d getCameraCorrectedFromCamera() const;
   /// Head base pose correction model
   const Eigen::Affine3d getHeadBaseCorrectedFromHeadBase() const;
+  /* /// IMU pose correction model */
+  /* const Eigen::Matrix3d getImuCorrectedFromImu() const; */
 
   const rhoban::CameraModel& getCameraModel() const;
 

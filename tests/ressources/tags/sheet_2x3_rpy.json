@@ -1,0 +1,12 @@
+{
+    "marker_size" : 0.2,
+    "markers_ids" : [2,4,5,8,1,6],
+    "dy" : 0.1,
+    "dz" : 0.2,
+    "rows" : 2,
+    "cols" : 3,
+    "pose" : {
+        "pos" : [0,0,1],
+        "rpy" : [0,90,0]// rotation of pi/2 over y axis
+    }
+}

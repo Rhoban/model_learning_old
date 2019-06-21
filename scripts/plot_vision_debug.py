@@ -38,7 +38,7 @@ with open(path_to_results) as f:
             res[id_tag]["errors"].append(norm(observation - prediction))
     f.close()
 
-fig, ax = plt.subplots(nrows=len(res), ncols=2, figsize=(13, 10*len(res)))
+fig, ax = plt.subplots(nrows=len(res), ncols=2, figsize=(13, 12*len(res)))
 
 i = -1
 for id_tag in res:

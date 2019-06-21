@@ -15,6 +15,7 @@ CM::CalibrationModel() : CompositeModel()
   models["camera"] = std::unique_ptr<Model>(new CameraModel);
   models["camera_corrected_from_camera"] = std::unique_ptr<Model>(new PoseModel);
   models["head_base_corrected_from_head_base"] = std::unique_ptr<Model>(new PoseModel);
+  // models["imu_corrected_from_imu"] = std::unique_ptr<Model>(new PoseModel);
   models["noise"] = std::unique_ptr<Model>(new VisionNoiseModel);
 }
 
@@ -28,11 +29,11 @@ double CM::getPxStddev() const
 }
 
 const Eigen::Affine3d CM::getCameraFromSelfAfterCorrection(Eigen::Affine3d camera_from_self,
-                                                           Eigen::Affine3d head_base_from_camera) const
+                                                           Eigen::Affine3d camera_from_head_base) const
 {
   Eigen::Affine3d camera_corrected_from_camera = getCameraCorrectedFromCamera();
   Eigen::Affine3d head_base_corrected_from_head_base = getHeadBaseCorrectedFromHeadBase();
-  Eigen::Affine3d camera_from_head_base = head_base_from_camera.inverse();
+  Eigen::Affine3d head_base_from_camera = camera_from_head_base.inverse();
 
   return camera_corrected_from_camera * camera_from_head_base * head_base_corrected_from_head_base *
          head_base_from_camera * camera_from_self;
@@ -47,6 +48,11 @@ const Eigen::Affine3d CM::getHeadBaseCorrectedFromHeadBase() const
 {
   return (static_cast<const PoseModel&>(*models.at("head_base_corrected_from_head_base"))).getAffine3d();
 }
+
+// const Eigen::Matrix3d CM::getImuCorrectedFromImu() const
+// {
+//   return (static_cast<const PoseModel&>(*models.at("imu_corrected_from_imu"))).getRotationFromSelf();
+// }
 
 const rhoban::CameraModel& CM::getCameraModel() const
 {

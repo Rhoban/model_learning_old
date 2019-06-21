@@ -135,7 +135,7 @@ Json::Value CompositeModel::toJson() const
   Json::Value v;
   for (const auto& entry : models)
   {
-    v["models"][entry.first] = entry.second->toJson();
+    v["models"][entry.first] = entry.second->toFactoryJson();
   }
   return v;
 }

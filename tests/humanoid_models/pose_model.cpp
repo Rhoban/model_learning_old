@@ -173,9 +173,9 @@ TEST(rpy_mode, loadFile)
   EXPECT_FLOAT_EQ(p.pos(0), 1);
   EXPECT_FLOAT_EQ(p.pos(1), 2);
   EXPECT_FLOAT_EQ(p.pos(2), 3);
-  EXPECT_FLOAT_EQ(p.orientation(0), rhoban_utils::deg2rad(30));
-  EXPECT_FLOAT_EQ(p.orientation(1), rhoban_utils::deg2rad(90));
-  EXPECT_FLOAT_EQ(p.orientation(2), rhoban_utils::deg2rad(20));
+  EXPECT_FLOAT_EQ(p.orientation(0), 30);
+  EXPECT_FLOAT_EQ(p.orientation(1), 90);
+  EXPECT_FLOAT_EQ(p.orientation(2), 20);
 }
 
 TEST(getQuaternion, getQuaternion)

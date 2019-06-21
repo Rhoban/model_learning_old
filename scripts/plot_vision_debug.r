@@ -48,9 +48,9 @@ plotVectorsErrors <- function(dataPath, prefix) {
         minTag <- min(data$tagId)
         maxTag <- max(data$tagId)
         data$tagId <- as.factor(data$tagId)# Setting as factor AFTER computing min and max
-        g <- ggplot(data, aes(x=predX, y=predY, xend=obsX, yend=obsY, group=model, color=tagId));
+        g <- ggplot(data, aes(x=pred_x, y=pred_y, xend=obs_x, yend=obs_y, group="aa", color=marker_id));
         xMin <- 0#min(data$obsX,data$predX)
-        xMax <- 642#max(data$obsX,data$predX)
+        xMax <- 644#max(data$obsX,data$predX)
         yMin <- 0#min(data$obsY,data$predY)
         yMax <- 482#max(data$obsY,data$predY)
         # Add label: source: prediction: end: observation

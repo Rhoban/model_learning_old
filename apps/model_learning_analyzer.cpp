@@ -147,7 +147,8 @@ int main(int argc, char** argv)
 
           // Saving params
           r.model->saveFile(model_name + "_" + optimizer_name + "_" + reader_name + "_" + std::to_string(run_id) +
-                            "_trained_model.json");
+                                "_trained_model.json",
+                            true);
           learner.exportValidationResulstToCSV(*r.model, data,
                                                "predictionResultsTrained_" + model_name + "_" + optimizer_name + "_" +
                                                    reader_name + "_" + std::to_string(run_id) + ".csv",
