@@ -25,7 +25,7 @@ CM::CalibrationModel(const CalibrationModel& other) : CompositeModel(other)
 
 double CM::getPxStddev() const
 {
-  return static_cast<const VisionNoiseModel&>(*models.at("noise")).px_stddev;
+  return static_cast<const VisionNoiseModel&>(getModel("noise")).px_stddev;
 }
 
 const Eigen::Affine3d CM::getCameraFromSelfAfterCorrection(Eigen::Affine3d camera_from_self,
@@ -41,22 +41,22 @@ const Eigen::Affine3d CM::getCameraFromSelfAfterCorrection(Eigen::Affine3d camer
 
 const Eigen::Affine3d CM::getCameraCorrectedFromCamera() const
 {
-  return (static_cast<const PoseModel&>(*models.at("camera_corrected_from_camera"))).getAffine3d();
+  return (static_cast<const PoseModel&>(getModel("camera_corrected_from_camera"))).getAffine3d();
 }
 
 const Eigen::Affine3d CM::getHeadBaseCorrectedFromHeadBase() const
 {
-  return (static_cast<const PoseModel&>(*models.at("head_base_corrected_from_head_base"))).getAffine3d();
+  return (static_cast<const PoseModel&>(getModel("head_base_corrected_from_head_base"))).getAffine3d();
 }
 
 // const Eigen::Matrix3d CM::getImuCorrectedFromImu() const
 // {
-//   return (static_cast<const PoseModel&>(*models.at("imu_corrected_from_imu"))).getRotationFromSelf();
+//   return (static_cast<const PoseModel&>(getModel("imu_corrected_from_imu"))).getRotationFromSelf();
 // }
 
 const rhoban::CameraModel& CM::getCameraModel() const
 {
-  return static_cast<const CameraModel&>(*models.at("camera")).model;
+  return static_cast<const CameraModel&>(getModel("camera")).model;
 }
 
 void CM::setCameraFromSelf(PoseModel pose)
@@ -78,7 +78,7 @@ void CM::fromJson(const Json::Value& v, const std::string& dir_name)
   // Checking that content has been appropriately set
   try
   {
-    dynamic_cast<const CameraModel&>(*models.at("camera"));
+    dynamic_cast<const CameraModel&>(getModel("camera"));
   }
   catch (const std::bad_cast& e)
   {
@@ -86,7 +86,7 @@ void CM::fromJson(const Json::Value& v, const std::string& dir_name)
   }
   try
   {
-    dynamic_cast<const VisionNoiseModel&>(*models.at("noise"));
+    dynamic_cast<const VisionNoiseModel&>(getModel("noise"));
   }
   catch (const std::bad_cast& e)
   {
@@ -94,7 +94,7 @@ void CM::fromJson(const Json::Value& v, const std::string& dir_name)
   }
   try
   {
-    dynamic_cast<const PoseModel&>(*models.at("head_base_corrected_from_head_base"));
+    dynamic_cast<const PoseModel&>(getModel("head_base_corrected_from_head_base"));
   }
   catch (const std::bad_cast& e)
   {
@@ -102,7 +102,7 @@ void CM::fromJson(const Json::Value& v, const std::string& dir_name)
   }
   try
   {
-    dynamic_cast<const PoseModel&>(*models.at("camera_corrected_from_camera"));
+    dynamic_cast<const PoseModel&>(getModel("camera_corrected_from_camera"));
   }
   catch (const std::bad_cast& e)
   {

@@ -32,6 +32,8 @@ int CompositeModel::getOffset(const std::string& name) const
 
 const Model& CompositeModel::getModel(const std::string& name) const
 {
+  if (models.count(name) == 0)
+    throw std::out_of_range(DEBUG_INFO + " model '" + name + "' is not available");
   return *models.at(name);
 }
 
