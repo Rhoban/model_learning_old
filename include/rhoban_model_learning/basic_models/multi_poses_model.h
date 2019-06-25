@@ -32,12 +32,6 @@ public:
 private:
   // Poses for each element
   std::vector<PoseModel> poses;
-
-  // Histories
-  //// "corrected_pose" : PoseModel history
-  //// "isValid" : bool history
-  //// "pxStdDev" : double history
-  rhoban_utils::HistoryCollection histories;
 };
 
 }  // namespace rhoban_model_learning

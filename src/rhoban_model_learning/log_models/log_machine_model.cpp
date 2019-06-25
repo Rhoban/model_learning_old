@@ -47,20 +47,32 @@ Eigen::Affine3d LMM::getCorrectedCameraFromCamera(int index) const
 
 Eigen::Affine3d LMM::getCorrectedCameraFromCamera(double timestamp) const
 {
-  bool is_valid = histories.boolean("is_valid")->interpolate(timestamp);
+  bool is_valid = histories.requestValues(timestamp)["is_valid:value"] == 1.0 ? true : false;
   if (not is_valid)
   {
     throw std::runtime_error(DEBUG_INFO + "The correction pose at timestamp " + std::to_string(timestamp) +
                              " is not valid.");
   }
-  int index = std::round(histories.number("sequence_nb")->interpolate(timestamp));
+  int index = std::round(histories.requestValues(timestamp)["sequence_nb:value"]);
 
   return getCorrectedCameraFromCamera(index);
 }
 
 Eigen::Affine3d LMM::getCameraFromField(double timestamp) const
 {
-  Eigen::Affine3d res = histories.pose("camera_from_field")->interpolate(timestamp);
+  double tx = histories.requestValues(timestamp)["camera_from_field:tx"];
+  double ty = histories.requestValues(timestamp)["camera_from_field:ty"];
+  double tz = histories.requestValues(timestamp)["camera_from_field:tz"];
+
+  double qx = histories.requestValues(timestamp)["camera_from_field:qx"];
+  double qy = histories.requestValues(timestamp)["camera_from_field:qy"];
+  double qz = histories.requestValues(timestamp)["camera_from_field:qz"];
+  double qw = histories.requestValues(timestamp)["camera_from_field:qw"];
+
+  Eigen::Affine3d res;
+  res.translation() = Eigen::Vector3d(tx, ty, tz);
+  res.rotation() = Eigen::Quaterniond(qw, qx, qy, qz);
+
   return res;
 }
 
