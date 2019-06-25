@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rhoban_model_learning/composite_model.h"
-#include "rhoban_model_learning/humanoid_models/multi_poses_model.h"
+#include "rhoban_model_learning/basic_models/multi_poses_model.h"
 #include "rhoban_model_learning/camera_calibration/marker_collection.h"
 
 #include "robot_model/camera_model.h"

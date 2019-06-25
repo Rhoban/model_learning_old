@@ -1,12 +1,14 @@
 #pragma once
 
 #include "rhoban_model_learning/model.h"
-#include "rhoban_model_learning/humanoid_models/pose_model.h"
+#include "rhoban_model_learning/basic_models/pose_model.h"
+
+#include "rhoban_utils/history/history.h"
 
 namespace rhoban_model_learning
 {
-/// This model stocks poses associated to integers. The number of parameters
-/// grows linearly with the number of poses.
+// This model stocks poses associated to integers. The number of parameters
+// grows linearly with the number of poses.
 class MultiPosesModel : public Model
 {
 public:
@@ -28,8 +30,14 @@ public:
   virtual std::unique_ptr<Model> clone() const;
 
 private:
-  /// Poses for each element
+  // Poses for each element
   std::vector<PoseModel> poses;
+
+  // Histories
+  //// "corrected_pose" : PoseModel history
+  //// "isValid" : bool history
+  //// "pxStdDev" : double history
+  rhoban_utils::HistoryCollection histories;
 };
 
 }  // namespace rhoban_model_learning

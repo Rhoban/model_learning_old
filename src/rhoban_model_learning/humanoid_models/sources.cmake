@@ -3,8 +3,6 @@ set (SOURCES
   # calibration_input.cpp
   calibration_model.cpp
   # calibration_predictor.cpp
-  multi_poses_model.cpp
-  pose_model.cpp
   poses_optimization_data_set_reader.cpp
   poses_optimization_input.cpp
   poses_optimization_model.cpp

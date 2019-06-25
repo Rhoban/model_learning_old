@@ -1,7 +1,7 @@
 #include "rhoban_model_learning/camera_calibration/infered_poses_model.h"
 
 #include <rhoban_model_learning/camera_calibration/camera_model.h>
-#include "rhoban_model_learning/humanoid_models/multi_poses_model.h"
+#include "rhoban_model_learning/basic_models/multi_poses_model.h"
 #include "rhoban_model_learning/humanoid_models/vision_noise_model.h"
 
 #include <rhoban_utils/util.h>

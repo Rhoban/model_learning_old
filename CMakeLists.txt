@@ -45,6 +45,7 @@ set(DIRECTORIES
 #  src/rhoban_model_learning/models
   src/rhoban_model_learning/humanoid_models
   src/rhoban_model_learning/tags
+  src/rhoban_model_learning/log_models
   )
 
 # Build ALL_SOURCES

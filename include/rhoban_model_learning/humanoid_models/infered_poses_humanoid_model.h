@@ -2,7 +2,7 @@
 
 #include "rhoban_model_learning/composite_model.h"
 #include "rhoban_model_learning/camera_calibration/marker_collection.h"
-#include "rhoban_model_learning/humanoid_models/pose_model.h"
+#include "rhoban_model_learning/basic_models/pose_model.h"
 #include "rhoban_model_learning/basic_models/doubles_model.h"
 
 #include "robot_model/camera_model.h"

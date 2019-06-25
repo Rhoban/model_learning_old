@@ -1,4 +1,4 @@
-#include "rhoban_model_learning/humanoid_models/pose_model.h"
+#include "rhoban_model_learning/basic_models/pose_model.h"
 
 #include <rhoban_utils/angle.h>
 #include <gtest/gtest.h>

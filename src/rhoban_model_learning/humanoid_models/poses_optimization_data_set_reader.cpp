@@ -1,7 +1,7 @@
 #include "rhoban_model_learning/humanoid_models/poses_optimization_data_set_reader.h"
 
 #include "rhoban_model_learning/humanoid_models/poses_optimization_input.h"
-#include "rhoban_model_learning/humanoid_models/pose_model.h"
+#include "rhoban_model_learning/basic_models/pose_model.h"
 
 #include <rhoban_random/tools.h>
 #include <rhoban_utils/tables/string_table.h>
