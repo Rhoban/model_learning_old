@@ -27,10 +27,16 @@ int main(int argc, char** argv)
     CmdLine cmd("Extract aruco markers from images and writes their position in a csv file ", ' ', "0.1");
 
     TCLAP::ValueArg<std::string> videoPathArg("f", "video_path", "path to video", false, "video.avi", "video.avi", cmd);
-    std::string videoPath = videoPathArg.getValue();
+
+    TCLAP::ValueArg<std::string> modeArg("m", "mode", "mode (write, show, find)", true, "", "mode", cmd);
+
+    TCLAP::ValueArg<int> indexArg("i", "index", "image index", true, -1, "index", cmd);
 
     cmd.parse(argc, argv);
-    std::cout << "Parametres du binaire parse." << std::endl;
+
+    std::string videoPath = videoPathArg.getValue();
+    std::string mode = modeArg.getValue();
+    int image_index_to_find = indexArg.getValue();
 
     cv::VideoCapture video;
     if (!video.open(videoPath))
@@ -71,6 +77,15 @@ int main(int argc, char** argv)
       {
         break;
       }
+
+      std::cout << image_id << std::endl;
+
+      if (image_index_to_find != -1 and image_id != image_index_to_find)
+      {
+        image_id++;
+        continue;
+      }
+
       cv::Mat img;
       video.read(img);
 
@@ -84,39 +99,50 @@ int main(int argc, char** argv)
       std::vector<int> marker_ids;
       std::vector<std::vector<cv::Point2f>> marker_corners;
       cv::aruco::detectMarkers(gray, dic, marker_corners, marker_ids, params);
-      // cv::aruco::drawDetectedMarkers(gray, marker_corners, marker_ids, cv::Scalar(0, 0, 255));
 
-      // int width, height;
-      // int higherSize = 320;
-      // if (gray.cols > gray.rows)
-      // {
-      //   width = higherSize;
-      //   height = gray.rows / (gray.cols / higherSize);
-      // }
-
-      // else
-      // {
-      //   height = higherSize;
-      //   width = gray.cols / (gray.rows / higherSize);
-      // }
-
-      // cv::namedWindow("toto");  // Create a window for display.
-      // cv::resizeWindow("toto", width, height);
-      // imshow("toto", gray);  // Show our image inside it.
-
-      // cv::waitKey(0);  // Wait for a keystroke in the window
-
-      for (size_t i = 0; i < marker_ids.size(); i++)
+      if (mode == "show")
       {
-        for (int j = 0; j < 4; j++)
+        cv::aruco::drawDetectedMarkers(gray, marker_corners, marker_ids, cv::Scalar(0, 0, 255));
+
+        int width, height;
+        int higherSize = 320;
+        if (gray.cols > gray.rows)
         {
-          std::map<std::string, std::string> row = { { "image_id", std::to_string(image_id) },
-                                                     { "marker_id", std::to_string(marker_ids[i]) },
-                                                     { "corner_id", std::to_string(j) },
-                                                     { "pixel_x", std::to_string(marker_corners[i][j].x) },
-                                                     { "pixel_y", std::to_string(marker_corners[i][j].y) } };
-          markers_data.insertRow(row);
+          width = higherSize;
+          height = gray.rows / (gray.cols / higherSize);
         }
+
+        else
+        {
+          height = higherSize;
+          width = gray.cols / (gray.rows / higherSize);
+        }
+
+        cv::namedWindow("toto");  // Create a window for display.
+        cv::resizeWindow("toto", width, height);
+        imshow("toto", gray);  // Show our image inside it.
+
+        cv::waitKey(0);  // Wait for a keystroke in the window
+      }
+      else if (mode == "write")
+      {
+        for (size_t i = 0; i < marker_ids.size(); i++)
+        {
+          for (int j = 0; j < 4; j++)
+          {
+            std::map<std::string, std::string> row = { { "image_id", std::to_string(image_id) },
+                                                       { "marker_id", std::to_string(marker_ids[i]) },
+                                                       { "corner_id", std::to_string(j) },
+                                                       { "pixel_x", std::to_string(marker_corners[i][j].x) },
+                                                       { "pixel_y", std::to_string(marker_corners[i][j].y) } };
+            markers_data.insertRow(row);
+          }
+        }
+      }
+      else
+      {
+        std::cerr << "wrong mode, it should be show or write.";
+        exit(EXIT_FAILURE);
       }
       image_id++;
     }

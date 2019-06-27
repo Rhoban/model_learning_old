@@ -51,6 +51,7 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
   }
   catch (const std::runtime_error& exc)
   {
+    std::cout << "Image id: " << input.image_id << std::endl;
     std::cout << "Marker " << input.aruco_id << " corner " << input.corner_id
               << " pos in world: " << marker_pose.transpose() << std::endl;
     std::cout << "Marker " << input.aruco_id << " corner " << input.corner_id

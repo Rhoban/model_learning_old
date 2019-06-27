@@ -2,10 +2,11 @@ library(ggplot2)
 library(optparse)
 
 readAndSplitData <- function(dataPath) {
-    tagsPerSheet <- 6
+    tagsPerSheet <- 2
     data <- read.csv(dataPath)
-    data <- data[order(data$tagId),]
-    tagsId <- unique(data$tagId)
+    print(head(data))
+    data <- data[order(data$marker_id),]
+    tagsId <- unique(data$marker_id)
     nbElements <- ceiling(max(tagsId)/tagsPerSheet)
     result <- list()
     idx <- 1
@@ -13,8 +14,9 @@ readAndSplitData <- function(dataPath) {
         offset <- (sheet-1) * tagsPerSheet
         startIdx <- offset
         endIdx <- tagsPerSheet+offset-1
-        firstRow <- min(which(data$tagId >= startIdx))
-        lastRow <- max(which(data$tagId <= endIdx))
+        print(which(data$marker_id <= endIdx))
+        firstRow <- min(which(data$marker_id >= startIdx))
+        lastRow <- max(which(data$marker_id <= endIdx))
         # Add non empty data sets to results
         if (firstRow <= lastRow) {
             print(paste(firstRow,lastRow))
@@ -28,15 +30,17 @@ readAndSplitData <- function(dataPath) {
 plotTagsErrors <- function(dataPath, prefix) {
     splittedData <- readAndSplitData(dataPath)
     for (data in splittedData) {
-        g <- ggplot(data, aes(x=errX, y=errY, group=tagId, color=model));
+        data$errX = data$obs_x - data$pred_x
+        data$errY = data$obs_y - data$pred_y
+        g <- ggplot(data, aes(x=errX, y=errY, group=marker_id));
         xAbsMax <- max(-min(data$errX),max(data$errX))
         yAbsMax <- max(-min(data$errY),max(data$errY))
         maxVal <- max(xAbsMax,yAbsMax)
         g <- g + geom_point(size=0.5)
-        g <- g + facet_wrap(~tagId,ncol=2)
+        g <- g + facet_wrap(~marker_id,ncol=2)
         g <- g + coord_cartesian(xlim=c(-xAbsMax,xAbsMax), ylim=c(-yAbsMax,yAbsMax))
         g <- g + theme_bw()
-        outputFile = paste0(prefix,"tags_errors_",min(data$tagId),"-",max(data$tagId),".png")
+        outputFile = paste0(prefix,"tags_errors_",min(data$marker_id),"-",max(data$marker_id),".png")
         print(outputFile)
         ggsave(outputFile,width=10,height=10)
     }
@@ -45,9 +49,9 @@ plotTagsErrors <- function(dataPath, prefix) {
 plotVectorsErrors <- function(dataPath, prefix) {
     splittedData <- readAndSplitData(dataPath)
     for (data in splittedData) {
-        minTag <- min(data$tagId)
-        maxTag <- max(data$tagId)
-        data$tagId <- as.factor(data$tagId)# Setting as factor AFTER computing min and max
+        minTag <- min(data$marker_id)
+        maxTag <- max(data$marker_id)
+        data$marker_id <- as.factor(data$marker_id)# Setting as factor AFTER computing min and max
         g <- ggplot(data, aes(x=pred_x, y=pred_y, xend=obs_x, yend=obs_y, group="aa", color=marker_id));
         xMin <- 0#min(data$obsX,data$predX)
         xMax <- 644#max(data$obsX,data$predX)
