@@ -18,7 +18,6 @@ LMM::LogMachineModel() : CompositeModel()
 
   histories.pose("camera_from_field");
   histories.boolean("is_valid");
-  histories.number("sequence_number");
   histories.number("px_std_dev");
 }
 
@@ -38,6 +37,26 @@ const rhoban::CameraModel& LMM::getCameraModel() const
   return static_cast<const CameraModel&>(*models.at("camera")).model;
 }
 
+int LMM::getIndex(double timestamp) const
+{
+  bool is_valid = histories.requestValues(timestamp)["is_valid:value"] == 1.0 ? true : false;
+  if (not is_valid)
+  {
+    throw std::runtime_error(DEBUG_INFO + "The requested timestamp " + std::to_string(timestamp) + " is not valid.");
+  }
+
+  size_t i = 0;
+  for (; i < sequences_timestamps.size(); i++)
+  {
+    double seq_i_start = sequences_timestamps[i];
+    if (timestamp < seq_i_start)
+    {
+      break;
+    }
+  }
+  return i;
+}
+
 Eigen::Affine3d LMM::getCorrectedCameraFromCamera(int index) const
 {
   Eigen::Affine3d res =
@@ -47,40 +66,33 @@ Eigen::Affine3d LMM::getCorrectedCameraFromCamera(int index) const
 
 Eigen::Affine3d LMM::getCorrectedCameraFromCamera(double timestamp) const
 {
-  bool is_valid = histories.requestValues(timestamp)["is_valid:value"] == 1.0 ? true : false;
-  if (not is_valid)
-  {
-    throw std::runtime_error(DEBUG_INFO + "The correction pose at timestamp " + std::to_string(timestamp) +
-                             " is not valid.");
-  }
-  int index = std::round(histories.requestValues(timestamp)["sequence_nb:value"]);
-
-  return getCorrectedCameraFromCamera(index);
+  return getCorrectedCameraFromCamera(getIndex(timestamp));
 }
 
 Eigen::Affine3d LMM::getCameraFromField(double timestamp) const
 {
-  double tx = histories.requestValues(timestamp)["camera_from_field:tx"];
-  double ty = histories.requestValues(timestamp)["camera_from_field:ty"];
-  double tz = histories.requestValues(timestamp)["camera_from_field:tz"];
+  std::map<std::string, double> values = histories.requestValues(timestamp);
+  double tx = values["camera_from_fiel:tx"];
+  double ty = values["camera_from_field:ty"];
+  double tz = values["camera_from_field:tz"];
 
-  double qx = histories.requestValues(timestamp)["camera_from_field:qx"];
-  double qy = histories.requestValues(timestamp)["camera_from_field:qy"];
-  double qz = histories.requestValues(timestamp)["camera_from_field:qz"];
-  double qw = histories.requestValues(timestamp)["camera_from_field:qw"];
+  double qx = values["camera_from_field:qx"];
+  double qy = values["camera_from_field:qy"];
+  double qz = values["camera_from_field:qz"];
+  double qw = values["camera_from_field:qw"];
 
   Eigen::Affine3d res;
   res.translation() = Eigen::Vector3d(tx, ty, tz);
-  res.rotation() = Eigen::Quaterniond(qw, qx, qy, qz);
+  res.linear() = Eigen::Quaterniond(qw, qx, qy, qz).matrix();
 
   return res;
 }
 
 Eigen::Affine3d LMM::getCorrectedCameraFromField(double timestamp) const
 {
-  Eigen::Affine3d corrected_pose_from_pose = getCorrectedCameraFromCamera(timestamp);
-  Eigen::Affine3d pose = getPose(timestamp);
-  return corrected_pose_from_pose * pose;
+  Eigen::Affine3d corrected_camera_from_camera = getCorrectedCameraFromCamera(timestamp);
+  Eigen::Affine3d camera = getCameraFromField(timestamp);
+  return corrected_camera_from_camera * camera;
 }
 
 std::unique_ptr<Model> LMM::clone() const
@@ -93,10 +105,12 @@ void LMM::fromJson(const Json::Value& json_value, const std::string& dir_name)
   CompositeModel::fromJson(json_value, dir_name);
   // Checking content
   checkType<VisionNoiseModel&>("noise");
-  checkType<MultiPosesModel&>("corrected_pose_from_pose");
+  checkType<MultiPosesModel&>("corrected_camera_from_camera");
 
   std::string histories_file_path = rhoban_utils::read<std::string>(json_value, "histories_path");
   histories.loadReplays(histories_file_path);
+
+  sequences_timestamps = rhoban_utils::readVector<double>(json_value, dir_name);
 }
 
 std::string LMM::getClassName() const

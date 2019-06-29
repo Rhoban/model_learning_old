@@ -23,6 +23,8 @@ public:
 
   const rhoban::CameraModel& getCameraModel() const;
 
+  int getIndex(double timestamp) const;
+
   Eigen::Affine3d getCorrectedCameraFromCamera(int index) const;
   Eigen::Affine3d getCorrectedCameraFromCamera(double timestamp) const;
 
@@ -39,9 +41,9 @@ public:
   rhoban_utils::HistoryCollection histories;
 
 private:
-  // sequence start and end timestamp
-  // std::vector<std::pair<double, double>> sequences_time_stamps;
-  // void computeSequencesTimestamps();
+  // sequences start timestamps
+  // seq_1_start, seq_2_start, seq_3_start, ...
+  std::vector<double> sequences_timestamps;
 };
 
 }  // namespace rhoban_model_learning

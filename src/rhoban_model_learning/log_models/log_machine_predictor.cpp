@@ -37,21 +37,16 @@ Eigen::VectorXd LMP::predictObservation(const Input& raw_input, const Model& raw
   Eigen::Vector2d pixel;
   try
   {
-    pixel = cv2Eigen(log_machine_model.getCameraModel().getImgFromObject(eigen2CV(position_in_corrected_camera)));
+    pixel = cv2Eigen(
+        log_machine_model.getCameraModel().getImgFromObject(eigen2CV(position_in_corrected_camera), false, false));
   }
   catch (const std::runtime_error& exc)
   {
-    // std::cout << "Marker " << input.aruco_id << " corner " << input.corner_id
-    //           << " pos in world: " << marker_pose.transpose() << std::endl;
-    // std::cout << "Marker " << input.aruco_id << " corner " << input.corner_id
-    //           << " pos in self: " << marker_pose_in_self.transpose() << std::endl;
-    // std::cout << "Marker " << input.aruco_id << " corner " << input.corner_id
-    //           << " pos in camera: " << marker_pose_in_camera_after_correction.transpose() << std::endl;
-    // std::cout << "Camera pose in self before correction " << std::endl << camera_from_self.matrix() << std::endl;
-    // std::cout << "Camera pose in self after correction " << std::endl
-    //           << camera_from_self_after_correction.matrix() << std::endl;
-    // std::cerr << "error: " << exc.what() << std::endl;
-    // exit(EXIT_FAILURE);
+    std::cout << "Timestamp: " << timestamp << std::endl;
+    std::cout << "Position in field: " << position_in_field.transpose() << std::endl;
+    std::cout << "Position in corrected_camera: " << position_in_corrected_camera.transpose() << std::endl;
+    std::cerr << "Error: " << exc.what() << std::endl;
+    exit(EXIT_FAILURE);
   }
 
   // Add noise if required
