@@ -58,7 +58,7 @@ ModelLearner::Result ModelLearner::learnParameters(const SampleVector& training_
     throw std::logic_error("ModelLearner::learnParameters: model has no parameters");
   }
   optimizer->setLimits(matrix_space);
-  Eigen::VectorXd initial_guess = prior->getParametersInitialValues(*model, trainable_indices);
+  Eigen::VectorXd initial_guess = model->getParameters(trainable_indices);
   Eigen::VectorXd best_parameters;
 
   std::cout << "Start training." << std::endl;
@@ -136,7 +136,7 @@ void ModelLearner::fromJson(const Json::Value& v, const std::string& dir_name)
   }
 
   int model_size = model->getParametersSize();
-  int prior_size = prior->getParametersInitialValues(*model).rows();
+  int prior_size = prior->getParametersSize();
   int space_size = space->getParametersSpace(*model, *prior).rows();
   if (model_size != prior_size)
   {

@@ -11,6 +11,13 @@ class UniformPrior : public ModelPrior
 {
 public:
   UniformPrior();
+  UniformPrior(const UniformPrior& other);
+
+  double getLogLikelihood(const Model& m, const std::set<int>& used_indices) const override;
+
+  int getParametersSize() const override;
+
+  Eigen::MatrixXd getParametersSpace() const override;
 
   std::string getClassName() const override;
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;

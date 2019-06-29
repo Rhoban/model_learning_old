@@ -7,8 +7,11 @@ namespace rhoban_model_learning
 {
 ModelSpaceFactory::ModelSpaceFactory()
 {
+  // XXX : rethink spaces, only the default one is used
+  // the spaces are given by the priors themselfs
+
   registerBuilder("DefaultSpace", []() { return std::unique_ptr<ModelSpace>(new DefaultSpace); });
-  registerBuilder("DeviationBasedSpace", []() { return std::unique_ptr<ModelSpace>(new DeviationBasedSpace); });
+  // registerBuilder("DeviationBasedSpace", []() { return std::unique_ptr<ModelSpace>(new DeviationBasedSpace); });
 }
 
 }  // namespace rhoban_model_learning

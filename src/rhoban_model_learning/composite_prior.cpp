@@ -17,14 +17,17 @@ CompositePrior::CompositePrior(const CompositePrior& other) : ModelPrior()
   }
 }
 
-size_t CompositePrior::getNbParameters(const Model& m) const
+double CompositePrior::getLogLikelihood(const Model& m, const std::set<int>& used_indices) const
 {
-  size_t total_rows = 0;
+  const CompositeModel& model = dynamic_cast<const CompositeModel&>(m);
+  double log_likelihood = 0.0;
+  std::map<std::string, std::set<int>> indices_splitting = model.splitIndicesAmongSubModels(used_indices);
   for (const auto& entry : priors)
   {
-    total_rows += entry.second->getParametersInitialValues(getSubModel(m, entry.first)).rows();
+    log_likelihood += entry.second->getLogLikelihood(getSubModel(m, entry.first), indices_splitting[entry.first]);
   }
-  return total_rows;
+
+  return log_likelihood;
 }
 
 const Model& CompositePrior::getSubModel(const Model& m, const std::string& name) const
@@ -32,30 +35,31 @@ const Model& CompositePrior::getSubModel(const Model& m, const std::string& name
   return (dynamic_cast<const CompositeModel&>(m)).getModel(name);
 }
 
-Eigen::VectorXd CompositePrior::getParametersInitialValues(const Model& m) const
+int CompositePrior::getParametersSize() const
 {
-  Eigen::VectorXd params(getNbParameters(m));
-  int idx = 0;
+  int size = 0;
   for (const auto& entry : priors)
   {
-    Eigen::VectorXd local_params = entry.second->getParametersInitialValues(getSubModel(m, entry.first));
-    params.segment(idx, local_params.rows()) = local_params;
-    idx += local_params.rows();
+    size += entry.second->getParametersSize();
   }
-  return params;
+  return size;
 }
 
-Eigen::VectorXd CompositePrior::getParametersStdDev(const Model& m) const
+Eigen::MatrixXd CompositePrior::getParametersSpace() const
 {
-  Eigen::VectorXd devs(getNbParameters(m));
-  int idx = 0;
+  Eigen::MatrixXd total_space(getParametersSize(), 2);
+  int offset = 0;
   for (const auto& entry : priors)
   {
-    Eigen::VectorXd local_devs = entry.second->getParametersStdDev(getSubModel(m, entry.first));
-    devs.segment(idx, local_devs.rows()) = local_devs;
-    idx += local_devs.rows();
+    Eigen::MatrixXd space = entry.second->getParametersSpace();
+
+    int size = entry.second->getParametersSize();
+    total_space.block(offset, 0, size, 2) = space;
+
+    offset += size;
   }
-  return devs;
+
+  return total_space;
 }
 
 Json::Value CompositePrior::toJson() const

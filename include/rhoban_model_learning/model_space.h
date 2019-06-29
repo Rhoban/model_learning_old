@@ -2,13 +2,13 @@
 
 #include "rhoban_utils/serialization/json_serializable.h"
 
+#include <rhoban_model_learning/model.h>
+#include <rhoban_model_learning/model_prior.h>
+
 #include <memory>
 
 namespace rhoban_model_learning
 {
-class Model;
-class ModelPrior;
-
 class ModelSpace : public rhoban_utils::JsonSerializable
 {
 public:

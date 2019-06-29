@@ -11,7 +11,7 @@ ModelPriorFactory::ModelPriorFactory()
   registerBuilder("CompositePrior", []() { return std::unique_ptr<ModelPrior>(new CompositePrior); });
   registerBuilder("IndependentGaussiansPrior",
                   []() { return std::unique_ptr<ModelPrior>(new IndependentGaussiansPrior); });
-  // registerBuilder("UniformPrior", []() { return std::unique_ptr<ModelPrior>(new UniformPrior); });
+  registerBuilder("UniformPrior", []() { return std::unique_ptr<ModelPrior>(new UniformPrior); });
 }
 
 }  // namespace rhoban_model_learning
