@@ -22,6 +22,7 @@ double ModelPrior::getLogLikelihood(const Model& m) const
 
 void ModelPrior::setInitialMean(const Model& m)
 {
+  (void)m;
   return;
 }
 

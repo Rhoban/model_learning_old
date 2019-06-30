@@ -24,6 +24,8 @@ public:
   int getParametersSize() const override;
   Eigen::MatrixXd getParametersSpace() const override;
 
+  void setInitialMean(const Model& m);
+
   std::string getClassName() const override;
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;
   Json::Value toJson() const override;

@@ -2,6 +2,7 @@ set(SOURCES
   composite_model.cpp
   composite_prior.cpp
   data_set_reader_factory.cpp
+  data_set_reader.cpp
   default_data_set_reader.cpp
   default_input.cpp
   independent_gaussians_prior.cpp

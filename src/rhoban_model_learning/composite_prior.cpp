@@ -30,6 +30,15 @@ double CompositePrior::getLogLikelihood(const Model& m, const std::set<int>& use
   return log_likelihood;
 }
 
+void CompositePrior::setInitialMean(const Model& m)
+{
+  const CompositeModel& composite_model = dynamic_cast<const CompositeModel&>(m);
+  for (const auto& entry : priors)
+  {
+    entry.second->setInitialMean(composite_model.getModel(entry.first));
+  }
+}
+
 const Model& CompositePrior::getSubModel(const Model& m, const std::string& name) const
 {
   return (dynamic_cast<const CompositeModel&>(m)).getModel(name);

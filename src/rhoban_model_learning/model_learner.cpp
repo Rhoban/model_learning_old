@@ -25,6 +25,7 @@ ModelLearner::ModelLearner(std::unique_ptr<Model> model_, std::unique_ptr<ModelP
   , optimizer(std::move(optimizer_))
   , trainable_indices(trainable_indices_)
 {
+  prior->setInitialMean(*model);
 }
 
 ModelLearner::Result ModelLearner::learnParameters(const DataSet& data, std::default_random_engine* engine)
@@ -148,6 +149,8 @@ void ModelLearner::fromJson(const Json::Value& v, const std::string& dir_name)
     throw std::runtime_error(DEBUG_INFO + "size of space (" + std::to_string(space_size) + ") size of model (" +
                              std::to_string(model_size) + ")");
   }
+
+  prior->setInitialMean(*model);
 }
 
 const Model& ModelLearner::getModel() const

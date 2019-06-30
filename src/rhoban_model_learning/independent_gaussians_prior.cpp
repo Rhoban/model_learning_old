@@ -3,6 +3,8 @@
 #include "rhoban_random/gaussian_distribution.h"
 #include <rhoban_utils/util.h>
 
+#include <iostream>
+
 namespace rhoban_model_learning
 {
 IndependentGaussiansPrior::IndependentGaussiansPrior()

@@ -18,8 +18,36 @@ using namespace rhoban_utils;
 class Config : public rhoban_utils::JsonSerializable
 {
 public:
-  Config() : nb_runs(1)
+  Config() : nb_runs_by_iteration(1), nb_iterations(1)
   {
+  }
+
+  Config(Config& other)
+    : nb_runs_by_iteration(other.nb_runs_by_iteration)
+    , nb_iterations(other.nb_iterations)
+    , indices_names(other.indices_names)
+  {
+    std::cout << "Cloning models." << std::endl;
+    for (const auto& entry : other.models)
+    {
+      models[entry.first] = entry.second->clone();
+    }
+    std::cout << "Cloning readers." << std::endl;
+    for (const auto& entry : other.readers)
+    {
+      readers[entry.first] = entry.second->clone();
+    }
+    std::cout << "Cloning optimizers." << std::endl;
+    for (const auto& entry : other.optimizers)
+    {
+      optimizers[entry.first] = entry.second->clone();
+    }
+    std::cout << "Cloning predictor." << std::endl;
+    predictor = other.predictor->clone();
+    std::cout << "Cloning prior." << std::endl;
+    prior = other.prior->clone();
+    std::cout << "Cloning space." << std::endl;
+    space = other.space->clone();
   }
 
   std::string getClassName() const override
@@ -29,12 +57,33 @@ public:
 
   Json::Value toJson() const override
   {
-    throw std::logic_error("Not implemented");
+    Json::Value v;
+    for (const auto& entry : models)
+    {
+      v["models"][entry.first] = entry.second->toFactoryJson();
+    }
+    for (const auto& entry : readers)
+    {
+      v["readers"][entry.first] = entry.second->toFactoryJson();
+    }
+    for (const auto& entry : optimizers)
+    {
+      v["optimizers"][entry.first] = entry.second->toFactoryJson();
+    }
+    v["space"] = space->toFactoryJson();
+    v["predictor"] = predictor->toFactoryJson();
+    v["prior"] = prior->toFactoryJson();
+    v["indices_names"] = vector2Json(indices_names);
+    v["nb_runs_by_iteration"] = val2Json(nb_runs_by_iteration);
+    v["nb_iterations"] = val2Json(nb_iterations);
+
+    return v;
   }
 
   void fromJson(const Json::Value& v, const std::string& dir_name) override
   {
-    rhoban_utils::tryRead(v, "nb_runs", &nb_runs);
+    rhoban_utils::tryRead(v, "nb_runs_by_iteration", &nb_runs_by_iteration);
+    rhoban_utils::tryRead(v, "nb_iterations", &nb_iterations);
     readers = DataSetReaderFactory().readMap(v, "readers", dir_name);
     models = ModelFactory().readMap(v, "models", dir_name);
     optimizers = OptimizerFactory().readMap(v, "optimizers", dir_name);
@@ -44,8 +93,11 @@ public:
     rhoban_utils::tryReadVector<std::string>(v, "indices_names", &indices_names);
   }
 
-  /// The number of runs for each configuration
-  int nb_runs;
+  /// The number of runs for each configuration at each iteration
+  int nb_runs_by_iteration;
+
+  /// The number of times the prior will be updated
+  int nb_iterations;
 
   /// All available readers
   std::map<std::string, std::unique_ptr<DataSetReader>> readers;
@@ -84,7 +136,14 @@ int main(int argc, char** argv)
 
   std::default_random_engine engine = rhoban_random::getRandomEngine();
 
-  std::ofstream results_file("results.csv");
+  std::string folder_name = rhoban_utils::getFormattedTime();
+  int err = system(("mkdir -p " + folder_name).c_str());
+  if (err != 0)
+  {
+    throw std::runtime_error(DEBUG_INFO + "Failed to create dir: '" + folder_name + "'");
+  }
+
+  std::ofstream results_file(folder_name + "/results.csv");
 
   // OPTIONAL: eventually, reduce number of columns if there is only 1 optimizer
   // or only 1 reader etc...
@@ -98,7 +157,7 @@ int main(int argc, char** argv)
     // Parameters file
     std::ostringstream name_oss;
     name_oss << model_name << "_parameters.csv";
-    std::ofstream params_file(name_oss.str());
+    std::ofstream params_file(folder_name + "/" + name_oss.str());
     std::vector<std::string> parameter_names = model.getParametersNames();
     params_file << "optimizer,reader";
     for (size_t idx = 0; idx < parameter_names.size(); idx++)
@@ -121,10 +180,14 @@ int main(int argc, char** argv)
       {
         std::string reader_name = reader_pair.first;
         const DataSetReader& reader = *(reader_pair.second);
+
         // Perform multiple runs
         Eigen::VectorXd params_sum = Eigen::VectorXd::Zero(parameter_names.size());
-        for (int run_id = 0; run_id < conf.nb_runs; run_id++)
+        for (int run_id = 0; run_id < conf.nb_runs_by_iteration; run_id++)
         {
+          // Print parameters space
+          learner.getSpace().append(learner.getModel(), learner.getPrior(), learner.getTrainableIndices(), std::cout);
+
           // Extract data (splits between training and validation
           DataSet data = reader.extractSamples(data_path, &engine);
           // Learn model
@@ -145,20 +208,33 @@ int main(int argc, char** argv)
           params_sum += params;
           params_file << std::endl;
 
-          // Saving params
-          r.model->saveFile(model_name + "_" + optimizer_name + "_" + reader_name + "_" + std::to_string(run_id) +
-                                "_trained_model.json",
+          // Saving model params
+          r.model->saveFile(folder_name + "/" + model_name + "_" + optimizer_name + "_" + reader_name + "_" +
+                                std::to_string(run_id) + "_trained_model.json",
                             true);
+
+          // Writing prediction.
           learner.exportValidationResulstToCSV(*r.model, data,
-                                               "predictionResultsTrained_" + model_name + "_" + optimizer_name + "_" +
-                                                   reader_name + "_" + std::to_string(run_id) + ".csv",
+                                               folder_name + "/predictionResultsTrained_" + model_name + "_" +
+                                                   optimizer_name + "_" + reader_name + "_" + std::to_string(run_id) +
+                                                   ".csv",
                                                ',');
+
+          // Writing conf
+          std::cout << "Cloning conf." << std::endl;
+          Config tmp_conf(conf);
+          std::cout << "Updating model." << std::endl;
+          tmp_conf.models[model_name] = r.model->clone();
+          std::cout << "Saving conf in file." << std::endl;
+          tmp_conf.saveFile(folder_name + "/conf.json");
+
+          Eigen::VectorXd params_average = params_sum / conf.nb_runs_by_iteration;
+          std::unique_ptr<Model> average_model = model.clone();
+          average_model->setParameters(params_average);
+          average_model->saveFile(folder_name + "/" + model_name + "_" + optimizer_name + "_" + reader_name +
+                                      "_average_trained_models.json",
+                                  true);
         }
-        Eigen::VectorXd params_average = params_sum / conf.nb_runs;
-        std::unique_ptr<Model> average_model = model.clone();
-        average_model->setParameters(params_average);
-        average_model->saveFile(model_name + "_" + optimizer_name + "_" + reader_name + "_average_trained_models.json",
-                                true);
       }
     }
   }
