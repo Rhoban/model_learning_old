@@ -158,6 +158,27 @@ TEST(CompositeModel, getIndicesFromName)
   EXPECT_THROW(model.getIndicesFromNames({ "A1:toto" }), std::out_of_range);
 }
 
+TEST(CompositeModel, splitIndiceesAmongSubModels)
+{
+  AggregateModel model;
+  // Test indices
+  std::map<std::string, std::set<int>> expected_indices;
+  expected_indices["A1"] = { 0 };
+  expected_indices["A2"] = { 0, 1 };
+  expected_indices["B"] = { 0, 2 };
+
+  std::set<int> indices = model.getIndicesFromNames({ "A1:a", "A2:all", "B:a", "B:c" });
+  std::map<std::string, std::set<int>> splitted_indices = model.splitIndicesAmongSubModels(indices);
+  for (auto& entry : splitted_indices)
+  {
+    EXPECT_EQ(expected_indices[entry.first], splitted_indices[entry.first]);
+    for (size_t i = 0; i < expected_indices[entry.first].size(); i++)
+    {
+      EXPECT_TRUE(expected_indices[entry.first] == splitted_indices[entry.first]);
+    }
+  }
+}
+
 int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);

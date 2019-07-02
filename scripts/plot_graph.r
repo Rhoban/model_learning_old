@@ -59,11 +59,12 @@ parametersPlot <- function(data_path, output_file = "parameters_analysis.png")
                            stringsAsFactors=FALSE)
     print(head(data))
     # For each parameter (format is hard coded)
-    for (i in 3:length(names(data)))
+    print(names(data))
+    for (i in 5:length(names(data)))
     {
         colname <- names(data)[i]
         print(paste0("treating ", colname))
-        tmpData <- do.call(data.frame,aggregate(formula(paste0(colname,"~reader+optimizer")),
+        tmpData <- do.call(data.frame,aggregate(formula(paste0(colname,"~iteration_nb+optimizer")),
                                                 data,
                                                 function(x) c(mean = mean(x),
                                                               sd = sd(x),
@@ -73,11 +74,11 @@ parametersPlot <- function(data_path, output_file = "parameters_analysis.png")
         tmpData$value <- tmpData[,paste0(colname,".mean")]
         tmpData$sd <- tmpData[,paste0(colname,".sd")]
         tmpData$ci <- tmpData[,paste0(colname,".ci")]
-        tmpData <- tmpData[,c("param","value","sd","ci","reader","optimizer")]
+        tmpData <- tmpData[,c("param","value","sd","ci","iteration_nb","optimizer")]
         plotData <- rbind(plotData,tmpData)
     }
     print(plotData)
-    g <- ggplot(plotData, aes_string(x="reader",
+    g <- ggplot(plotData, aes_string(x="iteration_nb",
                                      y="value",
                                      ymin="value - ci",
                                      ymax="value + ci",
@@ -86,7 +87,7 @@ parametersPlot <- function(data_path, output_file = "parameters_analysis.png")
                                      group="interaction(param,optimizer)"))
     g <- g + geom_ribbon(alpha=0.5)
     g <- g + geom_ribbon(data=plotData,
-                         mapping=aes_string(x="reader",
+                         mapping=aes_string(x="iteration_nb",
                                             y="value",
                                             ymin="value - sd",
                                             ymax="value + sd",

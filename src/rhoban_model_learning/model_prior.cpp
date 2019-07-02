@@ -26,6 +26,34 @@ void ModelPrior::setInitialMean(const Model& m)
   return;
 }
 
+void ModelPrior::updateDeviations(const Model& m, const std::vector<Eigen::VectorXd> parameters_values,
+                                  const std::set<int> used_indices)
+{
+  (void)m;
+  if (used_indices.size() != parameters_values.size())
+  {
+    throw std::runtime_error(DEBUG_INFO + "used_indices (size=" + std::to_string(used_indices.size()) +
+                             ") and parameters_values (size=" + std::to_string(parameters_values.size()) +
+                             ") should have the same size.");
+  }
+  return;
+}
+
+Eigen::VectorXd ModelPrior::addNoiseToParameters(const Model& m, const Eigen::VectorXd parameters_values,
+                                                 const std::set<int> used_indices, std::default_random_engine* engine)
+{
+  std::cout << "Default adding noise." << std::endl;
+  (void)m;
+  (void)engine;
+  if (used_indices.size() != parameters_values.size())
+  {
+    throw std::runtime_error(DEBUG_INFO + "used_indices (size=" + std::to_string(used_indices.size()) +
+                             ") and parameters_values (size=" + std::to_string(parameters_values.size()) +
+                             ") should have the same size.");
+  }
+  return parameters_values;
+}
+
 std::unique_ptr<ModelPrior> ModelPrior::clone() const
 {
   Json::Value v = toJson();

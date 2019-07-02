@@ -1,18 +1,21 @@
 #include "rhoban_model_learning/independent_gaussians_prior.h"
 
+#include "rhoban_random/multivariate_gaussian.h"
+
 #include "rhoban_random/gaussian_distribution.h"
 #include <rhoban_utils/util.h>
+#include <rhoban_utils/stats/stats.h>
 
 #include <iostream>
 
 namespace rhoban_model_learning
 {
-IndependentGaussiansPrior::IndependentGaussiansPrior()
+IndependentGaussiansPrior::IndependentGaussiansPrior() : ratio(2)
 {
 }
 
 IndependentGaussiansPrior::IndependentGaussiansPrior(const IndependentGaussiansPrior& other)
-  : means(other.means), deviations(other.deviations)
+  : means(other.means), deviations(other.deviations), ratio(other.ratio)
 {
 }
 
@@ -48,9 +51,8 @@ Eigen::MatrixXd IndependentGaussiansPrior::getParametersSpace() const
 {
   Eigen::MatrixXd space(means.rows(), 2);
 
-  // XXX : add again the ratio for the deviation
-  space.block(0, 0, means.rows(), 1) = means - 2 * deviations;
-  space.block(0, 1, means.rows(), 1) = means + 2 * deviations;
+  space.block(0, 0, means.rows(), 1) = means - ratio * deviations;
+  space.block(0, 1, means.rows(), 1) = means + ratio * deviations;
 
   return space;
 }
@@ -64,6 +66,45 @@ void IndependentGaussiansPrior::fromJson(const Json::Value& json_value, const st
 void IndependentGaussiansPrior::setInitialMean(const Model& m)
 {
   means = m.getParameters();
+}
+
+void IndependentGaussiansPrior::updateDeviations(const Model& m, const std::vector<Eigen::VectorXd> parameters_values,
+                                                 const std::set<int> used_indices)
+{
+  (void)m;
+
+  if (used_indices.size() != parameters_values.size())
+  {
+    throw std::runtime_error(DEBUG_INFO + "used_indices (size=" + std::to_string(used_indices.size()) +
+                             ") and parameters_values (size=" + std::to_string(parameters_values.size()) +
+                             ") should have the same size.");
+  }
+
+  int i = 0;
+  for (auto it = used_indices.begin(); it != used_indices.end(); it++)
+  {
+    Eigen::VectorXd vals = parameters_values[i];
+    std::vector<double> vals_std(vals.data(), vals.data() + vals.size());
+    deviations[*it] = rhoban_utils::standardDeviation(vals_std);
+    i++;
+  }
+}
+
+Eigen::VectorXd IndependentGaussiansPrior::addNoiseToParameters(const Model& m, const Eigen::VectorXd parameters_values,
+                                                                const std::set<int> used_indices,
+                                                                std::default_random_engine* engine)
+{
+  return parameters_values;
+  (void)m;
+  Eigen::VectorXd parameters_noised_values(parameters_values.size());
+  for (int index : used_indices)
+  {
+    std::normal_distribution<double> distrib(parameters_values(index), ratio * deviations(index));
+    double val = distrib(*engine);
+    parameters_noised_values(index) = val;
+  }
+
+  return parameters_noised_values;
 }
 
 Json::Value IndependentGaussiansPrior::toJson() const

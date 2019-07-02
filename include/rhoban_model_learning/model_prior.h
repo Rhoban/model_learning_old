@@ -5,6 +5,7 @@
 
 #include <Eigen/Core>
 #include <memory>
+#include <random>
 
 namespace rhoban_model_learning
 {
@@ -25,6 +26,14 @@ public:
 
   /// Set the mean of the prior with initial values
   virtual void setInitialMean(const Model& m);
+
+  /// Updates deviations from multiple values of the same parameters
+  virtual void updateDeviations(const Model& m, const std::vector<Eigen::VectorXd> parameters_values,
+                                const std::set<int> used_indices);
+
+  /// Adds noise to parameters value with respect to the prior.
+  virtual Eigen::VectorXd addNoiseToParameters(const Model& m, const Eigen::VectorXd parameters_values,
+                                               const std::set<int> used_indices, std::default_random_engine* engine);
 
   /// Return parameters space
   virtual Eigen::MatrixXd getParametersSpace() const = 0;

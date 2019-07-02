@@ -60,10 +60,15 @@ ModelLearner::Result ModelLearner::learnParameters(const SampleVector& training_
   }
   optimizer->setLimits(matrix_space);
   Eigen::VectorXd initial_guess = model->getParameters(trainable_indices);
+  // XXX debug
+  std::cout << "Noising initial guess" << std::endl;
+  Eigen::VectorXd noised_initial_guess =
+      prior->addNoiseToParameters(*model, initial_guess, getTrainableIndices(), engine);
+
   Eigen::VectorXd best_parameters;
 
   std::cout << "Start training." << std::endl;
-  best_parameters = optimizer->train(reward_function, initial_guess, engine);
+  best_parameters = optimizer->train(reward_function, noised_initial_guess, engine);
   // Copy the model
   std::cout << "Finished training." << std::endl;
   result.model = model->clone();
