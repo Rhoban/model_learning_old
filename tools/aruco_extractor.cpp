@@ -48,11 +48,11 @@ int main(int argc, char** argv)
     std::cout << "Parametrage du detecteur." << std::endl;
     params->adaptiveThreshConstant = 7;
     std::cout << "adaptiveThreshConstant: " << params->adaptiveThreshConstant << std::endl;
-    params->adaptiveThreshWinSizeMin = 7;
+    params->adaptiveThreshWinSizeMin = 1;
     std::cout << "adaptiveThreshWinSizeMin: " << params->adaptiveThreshWinSizeMin << std::endl;
-    params->adaptiveThreshWinSizeMax = 7;
+    params->adaptiveThreshWinSizeMax = 23;
     std::cout << "adaptiveThreshWinSizeMax: " << params->adaptiveThreshWinSizeMax << std::endl;
-    params->adaptiveThreshWinSizeStep = 7;
+    params->adaptiveThreshWinSizeStep = 2;
     std::cout << "adaptiveThreshWinSizeStep: " << params->adaptiveThreshWinSizeStep << std::endl;
     params->doCornerRefinement = true;
     std::cout << "refinement: true" << std::endl;

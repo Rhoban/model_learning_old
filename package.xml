@@ -17,8 +17,14 @@
 
   <build_depend>rhoban_bbo</build_depend> <!-- rhoban/bbo.git -->
   <build_depend>robot_model</build_depend> <!-- rhoban/robot_model.git -->
+  <build_depend>hl_monitoring</build_depend> <!-- rhoban/hl_monitoring.git -->
+  <build_depend>hl_communication</build_depend> <!-- rhoban/hl_communication.git -->
+  <build_depend>hl_labelling</build_depend> <!-- rhoban/hl_labelling.git -->
 
   <run_depend>rhoban_bbo</run_depend>
   <run_depend>robot_model</run_depend>
+  <run_depend>hl_communication</run_depend>
+  <run_depend>hl_labelling</run_depend>
+  <run_depend>hl_monitoring</run_depend>
 
 </package>

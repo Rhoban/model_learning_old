@@ -10,6 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
   rhoban_bbo
   robot_model
   hl_monitoring
+  hl_communication
+  hl_labelling
   )
 
 option(BUILD_MODEL_LEARNING_TOOLS "Build the tools from model learning" OFF)
@@ -22,8 +24,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++17")
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES rhoban_model_learning
-  CATKIN_DEPENDS rhoban_bbo robot_model
-)
+  CATKIN_DEPENDS rhoban_bbo robot_model hl_communication hl_monitoring hl_labelling
+  )
 
 ###########
 ## Build ##
@@ -41,8 +43,8 @@ set(DIRECTORIES
   src/rhoban_model_learning/
   src/rhoban_model_learning/basic_models
   src/rhoban_model_learning/camera_calibration/
-#  src/rhoban_model_learning/ball_models
-#  src/rhoban_model_learning/models
+  #  src/rhoban_model_learning/ball_models
+  #  src/rhoban_model_learning/models
   src/rhoban_model_learning/humanoid_models
   src/rhoban_model_learning/tags
   src/rhoban_model_learning/log_models
@@ -53,14 +55,14 @@ set (SOURCES)
 set (ALL_SOURCES)
 set (PREFIXED_SOURCES)
 foreach (DIRECTORY ${DIRECTORIES})
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}")
-    include (${DIRECTORY}/sources.cmake)
+  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}")
+  include (${DIRECTORY}/sources.cmake)
 
-    foreach (SOURCE ${SOURCES})
-        set (PREFIXED_SOURCES ${PREFIXED_SOURCES} ${DIRECTORY}/${SOURCE})
-    endforeach (SOURCE)
+  foreach (SOURCE ${SOURCES})
+    set (PREFIXED_SOURCES ${PREFIXED_SOURCES} ${DIRECTORY}/${SOURCE})
+  endforeach (SOURCE)
 
-    set (ALL_SOURCES ${ALL_SOURCES} ${PREFIXED_SOURCES})
+  set (ALL_SOURCES ${ALL_SOURCES} ${PREFIXED_SOURCES})
 endforeach (DIRECTORY)
 
 # Declare a C++ library
@@ -80,9 +82,6 @@ target_link_libraries(rhoban_model_learning
 add_executable(model_learner apps/model_learner.cpp)
 target_link_libraries(model_learner ${catkin_LIBRARIES} rhoban_model_learning)
 
-add_executable(model_learning_analyzer apps/model_learning_analyzer.cpp)
-target_link_libraries(model_learning_analyzer ${catkin_LIBRARIES} rhoban_model_learning)
-
 # TODO integrate back tools
 #add_executable(vision_correction_debug tools/vision_correction_debug.cpp)
 #target_link_libraries(vision_correction_debug ${catkin_LIBRARIES} rhoban_model_learning)
@@ -101,10 +100,14 @@ if (BUILD_MODEL_LEARNING_TOOLS)
 
   add_executable(aruco_extractor tools/aruco_extractor.cpp)
   target_link_libraries(aruco_extractor ${catkin_LIBRARIES} ${OpenCV_LIBS} rhoban_model_learning)
+
+  add_executable(log_machine_data_preparation tools/log_machine_data_preparation.cpp)
+  target_link_libraries(log_machine_data_prepatation ${catkin_LIBRARIES} rhoban_model_learning)
+
 endif()
 
 enable_testing()
- 
+
 set(TESTS
   composite_model
   basic_models/linear_model
@@ -116,9 +119,9 @@ set(TESTS
   tags/aruco_cube
   tags/tags_sheet
   tags/aruco_tag
-# TODO: reintegrate
-#  humanoid_models/vision_correction_model
-)
+  # TODO: reintegrate
+  #  humanoid_models/vision_correction_model
+  )
 
 if (CATKIN_ENABLE_TESTING)
   # create an executable for each test
@@ -128,4 +131,3 @@ if (CATKIN_ENABLE_TESTING)
     target_link_libraries(${id} rhoban_model_learning)
   endforeach(test)
 endif()
-
