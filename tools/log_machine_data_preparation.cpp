@@ -20,6 +20,13 @@ int main(int argc, char** argv)
 
     cmd.parse(argc, argv);
 
+    // I need :
+    //   - the history of world poses to make poses diff
+    //   - the history of is_valid
+    //   - a vector with the beginings of a new sequence
+    //   - a vector giving for each sequence an initial guess with the correcponding timestamp
+    //   - a map : timestamp -> ((x,y,z,px,py), (x,y,z,px,py), ...) x,y,z in field
+
     std::string labels_path = labelsArg.getValue();
     // std::string metadata_path = metadataArg.getValue();
     std::string first_guess_path = firstGuessArg.getValue();
