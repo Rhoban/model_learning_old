@@ -60,12 +60,11 @@ ModelLearner::Result ModelLearner::learnParameters(const SampleVector& training_
   }
   optimizer->setLimits(matrix_space);
   Eigen::VectorXd initial_guess = model->getParameters(trainable_indices);
-  // XXX debug
-  // std::cout << "Noising initial guess" << std::endl;
-  // Eigen::VectorXd noised_initial_guess =
-  //     prior->addNoiseToParameters(*model, initial_guess, getTrainableIndices(), engine);
-  std::cout << "Noising off" << std::endl;
-  Eigen::VectorXd noised_initial_guess = initial_guess;
+  std::cout << "Noising initial guess" << std::endl;
+  Eigen::VectorXd noised_initial_guess =
+      prior->addNoiseToParameters(*model, initial_guess, getTrainableIndices(), engine);
+  // std::cout << "Noising off" << std::endl;
+  // Eigen::VectorXd noised_initial_guess = initial_guess;
 
   Eigen::VectorXd best_parameters;
 

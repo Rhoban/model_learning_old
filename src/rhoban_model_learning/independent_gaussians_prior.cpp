@@ -10,7 +10,7 @@
 
 namespace rhoban_model_learning
 {
-IndependentGaussiansPrior::IndependentGaussiansPrior() : ratio(2)
+IndependentGaussiansPrior::IndependentGaussiansPrior() : ratio(1.5)
 {
 }
 
@@ -94,14 +94,14 @@ Eigen::VectorXd IndependentGaussiansPrior::addNoiseToParameters(const Model& m, 
                                                                 const std::set<int> used_indices,
                                                                 std::default_random_engine* engine)
 {
-  return parameters_values;
-  (void)m;
   Eigen::VectorXd parameters_noised_values(parameters_values.size());
+  int j = 0;
   for (int index : used_indices)
   {
-    std::normal_distribution<double> distrib(parameters_values(index), ratio * deviations(index));
+    std::normal_distribution<double> distrib(parameters_values(j), deviations(index));
     double val = distrib(*engine);
-    parameters_noised_values(index) = val;
+    parameters_noised_values(j) = val;
+    j++;
   }
 
   return parameters_noised_values;

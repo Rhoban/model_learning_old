@@ -34,7 +34,7 @@ private:
   Eigen::VectorXd means;
   Eigen::VectorXd deviations;
 
-  int ratio;
+  double ratio;
 };
 
 }  // namespace rhoban_model_learning

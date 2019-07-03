@@ -26,7 +26,6 @@ double CompositePrior::getLogLikelihood(const Model& m, const std::set<int>& use
   {
     double sub_log_likelihood =
         entry.second->getLogLikelihood(getSubModel(m, entry.first), indices_splitting[entry.first]);
-    std::cout << "Prior: " << entry.first << " log likelihood: " << sub_log_likelihood << std::endl;
     log_likelihood += sub_log_likelihood;
   }
 
