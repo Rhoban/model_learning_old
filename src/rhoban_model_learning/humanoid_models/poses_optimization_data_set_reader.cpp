@@ -126,6 +126,8 @@ Json::Value PODSR::toJson() const
   v["nb_training_tags"] = nb_training_tags;
   v["nb_validation_tags"] = nb_validation_tags;
   v["verbose"] = verbose;
+  v["camera_from_self"] = path_to_camera_from_self_protobuf;
+  v["camera_from_head_base"] = path_to_camera_from_head_base_protobuf;
   return v;
 }
 void PODSR::fromJson(const Json::Value& v, const std::string& dir_name)
@@ -134,11 +136,10 @@ void PODSR::fromJson(const Json::Value& v, const std::string& dir_name)
   rhoban_utils::tryRead(v, "nb_training_tags", &nb_training_tags);
   rhoban_utils::tryRead(v, "nb_validation_tags", &nb_validation_tags);
   rhoban_utils::tryRead(v, "verbose", &verbose);
-  std::string path_frames_pb;
-  rhoban_utils::tryRead(v, "camera_from_self", &path_frames_pb);
-  camera_from_self_poses.loadMetaInformation(path_frames_pb);
-  rhoban_utils::tryRead(v, "camera_from_head_base", &path_frames_pb);
-  camera_from_head_base_poses.loadMetaInformation(path_frames_pb);
+  path_to_camera_from_self_protobuf = rhoban_utils::read<std::string>(v, "camera_from_self");
+  camera_from_self_poses.loadMetaInformation(path_to_camera_from_self_protobuf);
+  path_to_camera_from_head_base_protobuf = rhoban_utils::read<std::string>(v, "camera_from_head_base");
+  camera_from_head_base_poses.loadMetaInformation(path_to_camera_from_head_base_protobuf);
 }
 
 }  // namespace rhoban_model_learning

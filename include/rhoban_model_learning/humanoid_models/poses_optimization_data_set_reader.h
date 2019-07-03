@@ -35,6 +35,10 @@ private:
 
   /// Head base from camera poses
   hl_monitoring::ReplayImageProvider camera_from_head_base_poses;
+
+  /// Paths to protobufs
+  std::string path_to_camera_from_self_protobuf;
+  std::string path_to_camera_from_head_base_protobuf;
 };
 
 }  // namespace rhoban_model_learning

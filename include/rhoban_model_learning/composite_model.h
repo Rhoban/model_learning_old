@@ -34,6 +34,8 @@ public:
 
   std::set<int> getIndicesFromName(const std::string& name) const override;
 
+  std::map<std::string, std::set<int>> splitIndicesAmongSubModels(const std::set<int>& indices) const;
+
   Json::Value toJson() const override;
   void fromJson(const Json::Value& v, const std::string& dir_name) override;
 

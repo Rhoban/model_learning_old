@@ -32,6 +32,8 @@ int CompositeModel::getOffset(const std::string& name) const
 
 const Model& CompositeModel::getModel(const std::string& name) const
 {
+  if (models.count(name) == 0)
+    throw std::out_of_range(DEBUG_INFO + " model '" + name + "' is not available");
   return *models.at(name);
 }
 
@@ -128,6 +130,36 @@ std::set<int> CompositeModel::getIndicesFromName(const std::string& name) const
     corrected_indices.insert(index + offset);
   }
   return corrected_indices;
+}
+
+std::map<std::string, std::set<int>> CompositeModel::splitIndicesAmongSubModels(const std::set<int>& indices) const
+{
+  for (int index : indices)
+  {
+    if (index < 0)
+      throw std::runtime_error(DEBUG_INFO + "Can't use negative indices. (" + std::to_string(index) + " < 0)");
+
+    if (index > getParametersSize())
+      throw std::runtime_error(DEBUG_INFO +
+                               "Can't use indices bigger thant the number of indices of the composite "
+                               "model. (" +
+                               std::to_string(index) + " < " + std::to_string(getParametersSize()) + ")");
+  }
+
+  std::map<std::string, std::set<int>> res;
+  int offset = 0;
+  for (const auto& entry : models)
+  {
+    int model_parameters_size = entry.second->getParametersSize();
+    int new_offset = offset + model_parameters_size;
+    for (auto it = indices.lower_bound(offset); it != indices.lower_bound(new_offset); it++)
+    {
+      res[entry.first].insert(*it - offset);
+    }
+    offset = new_offset;
+  }
+
+  return res;
 }
 
 Json::Value CompositeModel::toJson() const

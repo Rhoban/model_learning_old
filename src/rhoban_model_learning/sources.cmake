@@ -2,11 +2,12 @@ set(SOURCES
   composite_model.cpp
   composite_prior.cpp
   data_set_reader_factory.cpp
+  data_set_reader.cpp
   default_data_set_reader.cpp
   default_input.cpp
   independent_gaussians_prior.cpp
   default_space.cpp
-  deviation_based_space.cpp
+  #deviation_based_space.cpp
   model.cpp
   model_factory.cpp
   model_learner.cpp

@@ -25,6 +25,7 @@ ModelLearner::ModelLearner(std::unique_ptr<Model> model_, std::unique_ptr<ModelP
   , optimizer(std::move(optimizer_))
   , trainable_indices(trainable_indices_)
 {
+  prior->setInitialMean(*model);
 }
 
 ModelLearner::Result ModelLearner::learnParameters(const DataSet& data, std::default_random_engine* engine)
@@ -58,11 +59,17 @@ ModelLearner::Result ModelLearner::learnParameters(const SampleVector& training_
     throw std::logic_error("ModelLearner::learnParameters: model has no parameters");
   }
   optimizer->setLimits(matrix_space);
-  Eigen::VectorXd initial_guess = prior->getParametersInitialValues(*model, trainable_indices);
+  Eigen::VectorXd initial_guess = model->getParameters(trainable_indices);
+  std::cout << "Noising initial guess" << std::endl;
+  Eigen::VectorXd noised_initial_guess =
+      prior->addNoiseToParameters(*model, initial_guess, getTrainableIndices(), engine);
+  // std::cout << "Noising off" << std::endl;
+  // Eigen::VectorXd noised_initial_guess = initial_guess;
+
   Eigen::VectorXd best_parameters;
 
   std::cout << "Start training." << std::endl;
-  best_parameters = optimizer->train(reward_function, initial_guess, engine);
+  best_parameters = optimizer->train(reward_function, noised_initial_guess, engine);
   // Copy the model
   std::cout << "Finished training." << std::endl;
   result.model = model->clone();
@@ -136,7 +143,7 @@ void ModelLearner::fromJson(const Json::Value& v, const std::string& dir_name)
   }
 
   int model_size = model->getParametersSize();
-  int prior_size = prior->getParametersInitialValues(*model).rows();
+  int prior_size = prior->getParametersSize();
   int space_size = space->getParametersSpace(*model, *prior).rows();
   if (model_size != prior_size)
   {
@@ -148,6 +155,8 @@ void ModelLearner::fromJson(const Json::Value& v, const std::string& dir_name)
     throw std::runtime_error(DEBUG_INFO + "size of space (" + std::to_string(space_size) + ") size of model (" +
                              std::to_string(model_size) + ")");
   }
+
+  prior->setInitialMean(*model);
 }
 
 const Model& ModelLearner::getModel() const

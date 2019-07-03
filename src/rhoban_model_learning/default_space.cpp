@@ -13,8 +13,7 @@ DefaultSpace::DefaultSpace(const DefaultSpace& other) : space(other.space)
 Eigen::MatrixXd DefaultSpace::getParametersSpace(const Model& m, const ModelPrior& p) const
 {
   (void)m;
-  (void)p;
-  return space;
+  return p.getParametersSpace();
 }
 
 std::string DefaultSpace::getClassName() const
@@ -25,13 +24,14 @@ std::string DefaultSpace::getClassName() const
 void DefaultSpace::fromJson(const Json::Value& json_value, const std::string& dir_name)
 {
   (void)dir_name;
-  space = rhoban_utils::readEigen<-1, -1>(json_value, "space");
+  (void)json_value;
+  // space = rhoban_utils::readEigen<-1, -1>(json_value, "space");
 }
 
 Json::Value DefaultSpace::toJson() const
 {
   Json::Value v;
-  v["space"] = rhoban_utils::matrix2Json(space);
+  // v["space"] = rhoban_utils::matrix2Json(space);
   return v;
 }
 

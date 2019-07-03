@@ -13,8 +13,16 @@ public:
   IndependentGaussiansPrior();
   IndependentGaussiansPrior(const IndependentGaussiansPrior& other);
 
-  Eigen::VectorXd getParametersInitialValues(const Model& m) const override;
-  Eigen::VectorXd getParametersStdDev(const Model& m) const override;
+  double getLogLikelihood(const Model& m, const std::set<int>& used_indices) const override;
+
+  int getParametersSize() const override;
+  Eigen::MatrixXd getParametersSpace() const override;
+
+  void setInitialMean(const Model& m) override;
+  void updateDeviations(const Model& m, const std::vector<Eigen::VectorXd> parameters_values,
+                        const std::set<int> used_indices) override;
+  Eigen::VectorXd addNoiseToParameters(const Model& m, const Eigen::VectorXd parameters_values,
+                                       const std::set<int> used_indices, std::default_random_engine*) override;
 
   std::string getClassName() const override;
   void fromJson(const Json::Value& json_value, const std::string& dir_name) override;
@@ -25,6 +33,8 @@ public:
 private:
   Eigen::VectorXd means;
   Eigen::VectorXd deviations;
+
+  double ratio;
 };
 
 }  // namespace rhoban_model_learning

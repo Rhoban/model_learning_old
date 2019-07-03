@@ -51,6 +51,7 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
   }
   catch (const std::runtime_error& exc)
   {
+    std::cout << "Image id: " << input.image_id << std::endl;
     std::cout << "Marker " << input.aruco_id << " corner " << input.corner_id
               << " pos in world: " << marker_pose.transpose() << std::endl;
     std::cout << "Marker " << input.aruco_id << " corner " << input.corner_id
@@ -60,6 +61,7 @@ Eigen::VectorXd POP::predictObservation(const Input& raw_input, const Model& raw
     std::cout << "Camera pose in self before correction " << std::endl << camera_from_self.matrix() << std::endl;
     std::cout << "Camera pose in self after correction " << std::endl
               << camera_from_self_after_correction.matrix() << std::endl;
+    std::cerr << "camera model: " << calibration_model.getCameraModel().toJsonStringHuman() << std::endl;
     std::cerr << "error: " << exc.what() << std::endl;
     exit(EXIT_FAILURE);
   }
