@@ -40,11 +40,11 @@ DataSet LMDSR::extractSamples(const std::string& file_path, std::default_random_
     std::vector<int> key{ marker_id, corner_id, image_id };
     keys.insert(key);
     double pixel_x = std::stod(row_content.at("pixel_x"));
-    double pixel_y = std::stod(row_content.at("pixel_y"));
+    ameraM
 
-    // camera from self
-    Eigen::Affine3d camera_from_self =
-        hl_communication::getAffineFromProtobuf(camera_from_self_poses.getCameraMetaInformation(image_id).pose());
+        // camera from self
+        Eigen::Affine3d camera_from_self =
+            hl_communication::getAffineFromProtobuf(camera_from_self_poses.getCameraMetaInformation(image_id).pose());
 
     // camera from self
     Eigen::Affine3d camera_from_head_base =

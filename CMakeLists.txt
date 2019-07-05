@@ -102,8 +102,7 @@ if (BUILD_MODEL_LEARNING_TOOLS)
   target_link_libraries(aruco_extractor ${catkin_LIBRARIES} ${OpenCV_LIBS} rhoban_model_learning)
 
   add_executable(log_machine_data_preparation tools/log_machine_data_preparation.cpp)
-  target_link_libraries(log_machine_data_prepatation ${catkin_LIBRARIES} rhoban_model_learning)
-
+  target_link_libraries(log_machine_data_preparation ${catkin_LIBRARIES} rhoban_model_learning)
 endif()
 
 enable_testing()

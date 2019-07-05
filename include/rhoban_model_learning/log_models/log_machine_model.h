@@ -1,8 +1,8 @@
 #pragma once
-
 #include "rhoban_model_learning/composite_model.h"
 
 #include "rhoban_utils/history/history.h"
+#include "rhoban_model_learning/camera_calibration/camera_model.h"
 
 #include "robot_model/camera_model.h"
 
@@ -16,6 +16,7 @@ class LogMachineModel : public CompositeModel
 public:
   LogMachineModel();
   LogMachineModel(const LogMachineModel& other);
+  LogMachineModel(const rhoban_utils::HistoryCollection& _histories, std::vector<double> _sequences_timestamps);
 
   virtual std::unique_ptr<Model> clone() const;
 

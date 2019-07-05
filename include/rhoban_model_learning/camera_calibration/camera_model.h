@@ -1,3 +1,5 @@
+#pragma once
+
 #include "rhoban_model_learning/model.h"
 
 #include "robot_model/camera_model.h"

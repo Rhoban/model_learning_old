@@ -2,7 +2,6 @@
 
 #include "rhoban_model_learning/humanoid_models/vision_noise_model.h"
 #include "rhoban_model_learning/basic_models/multi_poses_model.h"
-#include "rhoban_model_learning/camera_calibration/camera_model.h"
 
 #include <rhoban_utils/util.h>
 
@@ -12,7 +11,6 @@ typedef LogMachineModel LMM;
 
 LMM::LogMachineModel() : CompositeModel()
 {
-  models["noise"] = std::unique_ptr<Model>(new VisionNoiseModel);
   models["corrected_camera_from_camera"] = std::unique_ptr<Model>(new MultiPosesModel);
   models["camera"] = std::unique_ptr<Model>(new CameraModel);
 
@@ -21,10 +19,15 @@ LMM::LogMachineModel() : CompositeModel()
   histories.number("px_std_dev");
 }
 
-LMM::LogMachineModel(const LogMachineModel& other) : CompositeModel(other)
+LMM::LogMachineModel(const rhoban_utils::HistoryCollection& _histories, std::vector<double> _sequences_timestamps)
+  : histories(_histories), sequences_timestamps(_sequences_timestamps)
 {
-  // XXX Il faut pouvoir copier les history collection
-  // histories(other.histories);
+  models["camera"] = std::unique_ptr<Model>(new CameraModel);
+  models["corrected_camera_from_camera"] = std::unique_ptr<Model>(new MultiPosesModel);
+}
+
+LMM::LogMachineModel(const LogMachineModel& other) : CompositeModel(other), histories(other.histories)
+{
 }
 
 double LMM::getPxStddev() const
