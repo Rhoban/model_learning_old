@@ -93,11 +93,6 @@ double POP::computeLogLikelihood(const Sample& sample, const Model& raw_model, s
   return expected_distribution.getLogLikelihood(observation);
 }
 
-Eigen::VectorXi POP::getObservationsCircularity() const
-{
-  return Eigen::VectorXi::Zero(2);
-}
-
 std::string POP::getClassName() const
 {
   return "PosesOptimizationPredictor";

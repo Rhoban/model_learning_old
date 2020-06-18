@@ -16,11 +16,6 @@ public:
   Predictor();
   Predictor(const Predictor& other);
 
-  /// Return a vector indicating for each dimension of the observation if it is
-  /// a circular dimension
-  /// Default implementation is none of the dimension is circular
-  virtual Eigen::VectorXi getObservationsCircularity() const;
-
   /// Return the predicted observation according to the provided input and
   /// parameters and model. If 'engine' is null, noise is not considered
   virtual Eigen::VectorXd predictObservation(const Input& input, const Model& model,

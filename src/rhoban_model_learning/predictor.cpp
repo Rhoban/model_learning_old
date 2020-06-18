@@ -19,11 +19,6 @@ Predictor::Predictor(const Predictor& other) : nb_samples(other.nb_samples), nb_
 {
 }
 
-Eigen::VectorXi Predictor::getObservationsCircularity() const
-{
-  return Eigen::VectorXi(output_dim, 0);
-}
-
 double Predictor::computeLogLikelihood(const Sample& sample, const Model& model,
                                        std::default_random_engine* engine) const
 {
@@ -33,7 +28,7 @@ double Predictor::computeLogLikelihood(const Sample& sample, const Model& model,
     observations.push_back(predictObservation(sample.getInput(), model, engine));
   }
   rhoban_random::MultivariateGaussian distrib;
-  distrib.fit(observations, getObservationsCircularity());
+  distrib.fit(observations);
   return distrib.getLogLikelihood(sample.getObservation());
 }
 

@@ -74,11 +74,6 @@ double IPP::computeLogLikelihood(const Sample& sample, const Model& raw_model, s
   return expected_distribution.getLogLikelihood(observation);
 }
 
-Eigen::VectorXi IPP::getObservationsCircularity() const
-{
-  return Eigen::VectorXi::Zero(2);
-}
-
 std::string IPP::getClassName() const
 {
   return "InferedPosesPredictor";

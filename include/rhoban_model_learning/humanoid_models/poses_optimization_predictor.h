@@ -20,8 +20,6 @@ public:
   double computeLogLikelihood(const Sample& sample, const Model& model,
                               std::default_random_engine* engine) const override;
 
-  Eigen::VectorXi getObservationsCircularity() const override;
-
   std::string getClassName() const override;
 
   void exportPredictionsToCSV(const Model& raw_model, const SampleVector& sample_vector, const std::string& filename,

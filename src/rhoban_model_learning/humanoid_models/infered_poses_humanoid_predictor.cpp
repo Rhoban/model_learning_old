@@ -82,11 +82,6 @@ double IPHP::computeLogLikelihood(const Sample& sample, const Model& raw_model,
   return expected_distribution.getLogLikelihood(observation);
 }
 
-Eigen::VectorXi IPHP::getObservationsCircularity() const
-{
-  return Eigen::VectorXi::Zero(2);
-}
-
 std::string IPHP::getClassName() const
 {
   return "InferedPosesHumanoidPredictor";
