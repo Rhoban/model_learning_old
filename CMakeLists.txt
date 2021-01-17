@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(rhoban_model_learning)
 
 
-find_package(OpenCV 3 REQUIRED)
+find_package(OpenCV 4.2 REQUIRED)
 include_directories(${OpenCV_DIR})
 link_directories(${OpenCV_DIR}/lib ${OpenCV_DIR}/3rdparty/lib)
 
