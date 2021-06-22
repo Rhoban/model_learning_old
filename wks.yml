@@ -1,5 +1,5 @@
 deps:
-  - rhoban/bbo
-  - rhoban/robot_model
-  - rhoban/hl_monitoring
+  - rhoban/bbo#wks
+  - rhoban/robot_model#wks
+  - rhoban/hl_monitoring#wks
 
